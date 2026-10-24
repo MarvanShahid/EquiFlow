@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2026-10-16 10:42:37.167033 by Eclipse SUMO randomTrips.py v1_28_0+0000-daf91b55789
+<configuration>
+    <net-file value="C:\Users\DELL\Desktop\EquiFlow\sumo\networks\y_junction_fixed.net.xml"/>
+    <additional-files value="C:\Users\DELL\Desktop\EquiFlow\sumo\routes\vtypes.add.xml"/>
+    <output-trip-file value="C:\Users\DELL\Desktop\EquiFlow\sumo\_tmp\y_junction_medium_bus.trips.xml"/>
+    <prefix value="bus_"/>
+    <trip-attributes value="type=&quot;bus&quot;"/>
+    <seed value="222"/>
+    <end value="3500.0"/>
+    <period value="100.0"/>
+</configuration>
+-->
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <trip id="bus_0" depart="0.00" from="in240" to="out0" type="bus"/>
+    <trip id="bus_1" depart="100.00" from="in0" to="out240" type="bus"/>
+    <trip id="bus_2" depart="200.00" from="in120" to="out0" type="bus"/>
+    <trip id="bus_3" depart="300.00" from="in0" to="out240" type="bus"/>
+    <trip id="bus_4" depart="400.00" from="in0" to="out120" type="bus"/>
+    <trip id="bus_5" depart="500.00" from="in0" to="out120" type="bus"/>
+    <trip id="bus_6" depart="600.00" from="in0" to="out120" type="bus"/>
+    <trip id="bus_7" depart="700.00" from="in0" to="out240" type="bus"/>
+    <trip id="bus_8" depart="800.00" from="in240" to="out120" type="bus"/>
+    <trip id="bus_9" depart="900.00" from="in120" to="out240" type="bus"/>
+    <trip id="bus_10" depart="1000.00" from="in120" to="out0" type="bus"/>
+    <trip id="bus_11" depart="1100.00" from="in240" to="out120" type="bus"/>
+    <trip id="bus_12" depart="1200.00" from="in240" to="out120" type="bus"/>
+    <trip id="bus_13" depart="1300.00" from="in120" to="out0" type="bus"/>
+    <trip id="bus_14" depart="1400.00" from="in0" to="out120" type="bus"/>
+    <trip id="bus_15" depart="1500.00" from="in240" to="out120" type="bus"/>
+    <trip id="bus_16" depart="1600.00" from="in240" to="out120" type="bus"/>
+    <trip id="bus_17" depart="1700.00" from="in240" to="out120" type="bus"/>
+    <trip id="bus_18" depart="1800.00" from="in0" to="out120" type="bus"/>
+    <trip id="bus_19" depart="1900.00" from="in120" to="out0" type="bus"/>
+    <trip id="bus_20" depart="2000.00" from="in240" to="out120" type="bus"/>
+    <trip id="bus_21" depart="2100.00" from="in0" to="out240" type="bus"/>
+    <trip id="bus_22" depart="2200.00" from="in0" to="out240" type="bus"/>
+    <trip id="bus_23" depart="2300.00" from="in240" to="out0" type="bus"/>
+    <trip id="bus_24" depart="2400.00" from="in240" to="out120" type="bus"/>
+    <trip id="bus_25" depart="2500.00" from="in120" to="out240" type="bus"/>
+    <trip id="bus_26" depart="2600.00" from="in0" to="out120" type="bus"/>
+    <trip id="bus_27" depart="2700.00" from="in0" to="out120" type="bus"/>
+    <trip id="bus_28" depart="2800.00" from="in120" to="out0" type="bus"/>
+    <trip id="bus_29" depart="2900.00" from="in240" to="out120" type="bus"/>
+    <trip id="bus_30" depart="3000.00" from="in0" to="out120" type="bus"/>
+    <trip id="bus_31" depart="3100.00" from="in120" to="out0" type="bus"/>
+    <trip id="bus_32" depart="3200.00" from="in0" to="out120" type="bus"/>
+    <trip id="bus_33" depart="3300.00" from="in0" to="out120" type="bus"/>
+    <trip id="bus_34" depart="3400.00" from="in0" to="out120" type="bus"/>
+</routes>

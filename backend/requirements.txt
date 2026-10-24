@@ -1,0 +1,13 @@
+# --- API (always needed) ---
+fastapi>=0.115
+uvicorn[standard]>=0.30
+pydantic>=2.7
+pyyaml>=6.0
+opencv-python-headless>=4.9
+numpy>=1.26
+# --- optional: MQTT bridge (mqtt.enabled: true) ---
+paho-mqtt>=2.0
+# --- live vision with your two models (mode: auto + cls_weights set) ---
+# pip install ultralytics torch   (use the same environment you trained / ran tracking in)
+# --- tests ---
+pytest>=8

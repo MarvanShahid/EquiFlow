@@ -1,0 +1,14 @@
+<edges>
+  <edge id="ring0" from="R0" to="R90" numLanes="1" speed="8.33" priority="5" shape="10.72,25.87 19.80,19.80 25.87,10.72"/>
+  <edge id="ring90" from="R90" to="R180" numLanes="1" speed="8.33" priority="5" shape="25.87,-10.72 19.80,-19.80 10.72,-25.87"/>
+  <edge id="ring180" from="R180" to="R270" numLanes="1" speed="8.33" priority="5" shape="-10.72,-25.87 -19.80,-19.80 -25.87,-10.72"/>
+  <edge id="ring270" from="R270" to="R0" numLanes="1" speed="8.33" priority="5" shape="-25.87,10.72 -19.80,19.80 -10.72,25.87"/>
+  <edge id="in0" from="A0" to="R0" numLanes="2" speed="13.89" priority="9"/>
+  <edge id="out0" from="R0" to="A0" numLanes="2" speed="13.89" priority="9"/>
+  <edge id="in90" from="A90" to="R90" numLanes="2" speed="13.89" priority="9"/>
+  <edge id="out90" from="R90" to="A90" numLanes="2" speed="13.89" priority="9"/>
+  <edge id="in180" from="A180" to="R180" numLanes="2" speed="13.89" priority="9"/>
+  <edge id="out180" from="R180" to="A180" numLanes="2" speed="13.89" priority="9"/>
+  <edge id="in270" from="A270" to="R270" numLanes="2" speed="13.89" priority="9"/>
+  <edge id="out270" from="R270" to="A270" numLanes="2" speed="13.89" priority="9"/>
+</edges>

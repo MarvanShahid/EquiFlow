@@ -1,0 +1,7 @@
+path: C:/Smester7/Projects/equiflow_det
+train: images/train
+val: images/val
+test: images/test
+names:
+  0: ambulance
+  1: other_vehicle

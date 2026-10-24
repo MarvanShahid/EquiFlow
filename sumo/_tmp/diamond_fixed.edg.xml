@@ -1,0 +1,18 @@
+<edges>
+  <edge id="exE0" from="XWi" to="DE1" numLanes="3" speed="22.22" priority="10"/>
+  <edge id="exE1" from="DE1" to="DE2" numLanes="3" speed="22.22" priority="10"/>
+  <edge id="exE2" from="DE2" to="XEo" numLanes="3" speed="22.22" priority="10"/>
+  <edge id="exW0" from="XEi" to="DW1" numLanes="3" speed="22.22" priority="10"/>
+  <edge id="exW1" from="DW1" to="DW2" numLanes="3" speed="22.22" priority="10"/>
+  <edge id="exW2" from="DW2" to="XWo" numLanes="3" speed="22.22" priority="10"/>
+  <edge id="arS_in" from="AS" to="JS" numLanes="2" speed="16.67" priority="8"/>
+  <edge id="arS_out" from="JS" to="AS" numLanes="2" speed="16.67" priority="8"/>
+  <edge id="arC_n" from="JS" to="JN" numLanes="2" speed="16.67" priority="8"/>
+  <edge id="arC_s" from="JN" to="JS" numLanes="2" speed="16.67" priority="8"/>
+  <edge id="arN_in" from="AN" to="JN" numLanes="2" speed="16.67" priority="8"/>
+  <edge id="arN_out" from="JN" to="AN" numLanes="2" speed="16.67" priority="8"/>
+  <edge id="rampE_off" from="DE1" to="JN" numLanes="1" speed="13.89" priority="6"/>
+  <edge id="rampE_on" from="JN" to="DE2" numLanes="1" speed="13.89" priority="6"/>
+  <edge id="rampW_off" from="DW1" to="JS" numLanes="1" speed="13.89" priority="6"/>
+  <edge id="rampW_on" from="JS" to="DW2" numLanes="1" speed="13.89" priority="6"/>
+</edges>

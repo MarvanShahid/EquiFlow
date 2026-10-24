@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2026-10-16 10:44:18.231768 by Eclipse SUMO randomTrips.py v1_28_0+0000-daf91b55789
+<configuration>
+    <net-file value="C:\Users\DELL\Desktop\EquiFlow\sumo\networks\sector_grid_fixed.net.xml"/>
+    <additional-files value="C:\Users\DELL\Desktop\EquiFlow\sumo\routes\vtypes.add.xml"/>
+    <output-trip-file value="C:\Users\DELL\Desktop\EquiFlow\sumo\_tmp\sector_grid_medium_ambulance.trips.xml"/>
+    <prefix value="ambulance_"/>
+    <trip-attributes value="type=&quot;ambulance&quot;"/>
+    <seed value="422"/>
+    <min-distance value="300.0"/>
+    <end value="3500.0"/>
+    <period value="360.0"/>
+</configuration>
+-->
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <trip id="ambulance_0" depart="0.00" from="B0C0" to="A0A1" type="ambulance"/>
+    <trip id="ambulance_1" depart="360.00" from="C2C1" to="B2A2" type="ambulance"/>
+    <trip id="ambulance_2" depart="720.00" from="B2A2" to="B0A0" type="ambulance"/>
+    <trip id="ambulance_3" depart="1080.00" from="A0A1" to="C2B2" type="ambulance"/>
+    <trip id="ambulance_4" depart="1440.00" from="C1B1" to="A1A2" type="ambulance"/>
+    <trip id="ambulance_5" depart="1800.00" from="B1B0" to="B1B2" type="ambulance"/>
+    <trip id="ambulance_6" depart="2160.00" from="B2A2" to="B2C2" type="ambulance"/>
+    <trip id="ambulance_7" depart="2520.00" from="C0C1" to="C1B1" type="ambulance"/>
+    <trip id="ambulance_8" depart="2880.00" from="B0C0" to="A2B2" type="ambulance"/>
+    <trip id="ambulance_9" depart="3240.00" from="A0A1" to="C0B0" type="ambulance"/>
+</routes>

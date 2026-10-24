@@ -1,0 +1,10 @@
+<edges>
+  <edge id="in0" from="A0" to="C" numLanes="3" speed="16.67" priority="9"/>
+  <edge id="out0" from="C" to="A0" numLanes="3" speed="16.67" priority="9"/>
+  <edge id="in90" from="A90" to="C" numLanes="3" speed="16.67" priority="9"/>
+  <edge id="out90" from="C" to="A90" numLanes="3" speed="16.67" priority="9"/>
+  <edge id="in180" from="A180" to="C" numLanes="3" speed="16.67" priority="9"/>
+  <edge id="out180" from="C" to="A180" numLanes="3" speed="16.67" priority="9"/>
+  <edge id="in270" from="A270" to="C" numLanes="3" speed="16.67" priority="9"/>
+  <edge id="out270" from="C" to="A270" numLanes="3" speed="16.67" priority="9"/>
+</edges>

@@ -1,0 +1,3 @@
+track_id,first_vote_frame,confirm_frame,confirm_time_s,delay_s,mean_p,max_p,dx,dy,heading_deg
+6,10,13,0.43,0.1,0.278,0.998,-49.5,97.5,116.9
+174,113,116,3.87,0.1,0.755,0.883,0.5,-2.0,-76.0

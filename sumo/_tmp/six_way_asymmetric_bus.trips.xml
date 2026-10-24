@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2026-10-16 10:45:41.200312 by Eclipse SUMO randomTrips.py v1_28_0+0000-daf91b55789
+<configuration>
+    <net-file value="C:\Users\DELL\Desktop\EquiFlow\sumo\networks\six_way_fixed.net.xml"/>
+    <additional-files value="C:\Users\DELL\Desktop\EquiFlow\sumo\routes\vtypes.add.xml"/>
+    <output-trip-file value="C:\Users\DELL\Desktop\EquiFlow\sumo\_tmp\six_way_asymmetric_bus.trips.xml"/>
+    <prefix value="bus_"/>
+    <trip-attributes value="type=&quot;bus&quot;"/>
+    <fringe-factor value="10"/>
+    <seed value="244"/>
+    <end value="3500.0"/>
+    <period value="83.333"/>
+</configuration>
+-->
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <trip id="bus_0" depart="0.00" from="in60" to="out300" type="bus"/>
+    <trip id="bus_1" depart="83.33" from="in300" to="out180" type="bus"/>
+    <trip id="bus_2" depart="166.67" from="in240" to="out0" type="bus"/>
+    <trip id="bus_3" depart="250.00" from="in0" to="out300" type="bus"/>
+    <trip id="bus_4" depart="333.33" from="in300" to="out120" type="bus"/>
+    <trip id="bus_5" depart="416.66" from="in300" to="out240" type="bus"/>
+    <trip id="bus_6" depart="500.00" from="in0" to="out120" type="bus"/>
+    <trip id="bus_7" depart="583.33" from="in180" to="out0" type="bus"/>
+    <trip id="bus_8" depart="666.66" from="in0" to="out180" type="bus"/>
+    <trip id="bus_9" depart="750.00" from="in60" to="out120" type="bus"/>
+    <trip id="bus_10" depart="833.33" from="in180" to="out300" type="bus"/>
+    <trip id="bus_11" depart="916.66" from="in180" to="out60" type="bus"/>
+    <trip id="bus_12" depart="1000.00" from="in0" to="out240" type="bus"/>
+    <trip id="bus_13" depart="1083.33" from="in60" to="out120" type="bus"/>
+    <trip id="bus_14" depart="1166.66" from="in180" to="out60" type="bus"/>
+    <trip id="bus_15" depart="1249.99" from="in300" to="out0" type="bus"/>
+    <trip id="bus_16" depart="1333.33" from="in120" to="out60" type="bus"/>
+    <trip id="bus_17" depart="1416.66" from="in60" to="out180" type="bus"/>
+    <trip id="bus_18" depart="1499.99" from="in120" to="out0" type="bus"/>
+    <trip id="bus_19" depart="1583.33" from="in120" to="out0" type="bus"/>
+    <trip id="bus_20" depart="1666.66" from="in0" to="out120" type="bus"/>
+    <trip id="bus_21" depart="1749.99" from="in60" to="out0" type="bus"/>
+    <trip id="bus_22" depart="1833.33" from="in180" to="out240" type="bus"/>
+    <trip id="bus_23" depart="1916.66" from="in180" to="out240" type="bus"/>
+    <trip id="bus_24" depart="1999.99" from="in300" to="out0" type="bus"/>
+    <trip id="bus_25" depart="2083.33" from="in0" to="out180" type="bus"/>
+    <trip id="bus_26" depart="2166.66" from="in300" to="out120" type="bus"/>
+    <trip id="bus_27" depart="2249.99" from="in180" to="out60" type="bus"/>
+    <trip id="bus_28" depart="2333.32" from="in120" to="out180" type="bus"/>
+    <trip id="bus_29" depart="2416.66" from="in60" to="out180" type="bus"/>
+    <trip id="bus_30" depart="2499.99" from="in180" to="out0" type="bus"/>
+    <trip id="bus_31" depart="2583.32" from="in300" to="out180" type="bus"/>
+    <trip id="bus_32" depart="2666.66" from="in180" to="out60" type="bus"/>
+    <trip id="bus_33" depart="2749.99" from="in0" to="out180" type="bus"/>
+    <trip id="bus_34" depart="2833.32" from="in0" to="out60" type="bus"/>
+    <trip id="bus_35" depart="2916.66" from="in120" to="out240" type="bus"/>
+    <trip id="bus_36" depart="2999.99" from="in0" to="out60" type="bus"/>
+    <trip id="bus_37" depart="3083.32" from="in180" to="out0" type="bus"/>
+    <trip id="bus_38" depart="3166.65" from="in240" to="out120" type="bus"/>
+    <trip id="bus_39" depart="3249.99" from="in0" to="out120" type="bus"/>
+    <trip id="bus_40" depart="3333.32" from="in120" to="out60" type="bus"/>
+    <trip id="bus_41" depart="3416.65" from="in60" to="out240" type="bus"/>
+    <trip id="bus_42" depart="3499.99" from="in60" to="out240" type="bus"/>
+</routes>

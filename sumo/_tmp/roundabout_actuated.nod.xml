@@ -1,0 +1,10 @@
+<nodes>
+  <node id="R0" x="0.00" y="28.00" type="priority"/>
+  <node id="R90" x="28.00" y="0.00" type="priority"/>
+  <node id="R180" x="0.00" y="-28.00" type="priority"/>
+  <node id="R270" x="-28.00" y="-0.00" type="priority"/>
+  <node id="A0" x="0.00" y="300.00" type="priority"/>
+  <node id="A90" x="300.00" y="0.00" type="priority"/>
+  <node id="A180" x="0.00" y="-300.00" type="priority"/>
+  <node id="A270" x="-300.00" y="-0.00" type="priority"/>
+</nodes>

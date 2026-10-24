@@ -1,0 +1,63 @@
+# Python Virtual Environments
+.venv/
+venv/
+env/
+Projects/.venv/
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Datasets / Generated Data
+Projects/Dataset/
+Projects/crops/
+Projects/updated_crops/
+Projects/equiflow_det/
+Projects/harvest_tmp/
+Projects/prelabels/
+
+# ML / YOLO generated outputs
+Projects/runs/*
+
+# Keep this trained model
+!Projects/runs/cls_v4-2/
+!Projects/runs/cls_v4-2/weights/
+!Projects/runs/cls_v4-2/weights/best.pt
+
+# Diagnostic / generated files
+Projects/diag/
+
+# ML experiment tracking
+wandb/
+
+# Videos
+*.mp4
+*.avi
+*.mov
+*.mkv
+
+# Archives
+*.zip
+*.rar
+*.7z
+
+# Node / Next.js
+node_modules/
+.next/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+Thumbs.db
+.DS_Store

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2026-10-16 10:43:22.904478 by Eclipse SUMO randomTrips.py v1_28_0+0000-daf91b55789
+<configuration>
+    <net-file value="C:\Users\DELL\Desktop\EquiFlow\sumo\networks\five_way_signal_fixed.net.xml"/>
+    <additional-files value="C:\Users\DELL\Desktop\EquiFlow\sumo\routes\vtypes.add.xml"/>
+    <output-trip-file value="C:\Users\DELL\Desktop\EquiFlow\sumo\_tmp\five_way_signal_high_bus.trips.xml"/>
+    <prefix value="bus_"/>
+    <trip-attributes value="type=&quot;bus&quot;"/>
+    <seed value="233"/>
+    <end value="3500.0"/>
+    <period value="58.333"/>
+</configuration>
+-->
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <trip id="bus_0" depart="0.00" from="in216" to="out72" type="bus"/>
+    <trip id="bus_1" depart="58.33" from="in216" to="out144" type="bus"/>
+    <trip id="bus_2" depart="116.67" from="in72" to="out144" type="bus"/>
+    <trip id="bus_3" depart="175.00" from="in0" to="out288" type="bus"/>
+    <trip id="bus_4" depart="233.33" from="in72" to="out288" type="bus"/>
+    <trip id="bus_5" depart="291.66" from="in216" to="out144" type="bus"/>
+    <trip id="bus_6" depart="350.00" from="in72" to="out144" type="bus"/>
+    <trip id="bus_7" depart="408.33" from="in216" to="out0" type="bus"/>
+    <trip id="bus_8" depart="466.66" from="in288" to="out144" type="bus"/>
+    <trip id="bus_9" depart="525.00" from="in72" to="out216" type="bus"/>
+    <trip id="bus_10" depart="583.33" from="in288" to="out216" type="bus"/>
+    <trip id="bus_11" depart="641.66" from="in0" to="out288" type="bus"/>
+    <trip id="bus_12" depart="700.00" from="in288" to="out144" type="bus"/>
+    <trip id="bus_13" depart="758.33" from="in72" to="out0" type="bus"/>
+    <trip id="bus_14" depart="816.66" from="in144" to="out72" type="bus"/>
+    <trip id="bus_15" depart="874.99" from="in0" to="out216" type="bus"/>
+    <trip id="bus_16" depart="933.33" from="in72" to="out288" type="bus"/>
+    <trip id="bus_17" depart="991.66" from="in0" to="out144" type="bus"/>
+    <trip id="bus_18" depart="1049.99" from="in144" to="out288" type="bus"/>
+    <trip id="bus_19" depart="1108.33" from="in144" to="out288" type="bus"/>
+    <trip id="bus_20" depart="1166.66" from="in288" to="out0" type="bus"/>
+    <trip id="bus_21" depart="1224.99" from="in72" to="out216" type="bus"/>
+    <trip id="bus_22" depart="1283.33" from="in0" to="out288" type="bus"/>
+    <trip id="bus_23" depart="1341.66" from="in0" to="out288" type="bus"/>
+    <trip id="bus_24" depart="1399.99" from="in216" to="out0" type="bus"/>
+    <trip id="bus_25" depart="1458.33" from="in144" to="out216" type="bus"/>
+    <trip id="bus_26" depart="1516.66" from="in288" to="out144" type="bus"/>
+    <trip id="bus_27" depart="1574.99" from="in216" to="out0" type="bus"/>
+    <trip id="bus_28" depart="1633.32" from="in288" to="out0" type="bus"/>
+    <trip id="bus_29" depart="1691.66" from="in288" to="out72" type="bus"/>
+    <trip id="bus_30" depart="1749.99" from="in288" to="out144" type="bus"/>
+    <trip id="bus_31" depart="1808.32" from="in144" to="out0" type="bus"/>
+    <trip id="bus_32" depart="1866.66" from="in72" to="out216" type="bus"/>
+    <trip id="bus_33" depart="1924.99" from="in288" to="out72" type="bus"/>
+    <trip id="bus_34" depart="1983.32" from="in216" to="out288" type="bus"/>
+    <trip id="bus_35" depart="2041.66" from="in288" to="out144" type="bus"/>
+    <trip id="bus_36" depart="2099.99" from="in288" to="out72" type="bus"/>
+    <trip id="bus_37" depart="2158.32" from="in144" to="out0" type="bus"/>
+    <trip id="bus_38" depart="2216.65" from="in288" to="out72" type="bus"/>
+    <trip id="bus_39" depart="2274.99" from="in216" to="out144" type="bus"/>
+    <trip id="bus_40" depart="2333.32" from="in216" to="out144" type="bus"/>
+    <trip id="bus_41" depart="2391.65" from="in0" to="out288" type="bus"/>
+    <trip id="bus_42" depart="2449.99" from="in0" to="out288" type="bus"/>
+    <trip id="bus_43" depart="2508.32" from="in72" to="out288" type="bus"/>
+    <trip id="bus_44" depart="2566.65" from="in216" to="out144" type="bus"/>
+    <trip id="bus_45" depart="2624.99" from="in144" to="out216" type="bus"/>
+    <trip id="bus_46" depart="2683.32" from="in216" to="out72" type="bus"/>
+    <trip id="bus_47" depart="2741.65" from="in288" to="out0" type="bus"/>
+    <trip id="bus_48" depart="2799.98" from="in0" to="out144" type="bus"/>
+    <trip id="bus_49" depart="2858.32" from="in144" to="out288" type="bus"/>
+    <trip id="bus_50" depart="2916.65" from="in0" to="out72" type="bus"/>
+    <trip id="bus_51" depart="2974.98" from="in72" to="out216" type="bus"/>
+    <trip id="bus_52" depart="3033.32" from="in72" to="out0" type="bus"/>
+    <trip id="bus_53" depart="3091.65" from="in216" to="out288" type="bus"/>
+    <trip id="bus_54" depart="3149.98" from="in216" to="out72" type="bus"/>
+    <trip id="bus_55" depart="3208.32" from="in144" to="out0" type="bus"/>
+    <trip id="bus_56" depart="3266.65" from="in72" to="out288" type="bus"/>
+    <trip id="bus_57" depart="3324.98" from="in0" to="out72" type="bus"/>
+    <trip id="bus_58" depart="3383.31" from="in144" to="out288" type="bus"/>
+    <trip id="bus_59" depart="3441.65" from="in144" to="out288" type="bus"/>
+    <trip id="bus_60" depart="3499.98" from="in216" to="out0" type="bus"/>
+</routes>

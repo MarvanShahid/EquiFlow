@@ -1,0 +1,159 @@
+:root {
+  --asphalt: #1c2228;
+  --panel: #252d35;
+  --road: #343d46;
+  --line: #3e4953;
+  --paint: #ece7d6;
+  --paint-dim: #a7aeb4;
+  --yellow: #f0c419;
+  --red: #ef4b4b;
+  --amber: #f6a623;
+  --green: #2fcf8f;
+  --amb: #4aa3ff;
+  --lamp-off: #3a444e;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--asphalt);
+  color: var(--paint);
+  font-family: var(--font-overpass, "Overpass"), system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.45;
+}
+h1, h2, p, dl, dd, ol { margin: 0; padding: 0; }
+:focus-visible { outline: 2px solid var(--yellow); outline-offset: 2px; }
+
+.shell { max-width: 1560px; margin: 0 auto; padding: 16px; }
+
+/* ------------------------------------------------------------- header */
+.top { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 14px; }
+.top h1 { font-size: 26px; font-weight: 800; letter-spacing: 0.01em; }
+.tabs { display: flex; gap: 6px; }
+.tabs button, .btn-grid button, .btn-quiet {
+  font: inherit; color: var(--paint); background: transparent; border: 1px solid var(--line);
+  border-radius: 6px; padding: 6px 12px; cursor: pointer;
+}
+.tabs button[aria-pressed="true"] { border-color: var(--yellow); color: var(--yellow); }
+.pills { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+.pill { border: 1px solid var(--line); border-radius: 999px; padding: 3px 12px; font-size: 13px; color: var(--paint-dim); }
+.pill.link-live { color: var(--green); border-color: color-mix(in srgb, var(--green) 50%, var(--line)); }
+.pill.link-offline { color: var(--red); border-color: color-mix(in srgb, var(--red) 50%, var(--line)); }
+.waiting { padding: 48px 0; color: var(--paint-dim); max-width: 60ch; }
+
+/* -------------------------------------------------------------- board */
+/* The board mirrors the junction: each camera sits on the side its approach comes from. */
+.board {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr) minmax(0, 1fr);
+  grid-template-areas:
+    "tl n tr"
+    "w  c e"
+    "bl s br";
+}
+.cell { min-width: 0; min-height: 0; }
+.c-tl { grid-area: tl; } .c-n { grid-area: n; } .c-tr { grid-area: tr; }
+.c-w { grid-area: w; align-self: center; } .c-c { grid-area: c; } .c-e { grid-area: e; align-self: center; }
+.c-bl { grid-area: bl; } .c-s { grid-area: s; } .c-br { grid-area: br; }
+.c-tl, .c-tr, .c-bl, .c-br { display: flex; }
+.c-tl > .panel, .c-tr > .panel, .c-bl > .panel, .c-br > .panel { flex: 1; min-width: 0; }
+.c-br { max-height: 320px; }
+
+@media (max-width: 1000px) {
+  .board {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "tl tl"
+      "c  c"
+      "n  e"
+      "w  s"
+      "bl tr"
+      "br br";
+  }
+  .c-w, .c-e { align-self: stretch; }
+}
+@media (max-width: 620px) {
+  .board { grid-template-columns: 1fr; grid-template-areas: "tl" "c" "n" "e" "s" "w" "bl" "tr" "br"; }
+}
+
+/* ------------------------------------------------------------- panels */
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; overflow: auto; }
+.panel h2 { font-size: 14px; font-weight: 700; color: var(--paint-dim); margin-bottom: 8px; }
+.hint { color: var(--paint-dim); font-size: 13px; max-width: 46ch; }
+.error { color: var(--red); margin-top: 8px; font-size: 13px; word-break: break-word; }
+
+.status-title { font-size: 24px; font-weight: 800; line-height: 1.15; }
+.status-detail { margin-top: 6px; }
+.status-count { margin-top: 10px; font-size: 40px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+.status-count small { font-size: 15px; font-weight: 600; color: var(--paint-dim); margin-left: 6px; }
+.amb-list { list-style: none; margin-top: 12px; border-top: 1px solid var(--line); padding-top: 8px; font-size: 13.5px; }
+.amb-list li { display: flex; justify-content: space-between; gap: 8px; padding: 2px 0; }
+.amb-list .none { color: var(--paint-dim); }
+.amb-list strong { color: var(--amb); }
+.status-foot { margin-top: 12px; color: var(--paint-dim); font-size: 13px; }
+.status.mode-preempt { border-color: var(--amb); box-shadow: inset 4px 0 0 var(--amb); }
+.status.mode-preempt .status-title { color: var(--amb); }
+.status.mode-recovery { border-color: var(--yellow); box-shadow: inset 4px 0 0 var(--yellow); }
+.status.mode-recovery .status-title { color: var(--yellow); }
+
+.metrics > div { display: flex; justify-content: space-between; gap: 12px; padding: 5px 0; border-bottom: 1px solid var(--line); }
+.metrics > div:last-child { border-bottom: 0; }
+.metrics dt { color: var(--paint-dim); }
+.metrics dd { font-weight: 800; font-size: 17px; font-variant-numeric: tabular-nums; }
+
+.btn-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 10px 0 8px; }
+.btn-grid button:hover:not(:disabled), .btn-quiet:hover { border-color: var(--amb); color: var(--amb); }
+.btn-grid button:disabled { opacity: 0.45; cursor: default; }
+
+.log ol { list-style: none; }
+.log li { display: grid; grid-template-columns: 64px 1fr; gap: 8px; padding: 4px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; }
+.log li:last-child { border-bottom: 0; }
+.log time { color: var(--paint-dim); font-variant-numeric: tabular-nums; }
+.tone-dim { color: var(--paint-dim); }
+.tone-amb { color: var(--amb); font-weight: 600; }
+.tone-ok { color: var(--green); }
+.tone-warn { color: var(--amber); }
+
+/* ------------------------------------------------------------ cameras */
+.cam { margin: 0; position: relative; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #11161a; }
+.cam img, .cam-empty { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+.cam-empty { display: grid; place-items: center; text-align: center; padding: 12px; color: var(--paint-dim); font-size: 13px; }
+.cam figcaption {
+  position: absolute; left: 0; right: 0; bottom: 0; display: flex; align-items: center; gap: 8px;
+  padding: 6px 10px; background: linear-gradient(transparent, rgba(0, 0, 0, 0.72)); font-size: 13px;
+}
+.cam-name { font-weight: 700; }
+.cam-tag, .cam-fps { color: var(--paint-dim); }
+.cam-fps { margin-left: auto; font-variant-numeric: tabular-nums; }
+.cam-badge { background: var(--amb); color: #06223d; font-weight: 800; border-radius: 4px; padding: 1px 8px; }
+.cam-amb { border-color: var(--amb); box-shadow: 0 0 0 2px var(--amb); }
+.chip { width: 12px; height: 12px; border-radius: 50%; background: var(--lamp-off); flex: none; }
+.chip-red { background: var(--red); } .chip-yellow { background: var(--amber); } .chip-green { background: var(--green); }
+
+/* --------------------------------------------------------------- plan */
+.plan { display: block; width: 100%; height: auto; max-height: 74vh; margin: 0 auto; background: #20272d; border: 1px solid var(--line); border-radius: 10px; }
+.plan .road { fill: var(--road); }
+.plan .paint { stroke: var(--yellow); stroke-width: 2; stroke-dasharray: 10 8; opacity: 0.85; }
+.plan .stop { stroke: var(--paint); stroke-width: 3; }
+.plan .arm-amb { fill: var(--amb); opacity: 0.22; }
+.plan .head { fill: #11161a; stroke: var(--line); stroke-width: 1.5; }
+.plan .lamp { fill: var(--lamp-off); }
+.plan .lamp.on.lamp-red { fill: var(--red); filter: drop-shadow(0 0 5px var(--red)); }
+.plan .lamp.on.lamp-yellow { fill: var(--amber); filter: drop-shadow(0 0 5px var(--amber)); }
+.plan .lamp.on.lamp-green { fill: var(--green); filter: drop-shadow(0 0 5px var(--green)); }
+.plan .lamp.on.lamp-amb { fill: var(--amb); filter: drop-shadow(0 0 6px var(--amb)); animation: siren 0.8s steps(2, end) infinite; }
+.plan text { font-family: var(--font-overpass, "Overpass"), system-ui, sans-serif; fill: var(--paint); }
+.plan .plan-name { font-size: 15px; font-weight: 800; }
+.plan .plan-name.is-amb { fill: var(--amb); }
+.plan .plan-sub { font-size: 11.5px; fill: var(--paint-dim); }
+.plan .plan-amb { font-size: 11.5px; font-weight: 800; fill: var(--amb); }
+.plan .centre-main { font-size: 13px; font-weight: 800; }
+.plan .centre-sub { font-size: 12px; fill: var(--paint-dim); }
+
+@keyframes siren { 50% { opacity: 0.35; } }
+@media (prefers-reduced-motion: reduce) {
+  .plan .lamp.on.lamp-amb { animation: none; }
+}

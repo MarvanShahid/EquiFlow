@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2026-10-16 10:45:43.953303 by Eclipse SUMO randomTrips.py v1_28_0+0000-daf91b55789
+<configuration>
+    <net-file value="C:\Users\DELL\Desktop\EquiFlow\sumo\networks\six_way_fixed.net.xml"/>
+    <additional-files value="C:\Users\DELL\Desktop\EquiFlow\sumo\routes\vtypes.add.xml"/>
+    <output-trip-file value="C:\Users\DELL\Desktop\EquiFlow\sumo\_tmp\six_way_asymmetric_ambulance.trips.xml"/>
+    <prefix value="ambulance_"/>
+    <trip-attributes value="type=&quot;ambulance&quot;"/>
+    <fringe-factor value="10"/>
+    <seed value="444"/>
+    <min-distance value="300.0"/>
+    <end value="3500.0"/>
+    <period value="360.0"/>
+</configuration>
+-->
+
+<!-- generated on 2026-10-16T10:45:43.878300+05:00 by Eclipse SUMO duarouter 1.28.0
+<duarouterConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/duarouterConfiguration.xsd">
+
+    <input>
+        <net-file value="C:\Users\DELL\Desktop\EquiFlow\sumo\networks\six_way_fixed.net.xml"/>
+        <additional-files value="C:\Users\DELL\Desktop\EquiFlow\sumo\routes\vtypes.add.xml"/>
+        <route-files value="C:\Users\DELL\Desktop\EquiFlow\sumo\_tmp\six_way_asymmetric_ambulance.trips.xml"/>
+    </input>
+
+    <output>
+        <output-file value="routes.rou.xml"/>
+        <alternatives-output value="NUL"/>
+    </output>
+
+    <processing>
+        <routing-threads value="4"/>
+    </processing>
+
+    <report>
+        <no-warnings value="true"/>
+        <ignore-errors value="true"/>
+        <no-step-log value="true"/>
+    </report>
+
+</duarouterConfiguration>
+-->
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <vType id="ambulance" length="5.80" maxSpeed="30.00" speedFactor="1.25" vClass="emergency" guiShape="emergency" width="2.10" color="red" laneChangeModel="LC2013" lcSpeedGain="3" lcAssertive="3" accel="3.0" decel="5.0" sigma="0.2"/>
+    <vehicle id="ambulance_0" type="ambulance" depart="0.00">
+        <route edges="in120 out0"/>
+    </vehicle>
+    <vehicle id="ambulance_1" type="ambulance" depart="360.00">
+        <route edges="in180 out60"/>
+    </vehicle>
+    <vehicle id="ambulance_2" type="ambulance" depart="720.00">
+        <route edges="in300 out240"/>
+    </vehicle>
+    <vehicle id="ambulance_3" type="ambulance" depart="1080.00">
+        <route edges="in180 out120"/>
+    </vehicle>
+    <vehicle id="ambulance_4" type="ambulance" depart="1440.00">
+        <route edges="in0 out240"/>
+    </vehicle>
+    <vehicle id="ambulance_5" type="ambulance" depart="1800.00">
+        <route edges="in120 out180"/>
+    </vehicle>
+    <vehicle id="ambulance_6" type="ambulance" depart="2160.00">
+        <route edges="in300 out60"/>
+    </vehicle>
+    <vehicle id="ambulance_7" type="ambulance" depart="2520.00">
+        <route edges="in300 out0"/>
+    </vehicle>
+    <vehicle id="ambulance_8" type="ambulance" depart="2880.00">
+        <route edges="in120 out0"/>
+    </vehicle>
+    <vehicle id="ambulance_9" type="ambulance" depart="3240.00">
+        <route edges="in180 out0"/>
+    </vehicle>
+</routes>

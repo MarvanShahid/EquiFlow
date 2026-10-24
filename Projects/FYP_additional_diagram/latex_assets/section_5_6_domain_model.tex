@@ -1,0 +1,15 @@
+% Replaces the body of \section{Domain Model} (Section 5.6)
+Core entities: Intersection, Approach/Lane, SignalPhase, Vehicle, EmergencyVehicle,
+DetectionEvent, Track, PreemptionEvent, ControllerDecision, SimulationScenario, and
+EvaluationRun. A DetectionEvent references a vehicle hypothesis, timestamp, confidence,
+and image coordinates. A PreemptionEvent records the affected intersection/approach,
+start and end times, and phases interrupted. An EvaluationRun records configuration,
+seed, policy version, model version, and output metrics. Figure~\ref{fig:domain-model}
+shows the entities, their main attributes, and their relationships.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{fig_domain_model.pdf}
+  \caption{Domain model of the AI-based traffic control system.}
+  \label{fig:domain-model}
+\end{figure}

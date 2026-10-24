@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2026-10-16 10:41:10.626092 by Eclipse SUMO randomTrips.py v1_28_0+0000-daf91b55789
+<configuration>
+    <net-file value="C:\Users\DELL\Desktop\EquiFlow\sumo\networks\t_signal_fixed.net.xml"/>
+    <additional-files value="C:\Users\DELL\Desktop\EquiFlow\sumo\routes\vtypes.add.xml"/>
+    <output-trip-file value="C:\Users\DELL\Desktop\EquiFlow\sumo\_tmp\t_signal_low_truck.trips.xml"/>
+    <prefix value="truck_"/>
+    <trip-attributes value="type=&quot;truck&quot;"/>
+    <seed value="311"/>
+    <end value="3500.0"/>
+    <period value="142.857"/>
+</configuration>
+-->
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <trip id="truck_0" depart="0.00" from="in90" to="out0" type="truck"/>
+    <trip id="truck_1" depart="142.86" from="in0" to="out270" type="truck"/>
+    <trip id="truck_2" depart="285.71" from="in90" to="out0" type="truck"/>
+    <trip id="truck_3" depart="428.57" from="in0" to="out90" type="truck"/>
+    <trip id="truck_4" depart="571.43" from="in270" to="out90" type="truck"/>
+    <trip id="truck_5" depart="714.28" from="in90" to="out0" type="truck"/>
+    <trip id="truck_6" depart="857.14" from="in90" to="out270" type="truck"/>
+    <trip id="truck_7" depart="1000.00" from="in270" to="out0" type="truck"/>
+    <trip id="truck_8" depart="1142.86" from="in0" to="out90" type="truck"/>
+    <trip id="truck_9" depart="1285.71" from="in90" to="out270" type="truck"/>
+    <trip id="truck_10" depart="1428.57" from="in270" to="out0" type="truck"/>
+    <trip id="truck_11" depart="1571.43" from="in0" to="out90" type="truck"/>
+    <trip id="truck_12" depart="1714.28" from="in0" to="out270" type="truck"/>
+    <trip id="truck_13" depart="1857.14" from="in90" to="out270" type="truck"/>
+    <trip id="truck_14" depart="2000.00" from="in270" to="out0" type="truck"/>
+    <trip id="truck_15" depart="2142.86" from="in90" to="out270" type="truck"/>
+    <trip id="truck_16" depart="2285.71" from="in270" to="out0" type="truck"/>
+    <trip id="truck_17" depart="2428.57" from="in0" to="out90" type="truck"/>
+    <trip id="truck_18" depart="2571.43" from="in270" to="out0" type="truck"/>
+    <trip id="truck_19" depart="2714.28" from="in270" to="out90" type="truck"/>
+    <trip id="truck_20" depart="2857.14" from="in0" to="out270" type="truck"/>
+    <trip id="truck_21" depart="3000.00" from="in0" to="out270" type="truck"/>
+    <trip id="truck_22" depart="3142.85" from="in270" to="out90" type="truck"/>
+    <trip id="truck_23" depart="3285.71" from="in90" to="out0" type="truck"/>
+    <trip id="truck_24" depart="3428.57" from="in90" to="out270" type="truck"/>
+</routes>

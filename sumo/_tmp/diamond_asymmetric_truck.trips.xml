@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2026-10-16 10:45:09.071624 by Eclipse SUMO randomTrips.py v1_28_0+0000-daf91b55789
+<configuration>
+    <net-file value="C:\Users\DELL\Desktop\EquiFlow\sumo\networks\diamond_fixed.net.xml"/>
+    <additional-files value="C:\Users\DELL\Desktop\EquiFlow\sumo\routes\vtypes.add.xml"/>
+    <output-trip-file value="C:\Users\DELL\Desktop\EquiFlow\sumo\_tmp\diamond_asymmetric_truck.trips.xml"/>
+    <prefix value="truck_"/>
+    <trip-attributes value="type=&quot;truck&quot;"/>
+    <fringe-factor value="10"/>
+    <seed value="344"/>
+    <end value="3500.0"/>
+    <period value="71.429"/>
+</configuration>
+-->
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <trip id="truck_0" depart="0.00" from="arS_in" to="arN_out" type="truck"/>
+    <trip id="truck_1" depart="71.43" from="exW0" to="exW2" type="truck"/>
+    <trip id="truck_2" depart="142.86" from="rampE_off" to="exE2" type="truck"/>
+    <trip id="truck_3" depart="214.29" from="exE0" to="arS_out" type="truck"/>
+    <trip id="truck_4" depart="285.72" from="arS_in" to="exE2" type="truck"/>
+    <trip id="truck_5" depart="357.14" from="arS_in" to="exE2" type="truck"/>
+    <trip id="truck_6" depart="428.57" from="arS_in" to="arN_out" type="truck"/>
+    <trip id="truck_7" depart="500.00" from="arS_in" to="exW2" type="truck"/>
+    <trip id="truck_8" depart="571.43" from="exW0" to="exE2" type="truck"/>
+    <trip id="truck_9" depart="642.86" from="exW0" to="exW2" type="truck"/>
+    <trip id="truck_10" depart="714.29" from="exW0" to="arS_out" type="truck"/>
+    <trip id="truck_11" depart="785.72" from="exE0" to="arS_out" type="truck"/>
+    <trip id="truck_12" depart="857.15" from="arN_in" to="exW2" type="truck"/>
+    <trip id="truck_13" depart="928.58" from="arN_in" to="exE2" type="truck"/>
+    <trip id="truck_14" depart="1000.01" from="exW0" to="exE2" type="truck"/>
+    <trip id="truck_15" depart="1071.43" from="exW0" to="exW2" type="truck"/>
+    <trip id="truck_16" depart="1142.86" from="arN_in" to="arC_s" type="truck"/>
+    <trip id="truck_17" depart="1214.29" from="rampE_off" to="arN_out" type="truck"/>
+    <trip id="truck_18" depart="1285.72" from="arN_in" to="arS_out" type="truck"/>
+    <trip id="truck_19" depart="1357.15" from="exE0" to="arN_out" type="truck"/>
+    <trip id="truck_20" depart="1428.58" from="exE0" to="exW2" type="truck"/>
+    <trip id="truck_21" depart="1500.01" from="exE0" to="arN_out" type="truck"/>
+    <trip id="truck_22" depart="1571.44" from="arS_in" to="exE2" type="truck"/>
+    <trip id="truck_23" depart="1642.87" from="exE0" to="exW2" type="truck"/>
+    <trip id="truck_24" depart="1714.30" from="arS_in" to="exE2" type="truck"/>
+    <trip id="truck_25" depart="1785.73" from="arS_in" to="exW2" type="truck"/>
+    <trip id="truck_26" depart="1857.15" from="arN_in" to="arS_out" type="truck"/>
+    <trip id="truck_27" depart="1928.58" from="arN_in" to="exW2" type="truck"/>
+    <trip id="truck_28" depart="2000.01" from="exW0" to="arN_out" type="truck"/>
+    <trip id="truck_29" depart="2071.44" from="arN_in" to="arC_s" type="truck"/>
+    <trip id="truck_30" depart="2142.87" from="exW0" to="arN_out" type="truck"/>
+    <trip id="truck_31" depart="2214.30" from="arC_s" to="exW2" type="truck"/>
+    <trip id="truck_32" depart="2285.73" from="exE0" to="arS_out" type="truck"/>
+    <trip id="truck_33" depart="2357.16" from="exE0" to="exW2" type="truck"/>
+    <trip id="truck_34" depart="2428.59" from="arN_in" to="exW2" type="truck"/>
+    <trip id="truck_35" depart="2500.02" from="arN_in" to="exW2" type="truck"/>
+    <trip id="truck_36" depart="2571.44" from="exE0" to="exE2" type="truck"/>
+    <trip id="truck_37" depart="2642.87" from="exE0" to="arN_out" type="truck"/>
+    <trip id="truck_38" depart="2714.30" from="arN_in" to="exE2" type="truck"/>
+    <trip id="truck_39" depart="2785.73" from="exW0" to="exE2" type="truck"/>
+    <trip id="truck_40" depart="2857.16" from="arS_in" to="arN_out" type="truck"/>
+    <trip id="truck_41" depart="2928.59" from="exE0" to="exE2" type="truck"/>
+    <trip id="truck_42" depart="3000.02" from="exW0" to="arN_out" type="truck"/>
+    <trip id="truck_43" depart="3071.45" from="arN_in" to="exE2" type="truck"/>
+    <trip id="truck_44" depart="3142.88" from="exW0" to="arC_n" type="truck"/>
+    <trip id="truck_45" depart="3214.31" from="exW0" to="arN_out" type="truck"/>
+    <trip id="truck_46" depart="3285.73" from="exE0" to="arS_out" type="truck"/>
+    <trip id="truck_47" depart="3357.16" from="arN_in" to="exW2" type="truck"/>
+    <trip id="truck_48" depart="3428.59" from="arS_in" to="rampW_on" type="truck"/>
+</routes>

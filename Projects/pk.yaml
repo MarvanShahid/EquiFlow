@@ -1,0 +1,7 @@
+path: C:/Smester7/Projects/Dataset/Pakistani_Ambulance
+train: images
+val: images
+test: images
+names:
+  0: ambulance
+  1: other_vehicle

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2026-10-16 10:44:17.049868 by Eclipse SUMO randomTrips.py v1_28_0+0000-daf91b55789
+<configuration>
+    <net-file value="C:\Users\DELL\Desktop\EquiFlow\sumo\networks\sector_grid_fixed.net.xml"/>
+    <additional-files value="C:\Users\DELL\Desktop\EquiFlow\sumo\routes\vtypes.add.xml"/>
+    <output-trip-file value="C:\Users\DELL\Desktop\EquiFlow\sumo\_tmp\sector_grid_medium_truck.trips.xml"/>
+    <prefix value="truck_"/>
+    <trip-attributes value="type=&quot;truck&quot;"/>
+    <seed value="322"/>
+    <end value="3500.0"/>
+    <period value="85.714"/>
+</configuration>
+-->
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <trip id="truck_0" depart="0.00" from="C1C0" to="C1B1" type="truck"/>
+    <trip id="truck_1" depart="85.71" from="B1A1" to="A0B0" type="truck"/>
+    <trip id="truck_2" depart="171.43" from="A2B2" to="C2C1" type="truck"/>
+    <trip id="truck_3" depart="257.14" from="A1A2" to="A1B1" type="truck"/>
+    <trip id="truck_4" depart="342.86" from="B1C1" to="C1B1" type="truck"/>
+    <trip id="truck_5" depart="428.57" from="A2A1" to="A2A1" type="truck"/>
+    <trip id="truck_6" depart="514.28" from="A1B1" to="C1C0" type="truck"/>
+    <trip id="truck_7" depart="600.00" from="B0B1" to="C1C0" type="truck"/>
+    <trip id="truck_8" depart="685.71" from="B1B0" to="B2B1" type="truck"/>
+    <trip id="truck_9" depart="771.43" from="C1C2" to="C1C2" type="truck"/>
+    <trip id="truck_10" depart="857.14" from="B1A1" to="C1B1" type="truck"/>
+    <trip id="truck_11" depart="942.85" from="B0A0" to="C0C1" type="truck"/>
+    <trip id="truck_12" depart="1028.57" from="C1B1" to="C1B1" type="truck"/>
+    <trip id="truck_13" depart="1114.28" from="C1B1" to="C0C1" type="truck"/>
+    <trip id="truck_14" depart="1200.00" from="C2B2" to="C1B1" type="truck"/>
+    <trip id="truck_15" depart="1285.71" from="B2A2" to="A1A2" type="truck"/>
+    <trip id="truck_16" depart="1371.42" from="A2A1" to="C0B0" type="truck"/>
+    <trip id="truck_17" depart="1457.14" from="C2B2" to="A0A1" type="truck"/>
+    <trip id="truck_18" depart="1542.85" from="A2B2" to="C0B0" type="truck"/>
+    <trip id="truck_19" depart="1628.57" from="B1A1" to="B1B2" type="truck"/>
+    <trip id="truck_20" depart="1714.28" from="C1C0" to="B1B2" type="truck"/>
+    <trip id="truck_21" depart="1799.99" from="B0A0" to="B2B1" type="truck"/>
+    <trip id="truck_22" depart="1885.71" from="A0A1" to="A2A1" type="truck"/>
+    <trip id="truck_23" depart="1971.42" from="C2B2" to="B2B1" type="truck"/>
+    <trip id="truck_24" depart="2057.14" from="C0C1" to="A1A2" type="truck"/>
+    <trip id="truck_25" depart="2142.85" from="C1B1" to="A1B1" type="truck"/>
+    <trip id="truck_26" depart="2228.56" from="A1A2" to="C2C1" type="truck"/>
+    <trip id="truck_27" depart="2314.28" from="A0B0" to="C1C2" type="truck"/>
+    <trip id="truck_28" depart="2399.99" from="C0C1" to="B2B1" type="truck"/>
+    <trip id="truck_29" depart="2485.71" from="A1A0" to="A1A2" type="truck"/>
+    <trip id="truck_30" depart="2571.42" from="C0C1" to="B0C0" type="truck"/>
+    <trip id="truck_31" depart="2657.13" from="C2C1" to="C1C0" type="truck"/>
+    <trip id="truck_32" depart="2742.85" from="B1A1" to="B1C1" type="truck"/>
+    <trip id="truck_33" depart="2828.56" from="B2C2" to="A2B2" type="truck"/>
+    <trip id="truck_34" depart="2914.28" from="B1C1" to="B2C2" type="truck"/>
+    <trip id="truck_35" depart="2999.99" from="B1C1" to="A2A1" type="truck"/>
+    <trip id="truck_36" depart="3085.70" from="C2B2" to="C2B2" type="truck"/>
+    <trip id="truck_37" depart="3171.42" from="B2A2" to="A2A1" type="truck"/>
+    <trip id="truck_38" depart="3257.13" from="C0C1" to="B1C1" type="truck"/>
+    <trip id="truck_39" depart="3342.85" from="B1B0" to="A2A1" type="truck"/>
+    <trip id="truck_40" depart="3428.56" from="A1A0" to="B2A2" type="truck"/>
+</routes>

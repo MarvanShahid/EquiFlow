@@ -1,0 +1,14 @@
+https://universe.roboflow.com/ambulance-uj5pi/ambulance-sjpea/dataset/ Done Ambulance.v20-final_dataset.yolo26
+https://universe.roboflow.com/ambulance-uj5pi/ambulance-sjpea/dataset/20/download Done 
+https://universe.roboflow.com/ambulance-b8kgx/ambulance-detection-tnzha/dataset/  --- Ambulance
+https://universe.roboflow.com/ritik-ihsgi/ambulance-ga0wa?utm_source=chatgpt.com  --- Ambulance
+https://universe.roboflow.com/srivalli-yada/ambulance-wmxl5?utm_source=chatgpt.com -- Ambulance
+
+https://universe.roboflow.com/daniels-workspace-uuk5i/ambulance-qasjo-osndt?utm_source=chatgpt.com -- Ambulance
+https://universe.roboflow.com/vehicle-detection-9dulo/vehicle-detection-yolo-v11?utm_source=chatgpt.com
+https://public.roboflow.com/object-detection/vehicles-openimages/1   --> All Vehicle
+
+https://universe.roboflow.com/baakhs-workspace/pakistani-vehicle-detection-yolo-h5oie?utm_source=chatgpt.com Pakistan Vehicle Detection
+https://universe.roboflow.com/ziauddin-university/vehicle-detection-y7ocl?utm_source=chatgpt.com
+
+https://universe.roboflow.com/traffic-analysis-wl8wg/detecting-the-ambulance/dataset/4/download Done 

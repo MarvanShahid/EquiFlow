@@ -1,0 +1,9 @@
+<nodes>
+  <node id="C" x="0.00" y="0.00" type="traffic_light"/>
+  <node id="A0" x="0.00" y="300.00" type="priority"/>
+  <node id="A60" x="259.81" y="150.00" type="priority"/>
+  <node id="A120" x="259.81" y="-150.00" type="priority"/>
+  <node id="A180" x="0.00" y="-300.00" type="priority"/>
+  <node id="A240" x="-259.81" y="-150.00" type="priority"/>
+  <node id="A300" x="-259.81" y="150.00" type="priority"/>
+</nodes>

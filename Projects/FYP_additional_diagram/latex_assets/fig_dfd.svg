@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="560" viewBox="0 0 1180 560" font-family="Helvetica, Arial, sans-serif">
+<defs><marker id="ar" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,1 L9,5 L0,9 Z" fill="#000"/></marker></defs>
+<rect width="1180" height="560" fill="white"/>
+<rect x="25" y="90" width="130" height="60" rx="0" fill="#f5f5f5" stroke="#666666" stroke-width="1.5"/>
+<text x="90.0" y="117.2" font-size="12" text-anchor="middle" font-weight="bold" fill="#000">Video / image</text><text x="90.0" y="131.2" font-size="12" text-anchor="middle" font-weight="bold" fill="#000">source</text>
+<rect x="25" y="290" width="130" height="60" rx="0" fill="#f5f5f5" stroke="#666666" stroke-width="1.5"/>
+<text x="90.0" y="324.2" font-size="12" text-anchor="middle" font-weight="bold" fill="#000">Operator</text>
+<rect x="260.0" y="82.0" width="160" height="76" rx="22" fill="#e1d5e7" stroke="#9673a6" stroke-width="1.5"/>
+<text x="340" y="107.8" font-size="11" text-anchor="middle" font-weight="bold" fill="#000">1.0</text>
+<text x="340" y="130.2" font-size="12" text-anchor="middle" fill="#000">Detect ambulance</text>
+<rect x="480.0" y="82.0" width="160" height="76" rx="22" fill="#e1d5e7" stroke="#9673a6" stroke-width="1.5"/>
+<text x="560" y="107.8" font-size="11" text-anchor="middle" font-weight="bold" fill="#000">2.0</text>
+<text x="560" y="130.2" font-size="12" text-anchor="middle" fill="#000">Track and validate</text>
+<rect x="720.0" y="82.0" width="160" height="76" rx="22" fill="#e1d5e7" stroke="#9673a6" stroke-width="1.5"/>
+<text x="800" y="107.8" font-size="11" text-anchor="middle" font-weight="bold" fill="#000">3.0</text>
+<text x="800" y="130.2" font-size="12" text-anchor="middle" fill="#000">Estimate traffic state</text>
+<rect x="720.0" y="282.0" width="160" height="76" rx="22" fill="#e1d5e7" stroke="#9673a6" stroke-width="1.5"/>
+<text x="800" y="307.9" font-size="11" text-anchor="middle" font-weight="bold" fill="#000">4.0</text>
+<text x="800" y="323.2" font-size="12" text-anchor="middle" fill="#000">Control signals</text><text x="800" y="337.2" font-size="12" text-anchor="middle" fill="#000">(priority, recovery)</text>
+<rect x="480.0" y="282.0" width="160" height="76" rx="22" fill="#e1d5e7" stroke="#9673a6" stroke-width="1.5"/>
+<text x="560" y="307.9" font-size="11" text-anchor="middle" font-weight="bold" fill="#000">5.0</text>
+<text x="560" y="323.2" font-size="12" text-anchor="middle" fill="#000">Simulate traffic</text><text x="560" y="337.2" font-size="12" text-anchor="middle" fill="#000">(SUMO)</text>
+<rect x="960.0" y="282.0" width="160" height="76" rx="22" fill="#e1d5e7" stroke="#9673a6" stroke-width="1.5"/>
+<text x="1040" y="307.9" font-size="11" text-anchor="middle" font-weight="bold" fill="#000">6.0</text>
+<text x="1040" y="330.2" font-size="12" text-anchor="middle" fill="#000">Log and evaluate</text>
+<line x1="245.0" y1="230" x2="435.0" y2="230" stroke="#444" stroke-width="1.6"/>
+<line x1="245.0" y1="270" x2="435.0" y2="270" stroke="#444" stroke-width="1.6"/>
+<text x="253.0" y="253.8" font-size="11" text-anchor="start" font-weight="bold" fill="#000">D1</text>
+<text x="348" y="254.2" font-size="12" text-anchor="middle" fill="#000">Model weights</text>
+<line x1="235.0" y1="300" x2="405.0" y2="300" stroke="#444" stroke-width="1.6"/>
+<line x1="235.0" y1="340" x2="405.0" y2="340" stroke="#444" stroke-width="1.6"/>
+<text x="243.0" y="323.9" font-size="11" text-anchor="start" font-weight="bold" fill="#000">D2</text>
+<text x="328" y="324.2" font-size="12" text-anchor="middle" fill="#000">Scenario configuration</text>
+<line x1="925.0" y1="470" x2="1155.0" y2="470" stroke="#444" stroke-width="1.6"/>
+<line x1="925.0" y1="510" x2="1155.0" y2="510" stroke="#444" stroke-width="1.6"/>
+<text x="933.0" y="493.9" font-size="11" text-anchor="start" font-weight="bold" fill="#000">D3</text>
+<text x="1048" y="494.2" font-size="12" text-anchor="middle" fill="#000">Event and metrics logs</text>
+<polyline points="155,120 260.0,120" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="340,230 340,158.0" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="420.0,120 480.0,120" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="640.0,120 720.0,120" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="800,158.0 800,282.0" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="720.0,320 640.0,320" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="600,282.0 740,158.0" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="155,320 235,320" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="405,320 480.0,320" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="880.0,320 960.0,320" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="560,358.0 560,410 980,410 980,358.0" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="560,82.0 560,55 1135,55 1135,320 1120.0,320" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="1060,358.0 1060,470" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="925,490 90,490 90,350" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#ar)"/>
+<text x="195" y="105.3" font-size="11" text-anchor="middle" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">frames /</text><text x="195" y="118.3" font-size="11" text-anchor="middle" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">images</text><text x="195" y="105.3" font-size="11" text-anchor="middle" font-style="italic" fill="#222">frames /</text><text x="195" y="118.3" font-size="11" text-anchor="middle" font-style="italic" fill="#222">images</text>
+<text x="352" y="208.8" font-size="11" text-anchor="start" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">weights</text><text x="352" y="208.8" font-size="11" text-anchor="start" font-style="italic" fill="#222">weights</text>
+<text x="450" y="107.8" font-size="11" text-anchor="middle" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">detections</text><text x="450" y="107.8" font-size="11" text-anchor="middle" font-style="italic" fill="#222">detections</text>
+<text x="680" y="101.3" font-size="11" text-anchor="middle" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">tracked</text><text x="680" y="114.3" font-size="11" text-anchor="middle" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">ambulance</text><text x="680" y="101.3" font-size="11" text-anchor="middle" font-style="italic" fill="#222">tracked</text><text x="680" y="114.3" font-size="11" text-anchor="middle" font-style="italic" fill="#222">ambulance</text>
+<text x="812" y="219.3" font-size="11" text-anchor="start" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">traffic state,</text><text x="812" y="232.3" font-size="11" text-anchor="start" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">emergency approach</text><text x="812" y="219.3" font-size="11" text-anchor="start" font-style="italic" fill="#222">traffic state,</text><text x="812" y="232.3" font-size="11" text-anchor="start" font-style="italic" fill="#222">emergency approach</text>
+<text x="670" y="297.4" font-size="11" text-anchor="middle" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">phase</text><text x="670" y="310.4" font-size="11" text-anchor="middle" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">commands</text><text x="670" y="297.4" font-size="11" text-anchor="middle" font-style="italic" fill="#222">phase</text><text x="670" y="310.4" font-size="11" text-anchor="middle" font-style="italic" fill="#222">commands</text>
+<text x="640" y="219.3" font-size="11" text-anchor="end" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">queues, waits,</text><text x="640" y="232.3" font-size="11" text-anchor="end" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">phase</text><text x="640" y="219.3" font-size="11" text-anchor="end" font-style="italic" fill="#222">queues, waits,</text><text x="640" y="232.3" font-size="11" text-anchor="end" font-style="italic" fill="#222">phase</text>
+<text x="195" y="309.9" font-size="11" text-anchor="middle" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">config</text><text x="195" y="309.9" font-size="11" text-anchor="middle" font-style="italic" fill="#222">config</text>
+<text x="443" y="295.4" font-size="11" text-anchor="middle" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">network,</text><text x="443" y="308.4" font-size="11" text-anchor="middle" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">demand</text><text x="443" y="295.4" font-size="11" text-anchor="middle" font-style="italic" fill="#222">network,</text><text x="443" y="308.4" font-size="11" text-anchor="middle" font-style="italic" fill="#222">demand</text>
+<text x="920" y="282.9" font-size="11" text-anchor="middle" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">decisions,</text><text x="920" y="295.9" font-size="11" text-anchor="middle" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">preemption</text><text x="920" y="308.9" font-size="11" text-anchor="middle" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">events</text><text x="920" y="282.9" font-size="11" text-anchor="middle" font-style="italic" fill="#222">decisions,</text><text x="920" y="295.9" font-size="11" text-anchor="middle" font-style="italic" fill="#222">preemption</text><text x="920" y="308.9" font-size="11" text-anchor="middle" font-style="italic" fill="#222">events</text>
+<text x="770" y="427.9" font-size="11" text-anchor="middle" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">simulation state, trip data</text><text x="770" y="427.9" font-size="11" text-anchor="middle" font-style="italic" fill="#222">simulation state, trip data</text>
+<text x="850" y="48.9" font-size="11" text-anchor="middle" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">detection events</text><text x="850" y="48.9" font-size="11" text-anchor="middle" font-style="italic" fill="#222">detection events</text>
+<text x="1072" y="443.9" font-size="11" text-anchor="start" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">results</text><text x="1072" y="443.9" font-size="11" text-anchor="start" font-style="italic" fill="#222">results</text>
+<text x="480" y="483.9" font-size="11" text-anchor="middle" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">metrics, run summary, plots</text><text x="480" y="483.9" font-size="11" text-anchor="middle" font-style="italic" fill="#222">metrics, run summary, plots</text>
+</svg>

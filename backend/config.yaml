@@ -1,0 +1,17 @@
+# Default config: SIMULATION. Runs out of the box (no GPU, models or videos needed),
+# so you can build and demo the dashboard. For real cameras + your models use:
+#   set EQUIFLOW_CONFIG=config.live.yaml     (Windows cmd)
+#   $env:EQUIFLOW_CONFIG="config.live.yaml"  (PowerShell)
+#   export EQUIFLOW_CONFIG=config.live.yaml  (Linux/macOS)
+mode: sim
+controller: adaptive          # fixed_time | adaptive   (a MARL controller plugs in here in Phase 3)
+
+timing: {green_s: 15, yellow_s: 3, all_red_s: 2}
+preempt: {min_green_s: 3, clear_hold_s: 4, max_preempt_s: 60, recovery_factor: 0.5, recovery_max_s: 15}
+sim: {auto_ambulance: true, min_gap_s: 35, max_gap_s: 80, ambulance_s: 9}
+mqtt: {enabled: false, host: localhost, port: 1883, prefix: equiflow}
+server:
+  cors_origins: ["http://localhost:3000", "http://127.0.0.1:3000"]
+
+intersections:
+  - {id: J1, name: "Main Intersection", lat: 33.6844, lng: 73.0479}

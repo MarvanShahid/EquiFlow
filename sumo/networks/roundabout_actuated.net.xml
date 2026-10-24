@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2026-10-16T10:43:35.137977+05:00 by Eclipse SUMO netconvert 1.28.0
+<netconvertConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
+
+    <input>
+        <node-files value="C:\Users\DELL\Desktop\EquiFlow\sumo\_tmp\roundabout_actuated.nod.xml"/>
+        <edge-files value="C:\Users\DELL\Desktop\EquiFlow\sumo\_tmp\roundabout_actuated.edg.xml"/>
+    </input>
+
+    <output>
+        <output-file value="C:\Users\DELL\Desktop\EquiFlow\sumo\networks\roundabout_actuated.net.xml"/>
+    </output>
+
+    <processing>
+        <roundabouts.guess value="true"/>
+        <lefthand value="true"/>
+    </processing>
+
+    <building_defaults>
+        <default.junctions.radius value="6"/>
+    </building_defaults>
+
+    <tls_building>
+        <tls.default-type value="actuated"/>
+    </tls_building>
+
+    <junctions>
+        <no-turnarounds value="true"/>
+        <junctions.corner-detail value="5"/>
+    </junctions>
+
+</netconvertConfiguration>
+-->
+
+<net version="1.20" junctionCornerDetail="5" lefthand="true" limitTurnSpeed="5.50" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/net_file.xsd">
+
+    <location netOffset="300.00,300.00" convBoundary="0.00,-0.00,600.00,600.00" origBoundary="-300.00,-300.00,300.00,300.00" projParameter="!"/>
+
+    <edge id=":R0_0" function="internal">
+        <lane id=":R0_0_0" index="0" speed="9.55" length="11.36" shape="304.80,335.81 305.23,333.75 306.50,331.63 308.63,329.45 311.61,327.20"/>
+    </edge>
+    <edge id=":R0_1" function="internal">
+        <lane id=":R0_1_0" index="0" speed="9.55" length="11.36" shape="288.39,327.20 291.37,329.45 293.50,331.63 294.77,333.75 295.20,335.81"/>
+        <lane id=":R0_1_1" index="1" speed="10.32" length="13.35" shape="288.39,327.20 292.77,330.25 295.90,332.70 297.77,334.55 298.40,335.81"/>
+    </edge>
+    <edge id=":R0_3" function="internal">
+        <lane id=":R0_3_0" index="0" speed="8.33" length="24.76" shape="288.39,327.20 294.20,330.11 300.00,331.08 305.80,330.11 311.61,327.20"/>
+    </edge>
+    <edge id=":R180_0" function="internal">
+        <lane id=":R180_0_0" index="0" speed="9.55" length="11.36" shape="295.20,264.19 294.77,266.25 293.50,268.37 291.37,270.55 288.39,272.80"/>
+    </edge>
+    <edge id=":R180_1" function="internal">
+        <lane id=":R180_1_0" index="0" speed="9.55" length="11.36" shape="311.61,272.80 308.63,270.55 306.50,268.37 305.23,266.25 304.80,264.19"/>
+        <lane id=":R180_1_1" index="1" speed="10.32" length="13.35" shape="311.61,272.80 307.23,269.75 304.10,267.30 302.23,265.45 301.60,264.19"/>
+    </edge>
+    <edge id=":R180_3" function="internal">
+        <lane id=":R180_3_0" index="0" speed="8.33" length="24.76" shape="311.61,272.80 305.80,269.89 300.00,268.92 294.20,269.89 288.39,272.80"/>
+    </edge>
+    <edge id=":R270_0" function="internal">
+        <lane id=":R270_0_0" index="0" speed="9.55" length="11.36" shape="272.80,288.39 270.55,291.37 268.37,293.50 266.25,294.77 264.19,295.20"/>
+        <lane id=":R270_0_1" index="1" speed="10.32" length="13.35" shape="272.80,288.39 269.75,292.77 267.30,295.90 265.45,297.77 264.19,298.40"/>
+    </edge>
+    <edge id=":R270_2" function="internal">
+        <lane id=":R270_2_0" index="0" speed="8.33" length="24.76" shape="272.80,288.39 269.89,294.20 268.92,300.00 269.89,305.80 272.80,311.61"/>
+    </edge>
+    <edge id=":R270_3" function="internal">
+        <lane id=":R270_3_0" index="0" speed="9.55" length="11.36" shape="264.19,304.80 266.25,305.23 268.37,306.50 270.55,308.63 272.80,311.61"/>
+    </edge>
+    <edge id=":R90_0" function="internal">
+        <lane id=":R90_0_0" index="0" speed="9.55" length="11.36" shape="335.81,295.20 333.75,294.77 331.63,293.50 329.45,291.37 327.20,288.39"/>
+    </edge>
+    <edge id=":R90_1" function="internal">
+        <lane id=":R90_1_0" index="0" speed="9.55" length="11.36" shape="327.20,311.61 329.45,308.63 331.63,306.50 333.75,305.23 335.81,304.80"/>
+        <lane id=":R90_1_1" index="1" speed="10.32" length="13.35" shape="327.20,311.61 330.25,307.23 332.70,304.10 334.55,302.23 335.81,301.60"/>
+    </edge>
+    <edge id=":R90_3" function="internal">
+        <lane id=":R90_3_0" index="0" speed="8.33" length="24.76" shape="327.20,311.61 330.11,305.80 331.08,300.00 330.11,294.20 327.20,288.39"/>
+    </edge>
+
+    <edge id="in0" from="A0" to="R0" priority="9">
+        <lane id="in0_0" index="0" speed="13.89" length="264.19" shape="304.80,600.00 304.80,335.81"/>
+        <lane id="in0_1" index="1" speed="13.89" length="264.19" shape="301.60,600.00 301.60,335.81"/>
+    </edge>
+    <edge id="in180" from="A180" to="R180" priority="9">
+        <lane id="in180_0" index="0" speed="13.89" length="264.19" shape="295.20,0.00 295.20,264.19"/>
+        <lane id="in180_1" index="1" speed="13.89" length="264.19" shape="298.40,0.00 298.40,264.19"/>
+    </edge>
+    <edge id="in270" from="A270" to="R270" priority="9">
+        <lane id="in270_0" index="0" speed="13.89" length="264.19" shape="0.00,304.80 264.19,304.80"/>
+        <lane id="in270_1" index="1" speed="13.89" length="264.19" shape="0.00,301.60 264.19,301.60"/>
+    </edge>
+    <edge id="in90" from="A90" to="R90" priority="9">
+        <lane id="in90_0" index="0" speed="13.89" length="264.19" shape="600.00,295.20 335.81,295.20"/>
+        <lane id="in90_1" index="1" speed="13.89" length="264.19" shape="600.00,298.40 335.81,298.40"/>
+    </edge>
+    <edge id="out0" from="R0" to="A0" priority="9">
+        <lane id="out0_0" index="0" speed="13.89" length="264.19" shape="295.20,335.81 295.20,600.00"/>
+        <lane id="out0_1" index="1" speed="13.89" length="264.19" shape="298.40,335.81 298.40,600.00"/>
+    </edge>
+    <edge id="out180" from="R180" to="A180" priority="9">
+        <lane id="out180_0" index="0" speed="13.89" length="264.19" shape="304.80,264.19 304.80,0.00"/>
+        <lane id="out180_1" index="1" speed="13.89" length="264.19" shape="301.60,264.19 301.60,0.00"/>
+    </edge>
+    <edge id="out270" from="R270" to="A270" priority="9">
+        <lane id="out270_0" index="0" speed="13.89" length="264.19" shape="264.19,295.20 0.00,295.20"/>
+        <lane id="out270_1" index="1" speed="13.89" length="264.19" shape="264.19,298.40 0.00,298.40"/>
+    </edge>
+    <edge id="out90" from="R90" to="A90" priority="9">
+        <lane id="out90_0" index="0" speed="13.89" length="264.19" shape="335.81,304.80 600.00,304.80"/>
+        <lane id="out90_1" index="1" speed="13.89" length="264.19" shape="335.81,301.60 600.00,301.60"/>
+    </edge>
+    <edge id="ring0" from="R0" to="R90" priority="5" shape="310.72,325.87 319.80,319.80 325.87,310.72">
+        <lane id="ring0_0" index="0" speed="8.33" length="22.48" shape="311.61,327.20 320.95,320.95 327.20,311.61"/>
+    </edge>
+    <edge id="ring180" from="R180" to="R270" priority="5" shape="289.28,274.13 280.20,280.20 274.13,289.28">
+        <lane id="ring180_0" index="0" speed="8.33" length="22.48" shape="288.39,272.80 279.05,279.05 272.80,288.39"/>
+    </edge>
+    <edge id="ring270" from="R270" to="R0" priority="5" shape="274.13,310.72 280.20,319.80 289.28,325.87">
+        <lane id="ring270_0" index="0" speed="8.33" length="22.48" shape="272.80,311.61 279.05,320.95 288.39,327.20"/>
+    </edge>
+    <edge id="ring90" from="R90" to="R180" priority="5" shape="325.87,289.28 319.80,280.20 310.72,274.13">
+        <lane id="ring90_0" index="0" speed="8.33" length="22.48" shape="327.20,288.39 320.95,279.05 311.61,272.80"/>
+    </edge>
+
+    <junction id="A0" type="dead_end" x="300.00" y="600.00" incLanes="out0_0 out0_1" intLanes="" shape="300.00,600.00 293.60,600.00 300.00,600.00"/>
+    <junction id="A180" type="dead_end" x="300.00" y="-0.00" incLanes="out180_0 out180_1" intLanes="" shape="300.00,0.00 306.40,0.00 300.00,0.00"/>
+    <junction id="A270" type="dead_end" x="0.00" y="300.00" incLanes="out270_0 out270_1" intLanes="" shape="0.00,300.00 0.00,293.60 0.00,300.00"/>
+    <junction id="A90" type="dead_end" x="600.00" y="300.00" incLanes="out90_0 out90_1" intLanes="" shape="600.00,300.00 600.00,306.40 600.00,300.00"/>
+    <junction id="R0" type="priority" x="300.00" y="328.00" incLanes="in0_0 in0_1 ring270_0" intLanes=":R0_0_0 :R0_1_0 :R0_1_1 :R0_3_0" shape="310.72,325.87 312.50,328.53 310.64,329.87 309.11,331.15 307.92,332.39 307.08,333.58 306.57,334.72 306.40,335.81 293.60,335.81 292.92,333.58 292.08,332.39 290.89,331.15 289.36,329.87 287.50,328.53 289.28,325.87 292.85,327.86 296.43,329.06 300.00,329.45 303.57,329.06 307.15,327.86" radius="3.21">
+        <request index="0" response="1000" foes="1000" cont="0"/>
+        <request index="1" response="0000" foes="0000" cont="0"/>
+        <request index="2" response="0000" foes="0000" cont="0"/>
+        <request index="3" response="0000" foes="0001" cont="0"/>
+    </junction>
+    <junction id="R180" type="priority" x="300.00" y="272.00" incLanes="in180_0 in180_1 ring90_0" intLanes=":R180_0_0 :R180_1_0 :R180_1_1 :R180_3_0" shape="293.60,264.19 306.40,264.19 307.08,266.42 307.92,267.61 309.11,268.85 310.64,270.13 312.50,271.47 310.72,274.13 307.15,272.14 303.57,270.94 300.00,270.55 296.43,270.94 292.85,272.14 289.28,274.13 287.50,271.47 289.36,270.13 290.89,268.85 292.08,267.61 292.92,266.42 293.43,265.28" radius="3.21">
+        <request index="0" response="1000" foes="1000" cont="0"/>
+        <request index="1" response="0000" foes="0000" cont="0"/>
+        <request index="2" response="0000" foes="0000" cont="0"/>
+        <request index="3" response="0000" foes="0001" cont="0"/>
+    </junction>
+    <junction id="R270" type="priority" x="272.00" y="300.00" incLanes="ring180_0 in270_0 in270_1" intLanes=":R270_0_0 :R270_0_1 :R270_2_0 :R270_3_0" shape="271.47,287.50 274.13,289.28 272.14,292.85 270.94,296.43 270.55,300.00 270.94,303.57 272.14,307.15 274.13,310.72 271.47,312.50 270.13,310.64 268.85,309.11 267.61,307.92 266.42,307.08 265.28,306.57 264.19,306.40 264.19,293.60 266.42,292.92 267.61,292.08 268.85,290.89 270.13,289.36" radius="3.21">
+        <request index="0" response="0000" foes="0000" cont="0"/>
+        <request index="1" response="0000" foes="0000" cont="0"/>
+        <request index="2" response="0000" foes="1000" cont="0"/>
+        <request index="3" response="0100" foes="0100" cont="0"/>
+    </junction>
+    <junction id="R90" type="priority" x="328.00" y="300.00" incLanes="in90_0 in90_1 ring0_0" intLanes=":R90_0_0 :R90_1_0 :R90_1_1 :R90_3_0" shape="335.81,293.60 335.81,306.40 333.58,307.08 332.39,307.92 331.15,309.11 329.87,310.64 328.53,312.50 325.87,310.72 327.86,307.15 329.06,303.57 329.45,300.00 329.06,296.43 327.86,292.85 325.87,289.28 328.53,287.50 329.87,289.36 331.15,290.89 332.39,292.08 333.58,292.92 334.72,293.43" radius="3.21">
+        <request index="0" response="1000" foes="1000" cont="0"/>
+        <request index="1" response="0000" foes="0000" cont="0"/>
+        <request index="2" response="0000" foes="0000" cont="0"/>
+        <request index="3" response="0000" foes="0001" cont="0"/>
+    </junction>
+
+    <connection from="in0" to="ring0" fromLane="0" toLane="0" via=":R0_0_0" dir="l" state="m" visibility="9.00"/>
+    <connection from="in180" to="ring180" fromLane="0" toLane="0" via=":R180_0_0" dir="l" state="m" visibility="9.00"/>
+    <connection from="in270" to="ring270" fromLane="0" toLane="0" via=":R270_3_0" dir="l" state="m" visibility="9.00"/>
+    <connection from="in90" to="ring90" fromLane="0" toLane="0" via=":R90_0_0" dir="l" state="m" visibility="9.00"/>
+    <connection from="ring0" to="out90" fromLane="0" toLane="0" via=":R90_1_0" dir="l" state="M"/>
+    <connection from="ring0" to="out90" fromLane="0" toLane="1" via=":R90_1_1" dir="l" state="M"/>
+    <connection from="ring0" to="ring90" fromLane="0" toLane="0" via=":R90_3_0" dir="s" state="M"/>
+    <connection from="ring180" to="out270" fromLane="0" toLane="0" via=":R270_0_0" dir="l" state="M"/>
+    <connection from="ring180" to="out270" fromLane="0" toLane="1" via=":R270_0_1" dir="l" state="M"/>
+    <connection from="ring180" to="ring270" fromLane="0" toLane="0" via=":R270_2_0" dir="s" state="M"/>
+    <connection from="ring270" to="out0" fromLane="0" toLane="0" via=":R0_1_0" dir="l" state="M"/>
+    <connection from="ring270" to="out0" fromLane="0" toLane="1" via=":R0_1_1" dir="l" state="M"/>
+    <connection from="ring270" to="ring0" fromLane="0" toLane="0" via=":R0_3_0" dir="s" state="M"/>
+    <connection from="ring90" to="out180" fromLane="0" toLane="0" via=":R180_1_0" dir="l" state="M"/>
+    <connection from="ring90" to="out180" fromLane="0" toLane="1" via=":R180_1_1" dir="l" state="M"/>
+    <connection from="ring90" to="ring180" fromLane="0" toLane="0" via=":R180_3_0" dir="s" state="M"/>
+
+    <connection from=":R0_0" to="ring0" fromLane="0" toLane="0" dir="l" state="M"/>
+    <connection from=":R0_1" to="out0" fromLane="0" toLane="0" dir="l" state="M"/>
+    <connection from=":R0_1" to="out0" fromLane="1" toLane="1" dir="l" state="M"/>
+    <connection from=":R0_3" to="ring0" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from=":R180_0" to="ring180" fromLane="0" toLane="0" dir="l" state="M"/>
+    <connection from=":R180_1" to="out180" fromLane="0" toLane="0" dir="l" state="M"/>
+    <connection from=":R180_1" to="out180" fromLane="1" toLane="1" dir="l" state="M"/>
+    <connection from=":R180_3" to="ring180" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from=":R270_0" to="out270" fromLane="0" toLane="0" dir="l" state="M"/>
+    <connection from=":R270_0" to="out270" fromLane="1" toLane="1" dir="l" state="M"/>
+    <connection from=":R270_2" to="ring270" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from=":R270_3" to="ring270" fromLane="0" toLane="0" dir="l" state="M"/>
+    <connection from=":R90_0" to="ring90" fromLane="0" toLane="0" dir="l" state="M"/>
+    <connection from=":R90_1" to="out90" fromLane="0" toLane="0" dir="l" state="M"/>
+    <connection from=":R90_1" to="out90" fromLane="1" toLane="1" dir="l" state="M"/>
+    <connection from=":R90_3" to="ring90" fromLane="0" toLane="0" dir="s" state="M"/>
+
+    <roundabout nodes="R0 R180 R270 R90" edges="ring0 ring180 ring270 ring90"/>
+
+</net>

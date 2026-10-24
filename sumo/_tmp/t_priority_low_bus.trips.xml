@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2026-10-16 10:41:49.040847 by Eclipse SUMO randomTrips.py v1_28_0+0000-daf91b55789
+<configuration>
+    <net-file value="C:\Users\DELL\Desktop\EquiFlow\sumo\networks\t_priority_fixed.net.xml"/>
+    <additional-files value="C:\Users\DELL\Desktop\EquiFlow\sumo\routes\vtypes.add.xml"/>
+    <output-trip-file value="C:\Users\DELL\Desktop\EquiFlow\sumo\_tmp\t_priority_low_bus.trips.xml"/>
+    <prefix value="bus_"/>
+    <trip-attributes value="type=&quot;bus&quot;"/>
+    <seed value="211"/>
+    <end value="3500.0"/>
+    <period value="166.667"/>
+</configuration>
+-->
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <trip id="bus_0" depart="0.00" from="in270" to="out90" type="bus"/>
+    <trip id="bus_1" depart="166.67" from="in0" to="out90" type="bus"/>
+    <trip id="bus_2" depart="333.33" from="in90" to="out270" type="bus"/>
+    <trip id="bus_3" depart="500.00" from="in0" to="out90" type="bus"/>
+    <trip id="bus_4" depart="666.67" from="in270" to="out90" type="bus"/>
+    <trip id="bus_5" depart="833.34" from="in90" to="out270" type="bus"/>
+    <trip id="bus_6" depart="1000.00" from="in270" to="out90" type="bus"/>
+    <trip id="bus_7" depart="1166.67" from="in270" to="out90" type="bus"/>
+    <trip id="bus_8" depart="1333.34" from="in270" to="out90" type="bus"/>
+    <trip id="bus_9" depart="1500.00" from="in0" to="out270" type="bus"/>
+    <trip id="bus_10" depart="1666.67" from="in270" to="out0" type="bus"/>
+    <trip id="bus_11" depart="1833.34" from="in90" to="out0" type="bus"/>
+    <trip id="bus_12" depart="2000.00" from="in0" to="out270" type="bus"/>
+    <trip id="bus_13" depart="2166.67" from="in90" to="out270" type="bus"/>
+    <trip id="bus_14" depart="2333.34" from="in0" to="out270" type="bus"/>
+    <trip id="bus_15" depart="2500.00" from="in270" to="out0" type="bus"/>
+    <trip id="bus_16" depart="2666.67" from="in0" to="out270" type="bus"/>
+    <trip id="bus_17" depart="2833.34" from="in270" to="out90" type="bus"/>
+    <trip id="bus_18" depart="3000.01" from="in270" to="out0" type="bus"/>
+    <trip id="bus_19" depart="3166.67" from="in0" to="out90" type="bus"/>
+    <trip id="bus_20" depart="3333.34" from="in0" to="out90" type="bus"/>
+</routes>

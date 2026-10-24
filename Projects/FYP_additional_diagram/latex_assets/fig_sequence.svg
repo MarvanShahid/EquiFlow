@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1300" height="900" viewBox="0 0 1300 900" font-family="Helvetica, Arial, sans-serif">
+<defs><marker id="ar" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,1 L9,5 L0,9 Z" fill="#000"/></marker></defs>
+<rect width="1300" height="900" fill="white"/>
+<rect x="28" y="14" width="144" height="50" rx="6" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1.5"/>
+<text x="100.0" y="36.3" font-size="11.5" text-anchor="middle" font-weight="bold" fill="#000">Ambulance</text><text x="100.0" y="49.8" font-size="11.5" text-anchor="middle" font-weight="bold" fill="#000">(video / SUMO)</text>
+<polyline points="100,64 100,880" fill="none" stroke="#777" stroke-width="1.3" stroke-dasharray="5 4"/>
+<rect x="198" y="14" width="144" height="50" rx="6" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1.5"/>
+<text x="270.0" y="36.3" font-size="11.5" text-anchor="middle" font-weight="bold" fill="#000">Perception</text><text x="270.0" y="49.8" font-size="11.5" text-anchor="middle" font-weight="bold" fill="#000">(YOLO26 + ByteTrack)</text>
+<polyline points="270,64 270,880" fill="none" stroke="#777" stroke-width="1.3" stroke-dasharray="5 4"/>
+<rect x="368" y="14" width="144" height="50" rx="6" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1.5"/>
+<text x="440.0" y="36.3" font-size="11.5" text-anchor="middle" font-weight="bold" fill="#000">Priority</text><text x="440.0" y="49.8" font-size="11.5" text-anchor="middle" font-weight="bold" fill="#000">manager</text>
+<polyline points="440,64 440,880" fill="none" stroke="#777" stroke-width="1.3" stroke-dasharray="5 4"/>
+<rect x="538" y="14" width="144" height="50" rx="6" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1.5"/>
+<text x="610.0" y="36.3" font-size="11.5" text-anchor="middle" font-weight="bold" fill="#000">Signal controller</text><text x="610.0" y="49.8" font-size="11.5" text-anchor="middle" font-weight="bold" fill="#000">(Intersection 1)</text>
+<polyline points="610,64 610,880" fill="none" stroke="#777" stroke-width="1.3" stroke-dasharray="5 4"/>
+<rect x="708" y="14" width="144" height="50" rx="6" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1.5"/>
+<text x="780.0" y="36.3" font-size="11.5" text-anchor="middle" font-weight="bold" fill="#000">Signal controller</text><text x="780.0" y="49.8" font-size="11.5" text-anchor="middle" font-weight="bold" fill="#000">(Intersection 2)</text>
+<polyline points="780,64 780,880" fill="none" stroke="#777" stroke-width="1.3" stroke-dasharray="5 4"/>
+<rect x="878" y="14" width="144" height="50" rx="6" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1.5"/>
+<text x="950.0" y="36.3" font-size="11.5" text-anchor="middle" font-weight="bold" fill="#000">Recovery</text><text x="950.0" y="49.8" font-size="11.5" text-anchor="middle" font-weight="bold" fill="#000">manager</text>
+<polyline points="950,64 950,880" fill="none" stroke="#777" stroke-width="1.3" stroke-dasharray="5 4"/>
+<rect x="1048" y="14" width="144" height="50" rx="6" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1.5"/>
+<text x="1120.0" y="43.0" font-size="11.5" text-anchor="middle" font-weight="bold" fill="#000">Logger</text>
+<polyline points="1120,64 1120,880" fill="none" stroke="#777" stroke-width="1.3" stroke-dasharray="5 4"/>
+<polyline points="100,100 270,100" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="270,134 308,134 308,152 272,152" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="270,172 440,172" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="440,206 478,206 478,224 442,224" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="440,244 610,244" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="610,278 648,278 648,296 612,296" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="610,316 440,316" fill="none" stroke="#000" stroke-width="1.3" stroke-dasharray="5 4" marker-end="url(#ar)"/>
+<polyline points="440,350 780,350" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="780,384 440,384" fill="none" stroke="#000" stroke-width="1.3" stroke-dasharray="5 4" marker-end="url(#ar)"/>
+<polyline points="270,428 440,428" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="440,462 610,462" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="610,496 950,496" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="950,530 610,530" fill="none" stroke="#000" stroke-width="1.3" stroke-dasharray="5 4" marker-end="url(#ar)"/>
+<polyline points="610,564 648,564 648,582 612,582" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="270,612 440,612" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="440,646 780,646" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="780,680 950,680" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="950,714 780,714" fill="none" stroke="#000" stroke-width="1.3" stroke-dasharray="5 4" marker-end="url(#ar)"/>
+<polyline points="440,758 1120,758" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="610,792 1120,792" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="950,826 1120,826" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#ar)"/>
+<text x="185.0" y="96.8" font-size="11" text-anchor="middle" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">approaching frames / state</text><text x="185.0" y="96.8" font-size="11" text-anchor="middle" font-style="italic" fill="#222">approaching frames / state</text>
+<text x="316" y="146.8" font-size="11" text-anchor="start" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">detect and track</text><text x="316" y="146.8" font-size="11" text-anchor="start" font-style="italic" fill="#222">detect and track</text>
+<text x="355.0" y="168.8" font-size="11" text-anchor="middle" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">DetectionEvent</text><text x="355.0" y="168.8" font-size="11" text-anchor="middle" font-style="italic" fill="#222">DetectionEvent</text>
+<text x="486" y="218.8" font-size="11" text-anchor="start" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">validate; map route</text><text x="486" y="218.8" font-size="11" text-anchor="start" font-style="italic" fill="#222">validate; map route</text>
+<text x="525.0" y="240.8" font-size="11" text-anchor="middle" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">requestPriority(approach)</text><text x="525.0" y="240.8" font-size="11" text-anchor="middle" font-style="italic" fill="#222">requestPriority(approach)</text>
+<text x="656" y="290.9" font-size="11" text-anchor="start" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">check clearance</text><text x="656" y="290.9" font-size="11" text-anchor="start" font-style="italic" fill="#222">check clearance</text>
+<text x="525.0" y="312.9" font-size="11" text-anchor="middle" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">phase ready (ack)</text><text x="525.0" y="312.9" font-size="11" text-anchor="middle" font-style="italic" fill="#222">phase ready (ack)</text>
+<text x="610.0" y="346.9" font-size="11" text-anchor="middle" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">prepareDownstream(route)</text><text x="610.0" y="346.9" font-size="11" text-anchor="middle" font-style="italic" fill="#222">prepareDownstream(route)</text>
+<text x="610.0" y="380.9" font-size="11" text-anchor="middle" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">ack</text><text x="610.0" y="380.9" font-size="11" text-anchor="middle" font-style="italic" fill="#222">ack</text>
+<text x="355.0" y="424.9" font-size="11" text-anchor="middle" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">passageConfirmed(Int. 1)</text><text x="355.0" y="424.9" font-size="11" text-anchor="middle" font-style="italic" fill="#222">passageConfirmed(Int. 1)</text>
+<text x="525.0" y="458.9" font-size="11" text-anchor="middle" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">clearPreemption</text><text x="525.0" y="458.9" font-size="11" text-anchor="middle" font-style="italic" fill="#222">clearPreemption</text>
+<text x="780.0" y="492.9" font-size="11" text-anchor="middle" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">preemptionCleared(queues, waits)</text><text x="780.0" y="492.9" font-size="11" text-anchor="middle" font-style="italic" fill="#222">preemptionCleared(queues, waits)</text>
+<text x="780.0" y="526.9" font-size="11" text-anchor="middle" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">recovery phase plan</text><text x="780.0" y="526.9" font-size="11" text-anchor="middle" font-style="italic" fill="#222">recovery phase plan</text>
+<text x="656" y="576.9" font-size="11" text-anchor="start" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">serve recovery; resume adaptive</text><text x="656" y="576.9" font-size="11" text-anchor="start" font-style="italic" fill="#222">serve recovery; resume adaptive</text>
+<text x="355.0" y="608.9" font-size="11" text-anchor="middle" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">passageConfirmed(Int. 2)</text><text x="355.0" y="608.9" font-size="11" text-anchor="middle" font-style="italic" fill="#222">passageConfirmed(Int. 2)</text>
+<text x="610.0" y="642.9" font-size="11" text-anchor="middle" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">clearPreemption</text><text x="610.0" y="642.9" font-size="11" text-anchor="middle" font-style="italic" fill="#222">clearPreemption</text>
+<text x="865.0" y="676.9" font-size="11" text-anchor="middle" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">preemptionCleared</text><text x="865.0" y="676.9" font-size="11" text-anchor="middle" font-style="italic" fill="#222">preemptionCleared</text>
+<text x="865.0" y="710.9" font-size="11" text-anchor="middle" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">recovery phase plan</text><text x="865.0" y="710.9" font-size="11" text-anchor="middle" font-style="italic" fill="#222">recovery phase plan</text>
+<text x="780.0" y="754.9" font-size="11" text-anchor="middle" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">log preemption events</text><text x="780.0" y="754.9" font-size="11" text-anchor="middle" font-style="italic" fill="#222">log preemption events</text>
+<text x="865.0" y="788.9" font-size="11" text-anchor="middle" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">log phase changes</text><text x="865.0" y="788.9" font-size="11" text-anchor="middle" font-style="italic" fill="#222">log phase changes</text>
+<text x="1035.0" y="822.9" font-size="11" text-anchor="middle" font-style="italic" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round">log recovery metrics</text><text x="1035.0" y="822.9" font-size="11" text-anchor="middle" font-style="italic" fill="#222">log recovery metrics</text>
+</svg>

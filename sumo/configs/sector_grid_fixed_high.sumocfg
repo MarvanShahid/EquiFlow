@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <input>
+    <net-file value="../networks/sector_grid_fixed.net.xml"/>
+    <route-files value="../routes/sector_grid_high.rou.xml"/>
+  <time><begin value="0"/><end value="3600"/><step-length value="1"/></time>
+  <processing><time-to-teleport value="-1"/></processing>
+</configuration>

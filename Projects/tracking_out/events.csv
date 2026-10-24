@@ -1,0 +1,5 @@
+track_id,first_frame,confirm_frame,confirm_time_s,delay_s,zone,dx,dy,heading_deg,mean_conf
+41,239,246,8.2,0.23,unknown,-0.5,-4.0,-97.1,0.499
+43,261,281,9.37,0.67,unknown,1.5,-4.0,-69.4,0.522
+57,287,294,9.8,0.23,unknown,3.5,-3.5,-45.0,0.552
+58,293,306,10.2,0.43,unknown,-4.0,-11.0,-110.0,0.623

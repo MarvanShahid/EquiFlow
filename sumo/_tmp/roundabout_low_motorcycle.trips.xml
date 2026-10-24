@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2026-10-16 10:43:37.093207 by Eclipse SUMO randomTrips.py v1_28_0+0000-daf91b55789
+<configuration>
+    <net-file value="C:\Users\DELL\Desktop\EquiFlow\sumo\networks\roundabout_fixed.net.xml"/>
+    <additional-files value="C:\Users\DELL\Desktop\EquiFlow\sumo\routes\vtypes.add.xml"/>
+    <output-trip-file value="C:\Users\DELL\Desktop\EquiFlow\sumo\_tmp\roundabout_low_motorcycle.trips.xml"/>
+    <prefix value="motorcycle_"/>
+    <trip-attributes value="type=&quot;motorcycle&quot;"/>
+    <seed value="111"/>
+    <end value="3500.0"/>
+    <period value="40.0"/>
+</configuration>
+-->
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <trip id="motorcycle_0" depart="0.00" from="in90" to="out0" type="motorcycle"/>
+    <trip id="motorcycle_1" depart="40.00" from="in90" to="out180" type="motorcycle"/>
+    <trip id="motorcycle_2" depart="80.00" from="in180" to="out270" type="motorcycle"/>
+    <trip id="motorcycle_3" depart="120.00" from="in0" to="out0" type="motorcycle"/>
+    <trip id="motorcycle_4" depart="160.00" from="in180" to="out0" type="motorcycle"/>
+    <trip id="motorcycle_5" depart="200.00" from="in270" to="out180" type="motorcycle"/>
+    <trip id="motorcycle_6" depart="240.00" from="in180" to="out180" type="motorcycle"/>
+    <trip id="motorcycle_7" depart="280.00" from="in0" to="out270" type="motorcycle"/>
+    <trip id="motorcycle_8" depart="320.00" from="in90" to="out180" type="motorcycle"/>
+    <trip id="motorcycle_9" depart="360.00" from="in90" to="out180" type="motorcycle"/>
+    <trip id="motorcycle_10" depart="400.00" from="in90" to="out0" type="motorcycle"/>
+    <trip id="motorcycle_11" depart="440.00" from="in270" to="out180" type="motorcycle"/>
+    <trip id="motorcycle_12" depart="480.00" from="in90" to="out90" type="motorcycle"/>
+    <trip id="motorcycle_13" depart="520.00" from="in0" to="out0" type="motorcycle"/>
+    <trip id="motorcycle_14" depart="560.00" from="in180" to="out0" type="motorcycle"/>
+    <trip id="motorcycle_15" depart="600.00" from="in0" to="out90" type="motorcycle"/>
+    <trip id="motorcycle_16" depart="640.00" from="in90" to="out0" type="motorcycle"/>
+    <trip id="motorcycle_17" depart="680.00" from="in0" to="out270" type="motorcycle"/>
+    <trip id="motorcycle_18" depart="720.00" from="in90" to="out90" type="motorcycle"/>
+    <trip id="motorcycle_19" depart="760.00" from="in270" to="out270" type="motorcycle"/>
+    <trip id="motorcycle_20" depart="800.00" from="in180" to="out180" type="motorcycle"/>
+    <trip id="motorcycle_21" depart="840.00" from="in90" to="out0" type="motorcycle"/>
+    <trip id="motorcycle_22" depart="880.00" from="in270" to="out270" type="motorcycle"/>
+    <trip id="motorcycle_23" depart="920.00" from="in0" to="out90" type="motorcycle"/>
+    <trip id="motorcycle_24" depart="960.00" from="in0" to="out90" type="motorcycle"/>
+    <trip id="motorcycle_25" depart="1000.00" from="in90" to="out180" type="motorcycle"/>
+    <trip id="motorcycle_26" depart="1040.00" from="in270" to="out90" type="motorcycle"/>
+    <trip id="motorcycle_27" depart="1080.00" from="in180" to="out0" type="motorcycle"/>
+    <trip id="motorcycle_28" depart="1120.00" from="in270" to="out90" type="motorcycle"/>
+    <trip id="motorcycle_29" depart="1160.00" from="in0" to="out90" type="motorcycle"/>
+    <trip id="motorcycle_30" depart="1200.00" from="in180" to="out270" type="motorcycle"/>
+    <trip id="motorcycle_31" depart="1240.00" from="in180" to="out90" type="motorcycle"/>
+    <trip id="motorcycle_32" depart="1280.00" from="in270" to="out90" type="motorcycle"/>
+    <trip id="motorcycle_33" depart="1320.00" from="in90" to="out0" type="motorcycle"/>
+    <trip id="motorcycle_34" depart="1360.00" from="in90" to="out90" type="motorcycle"/>
+    <trip id="motorcycle_35" depart="1400.00" from="in0" to="out270" type="motorcycle"/>
+    <trip id="motorcycle_36" depart="1440.00" from="in180" to="out0" type="motorcycle"/>
+    <trip id="motorcycle_37" depart="1480.00" from="in0" to="out180" type="motorcycle"/>
+    <trip id="motorcycle_38" depart="1520.00" from="in90" to="out0" type="motorcycle"/>
+    <trip id="motorcycle_39" depart="1560.00" from="in270" to="out90" type="motorcycle"/>
+    <trip id="motorcycle_40" depart="1600.00" from="in180" to="out270" type="motorcycle"/>
+    <trip id="motorcycle_41" depart="1640.00" from="in270" to="out90" type="motorcycle"/>
+    <trip id="motorcycle_42" depart="1680.00" from="in180" to="out90" type="motorcycle"/>
+    <trip id="motorcycle_43" depart="1720.00" from="in180" to="out0" type="motorcycle"/>
+    <trip id="motorcycle_44" depart="1760.00" from="in0" to="out180" type="motorcycle"/>
+    <trip id="motorcycle_45" depart="1800.00" from="in0" to="out90" type="motorcycle"/>
+    <trip id="motorcycle_46" depart="1840.00" from="in0" to="out90" type="motorcycle"/>
+    <trip id="motorcycle_47" depart="1880.00" from="in90" to="out180" type="motorcycle"/>
+    <trip id="motorcycle_48" depart="1920.00" from="in0" to="out0" type="motorcycle"/>
+    <trip id="motorcycle_49" depart="1960.00" from="in90" to="out180" type="motorcycle"/>
+    <trip id="motorcycle_50" depart="2000.00" from="in90" to="out0" type="motorcycle"/>
+    <trip id="motorcycle_51" depart="2040.00" from="in0" to="out180" type="motorcycle"/>
+    <trip id="motorcycle_52" depart="2080.00" from="in180" to="out0" type="motorcycle"/>
+    <trip id="motorcycle_53" depart="2120.00" from="in270" to="out270" type="motorcycle"/>
+    <trip id="motorcycle_54" depart="2160.00" from="in270" to="out180" type="motorcycle"/>
+    <trip id="motorcycle_55" depart="2200.00" from="in180" to="out180" type="motorcycle"/>
+    <trip id="motorcycle_56" depart="2240.00" from="in270" to="out180" type="motorcycle"/>
+    <trip id="motorcycle_57" depart="2280.00" from="in270" to="out90" type="motorcycle"/>
+    <trip id="motorcycle_58" depart="2320.00" from="in180" to="out270" type="motorcycle"/>
+    <trip id="motorcycle_59" depart="2360.00" from="in0" to="out90" type="motorcycle"/>
+    <trip id="motorcycle_60" depart="2400.00" from="in270" to="out270" type="motorcycle"/>
+    <trip id="motorcycle_61" depart="2440.00" from="in270" to="out0" type="motorcycle"/>
+    <trip id="motorcycle_62" depart="2480.00" from="in90" to="out0" type="motorcycle"/>
+    <trip id="motorcycle_63" depart="2520.00" from="in0" to="out180" type="motorcycle"/>
+    <trip id="motorcycle_64" depart="2560.00" from="in90" to="out270" type="motorcycle"/>
+    <trip id="motorcycle_65" depart="2600.00" from="in90" to="out180" type="motorcycle"/>
+    <trip id="motorcycle_66" depart="2640.00" from="in270" to="out270" type="motorcycle"/>
+    <trip id="motorcycle_67" depart="2680.00" from="in0" to="out0" type="motorcycle"/>
+    <trip id="motorcycle_68" depart="2720.00" from="in180" to="out0" type="motorcycle"/>
+    <trip id="motorcycle_69" depart="2760.00" from="in0" to="out0" type="motorcycle"/>
+    <trip id="motorcycle_70" depart="2800.00" from="in90" to="out270" type="motorcycle"/>
+    <trip id="motorcycle_71" depart="2840.00" from="in270" to="out270" type="motorcycle"/>
+    <trip id="motorcycle_72" depart="2880.00" from="in180" to="out90" type="motorcycle"/>
+    <trip id="motorcycle_73" depart="2920.00" from="in180" to="out180" type="motorcycle"/>
+    <trip id="motorcycle_74" depart="2960.00" from="in180" to="out0" type="motorcycle"/>
+    <trip id="motorcycle_75" depart="3000.00" from="in0" to="out180" type="motorcycle"/>
+    <trip id="motorcycle_76" depart="3040.00" from="in270" to="out0" type="motorcycle"/>
+    <trip id="motorcycle_77" depart="3080.00" from="in180" to="out180" type="motorcycle"/>
+    <trip id="motorcycle_78" depart="3120.00" from="in90" to="out0" type="motorcycle"/>
+    <trip id="motorcycle_79" depart="3160.00" from="in180" to="out270" type="motorcycle"/>
+    <trip id="motorcycle_80" depart="3200.00" from="in270" to="out90" type="motorcycle"/>
+    <trip id="motorcycle_81" depart="3240.00" from="in0" to="out180" type="motorcycle"/>
+    <trip id="motorcycle_82" depart="3280.00" from="in0" to="out90" type="motorcycle"/>
+    <trip id="motorcycle_83" depart="3320.00" from="in0" to="out90" type="motorcycle"/>
+    <trip id="motorcycle_84" depart="3360.00" from="in270" to="out90" type="motorcycle"/>
+    <trip id="motorcycle_85" depart="3400.00" from="in90" to="out90" type="motorcycle"/>
+    <trip id="motorcycle_86" depart="3440.00" from="in90" to="out180" type="motorcycle"/>
+    <trip id="motorcycle_87" depart="3480.00" from="in270" to="out90" type="motorcycle"/>
+</routes>
