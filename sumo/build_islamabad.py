@@ -220,6 +220,7 @@ def write_configs(name, scen):
             '<?xml version="1.0" encoding="UTF-8"?>\n<configuration>\n  <input>\n'
             f'    <net-file value="../networks/{name}_{ctrl}.net.xml"/>\n'
             f'    <route-files value="../routes/{name}_{scen}.rou.xml"/>\n'
+            '  </input>\n'
             '  <time><begin value="0"/><end value="3600"/><step-length value="1"/></time>\n'
             '  <processing><time-to-teleport value="-1"/></processing>\n</configuration>\n', encoding="utf-8")
 

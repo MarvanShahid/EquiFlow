@@ -3,6 +3,7 @@
   <input>
     <net-file value="../networks/six_way_fixed.net.xml"/>
     <route-files value="../routes/six_way_medium.rou.xml"/>
+  </input>
   <time><begin value="0"/><end value="3600"/><step-length value="1"/></time>
   <processing><time-to-teleport value="-1"/></processing>
 </configuration>
