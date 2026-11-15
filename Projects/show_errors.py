@@ -3,8 +3,10 @@ from pathlib import Path
 import cv2, numpy as np
 from ultralytics import YOLO
 
-WEIGHTS = r"C:\Smester7\Projects\runs\cls_v1\weights\best.pt"
-ROOT = Path(r"C:\Smester7\Projects\crops\test")
+HERE = Path(__file__).resolve().parent  # the Projects folder
+
+WEIGHTS = str(HERE / "runs" / "cls_v4-2" / "weights" / "best.pt")
+ROOT = HERE / "crops" / "test"
 TH = 0.5
 
 model = YOLO(WEIGHTS)
@@ -17,7 +19,7 @@ def probs(files):
 
 def source(f):
     n = f.name
-    return "pk" if n.startswith("pk_") else "local" if n.startswith("local_") else n.split("_")[1]
+    return "pk" if n.startswith("pk_") else "local" if n.startswith("local_") else n.split("_")[0]
 
 def sheet(items, name, tile=140, cols=10, max_n=100):
     items = items[:max_n]

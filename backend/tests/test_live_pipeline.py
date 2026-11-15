@@ -48,12 +48,12 @@ from app.config import VisionCfg  # noqa: E402
 from app.vision.live import DirectionTracker, SharedClassifier  # noqa: E402
 
 
-def run(ps, boxes, **cfg):
+def run(ps, boxes, zone=None, **cfg):
     SCRIPT["p"], SCRIPT["boxes"] = ps, boxes
     c = VisionCfg(cls_weights="cls.pt", det_weights="det.pt", **cfg)
     cl = SharedClassifier(c)
     cl.model.cls_calls = 0
-    tr = DirectionTracker(c, cl)
+    tr = DirectionTracker(c, cl, zone=zone)
     out = []
     for _ in range(len(ps)):
         frame = np.zeros((360, 640, 3), np.uint8)
@@ -86,6 +86,21 @@ def test_stationary_filter():
     assert not any(r.new_confirmed for r in res)
     res = run([0.95] * 12, STILL, min_move=0.0)
     assert any(r.new_confirmed for r in res)
+
+
+LEFT_HALF = [[0, 0], [0.5, 0], [0.5, 1], [0, 1]]       # x < 320 px of the 640 px test frame
+
+
+def test_fr04_zone_counts_only_vehicles_inside_and_queue_only_stationary_ones():
+    still_in = run([0.1] * 8, STILL, zone=LEFT_HALF)       # box bottom-centre (130, 160): inside, not moving
+    assert all(r.vehicles == 1 for r in still_in)
+    assert still_in[-1].queue == 1
+    outside = run([0.1] * 8, [(400, 100, 460, 160)], zone=LEFT_HALF)
+    assert all(r.vehicles == 0 and r.queue == 0 for r in outside)
+    moving_in = run([0.1] * 8, MOVING, zone=LEFT_HALF)     # 10 px per frame > 0.004 * 640
+    assert moving_in[-1].vehicles == 1 and moving_in[-1].queue == 0
+    no_zone = run([0.1] * 3, [(400, 100, 460, 160)])
+    assert no_zone[-1].vehicles == 1 and no_zone[-1].queue is None    # old behaviour without a zone
 
 
 if __name__ == "__main__":

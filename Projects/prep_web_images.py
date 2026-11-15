@@ -1,7 +1,9 @@
 import shutil
 from pathlib import Path
 
-ROOT = Path(r"C:\Smester7\Projects\crops")
+HERE = Path(__file__).resolve().parent  # the Projects folder
+
+ROOT = HERE / "crops"
 KNOWN = ("pub_", "pk_", "local_", "web_")
 DRY = False            # pehle True, theek lage to False
 REPEAT = 2            # har nayi image train mein kitni martaba (copies ke saath)

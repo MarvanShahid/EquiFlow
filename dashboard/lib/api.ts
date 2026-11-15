@@ -2,6 +2,15 @@ import type { Approach } from "./types";
 
 export const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000").replace(/\/$/, "");
 export const WS_URL = API_URL.replace(/^http/, "ws") + "/ws";
+// Only needed when the backend has server.api_key set (see backend/app/security.py)
+const API_KEY = process.env.NEXT_PUBLIC_API_KEY ?? "";
+
+export function apiHeaders(json: boolean): Record<string, string> | undefined {
+  const h: Record<string, string> = {};
+  if (json) h["Content-Type"] = "application/json";
+  if (API_KEY) h["X-API-Key"] = API_KEY;
+  return Object.keys(h).length ? h : undefined;
+}
 
 export const videoUrl = (intersectionId: string, approach: Approach) =>
   `${API_URL}/api/video/${encodeURIComponent(intersectionId)}/${approach}`;
@@ -9,7 +18,7 @@ export const videoUrl = (intersectionId: string, approach: Approach) =>
 async function send(method: "POST" | "DELETE", path: string, body?: unknown) {
   const res = await fetch(`${API_URL}${path}`, {
     method,
-    headers: body ? { "Content-Type": "application/json" } : undefined,
+    headers: apiHeaders(!!body),
     body: body ? JSON.stringify(body) : undefined,
   });
   if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);

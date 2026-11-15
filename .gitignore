@@ -61,3 +61,17 @@ node_modules/
 # OS
 Thumbs.db
 .DS_Store
+# evaluation scratch
+*.csv.lock
+sumo/results/robustness_tripinfo/
+marl/weights/_train_tripinfo.xml
+
+# backend event logs (one CSV per run)
+backend/logs/
+# keep detector evaluation results (python Projects/eval_detector.py)
+!Projects/runs/eval_test/
+!Projects/runs/eval_val/
+Projects/runs/eval_*/scores.csv
+# per-run SUMO event logs (run_equiflow.py --event-log)
+sumo/results/event_logs/
+sumo/_tmp/

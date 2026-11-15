@@ -1,9 +1,11 @@
 from pathlib import Path
 from ultralytics import YOLO
 
+HERE = Path(__file__).resolve().parent  # the Projects folder
+
 if __name__ == "__main__":
-    root = Path(r"C:\Smester7\Projects\equiflow_det")
-    model = YOLO(r"C:\Smester7\Projects\runs\v0\weights\best.pt")
+    root = HERE / "equiflow_det"
+    model = YOLO(str(HERE / "runs" / "v0" / "weights" / "best.pt"))
     for src in ["d1", "d2", "d3", "d4", "d5", "d6"]:
         imgs = sorted((root / "images" / "test").glob(f"{src}_*"))
         if not imgs: continue

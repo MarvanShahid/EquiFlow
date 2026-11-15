@@ -2,13 +2,18 @@ import csv
 from collections import defaultdict
 from pathlib import Path
 
-ROOT = Path(r"C:\Smester7\Projects\tracking_out")
-GT = Path(r"C:\Smester7\Projects\ground_truth.csv")
+HERE = Path(__file__).resolve().parent  # the Projects folder
+
+ROOT = HERE / "tracking_out"
+GT = HERE / "ground_truth.csv"
 MARGIN = 1.0     # window ke khatam hone ke itne second baad tak ka confirm bhi theek maante hain
 
 gt = defaultdict(list)
-for r in csv.DictReader(open(GT)):
-    gt[r["video"]].append((float(r["start_s"]), float(r["end_s"])))
+with open(GT, newline="", encoding="utf-8-sig") as fh:   # utf-8-sig: ground_truth.csv starts with an Excel BOM
+    for r in csv.DictReader(fh):
+        gt[r["video"]]                                       # videos without an ambulance still get a row
+        if r["start_s"].strip() and r["end_s"].strip():     # blank start/end = no ambulance in that video
+            gt[r["video"]].append((float(r["start_s"]), float(r["end_s"])))
 
 names = sorted(set(gt) | {p.parent.name for p in ROOT.glob("*/events.csv")})
 for video in names:

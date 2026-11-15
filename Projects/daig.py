@@ -2,14 +2,16 @@ from pathlib import Path
 import cv2
 from ultralytics import YOLO
 
+HERE = Path(__file__).resolve().parent  # the Projects folder
+
 if __name__ == "__main__":
-    VIDEO = r"C:\Smester7\Projects\videos\test7.mp4"
+    VIDEO = str(HERE / "videos" / "test7.mp4")
     FRAME = 294
-    out = Path(r"C:\Smester7\Projects\diag"); out.mkdir(exist_ok=True)
+    out = HERE / "diag"; out.mkdir(exist_ok=True)
     cap = cv2.VideoCapture(VIDEO); cap.set(cv2.CAP_PROP_POS_FRAMES, FRAME)
     ok, frame = cap.read(); cap.release()
     assert ok, "frame nahi mili"
-    model = YOLO(r"C:\Smester7\Projects\runs\v0\weights\best.pt")
+    model = YOLO(str(HERE / "runs" / "v0" / "weights" / "best.pt"))
     for sz in (640, 1280, 1920):
         r = model.predict(frame, imgsz=sz, conf=0.10, device=0, verbose=False)[0]
         names = [r.names[int(c)] for c in r.boxes.cls]

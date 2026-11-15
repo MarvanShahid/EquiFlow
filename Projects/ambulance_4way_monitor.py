@@ -6,6 +6,9 @@ from datetime import datetime
 import cv2
 import numpy as np
 from ultralytics import YOLO
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent  # the Projects folder
 
 # ============================================================
 # 1. SETTINGS
@@ -13,13 +16,13 @@ from ultralytics import YOLO
 
 # Model 1: vehicle detector (COCO) | Model 2: ambulance classifier (yours)
 DET_WEIGHTS = "yolo26s.pt"
-CLS_WEIGHTS = r"C:\Smester7\Projects\runs\cls_v4\weights\best.pt"
+CLS_WEIGHTS = str(HERE / "runs" / "cls_v4-2" / "weights" / "best.pt")
 
 VIDEO_PATHS = {
-    "North": r"C:\Smester7\Projects\videos\test11.mp4",
-    "South": r"C:\Smester7\Projects\videos\test12.mp4",
-    "East":  r"C:\Smester7\Projects\videos\v1.mp4",
-    "West":  r"C:\Smester7\Projects\videos\v2.mp4",
+    "North": str(HERE / "videos" / "test11.mp4"),
+    "South": str(HERE / "videos" / "test12.mp4"),
+    "East":  str(HERE / "videos" / "v1.mp4"),
+    "West":  str(HERE / "videos" / "v2.mp4"),
 }
 
 DEVICE = 0                  # GPU 0. Use "cpu" if no GPU.

@@ -1,4 +1,4 @@
-path: C:/Smester7/Projects/equiflow_det
+path: C:/Users/LEGEN/Desktop/EquiFlow/Projects/equiflow_det
 train: images/train
 val: images/val
 test: images/test

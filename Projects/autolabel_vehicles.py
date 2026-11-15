@@ -2,8 +2,10 @@ from pathlib import Path
 import cv2
 from ultralytics import YOLO
 
+HERE = Path(__file__).resolve().parent  # the Projects folder
+
 if __name__ == "__main__":
-    ROOT = Path(r"C:\Smester7\Projects\Dataset\local")
+    ROOT = HERE / "Dataset" / "local"
     
     NAMES = sorted(d.name for d in ROOT.iterdir() if (d / "images").exists())
     model = YOLO("yolo26s.pt")                    # COCO pretrained

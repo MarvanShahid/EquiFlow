@@ -1,10 +1,12 @@
 from pathlib import Path
 from ultralytics import YOLO
 
+HERE = Path(__file__).resolve().parent  # the Projects folder
+
 if __name__ == "__main__":
-    model = YOLO(r"C:\Smester7\Projects\runs\cls_v1-3\weights\best.pt")
+    model = YOLO(str(HERE / "runs" / "cls_v4-2" / "weights" / "best.pt"))
     amb = next(k for k, v in model.names.items() if v == "ambulance")
-    root = Path(r"C:\Smester7\Projects\crops\test")
+    root = HERE / "crops" / "test"
     TH = 0.5
     for cls in ("ambulance", "other_vehicle"):
         for src in ("pub", "pk", "local"):

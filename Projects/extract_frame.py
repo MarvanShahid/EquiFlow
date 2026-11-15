@@ -1,8 +1,10 @@
 import cv2
 from pathlib import Path
 
-VIDEO_DIR = Path(r"C:\Smester7\Projects\videos")
-ROOT = Path(r"C:\Smester7\Projects\Dataset\local")
+HERE = Path(__file__).resolve().parent  # the Projects folder
+
+VIDEO_DIR = HERE / "videos"
+ROOT = HERE / "Dataset" / "local"
 
 BASE_SEC = 1.0                       # normal frames: har 1 second par ek
 NAMES = sorted(p.stem for p in VIDEO_DIR.iterdir() if p.suffix.lower() in {".mp4", ".mov", ".avi", ".mkv"})

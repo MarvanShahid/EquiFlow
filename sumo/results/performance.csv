@@ -1,0 +1,7 @@
+what,mean_us,median_us,p99_us,max_us,n
+tick (fixed_time),0.94,0.92,3.21,99.37,50000
+decision (fixed_time),0.42,0.38,0.63,467.97,20000
+tick (adaptive),1.07,0.95,3.77,680.95,50000
+decision (adaptive),1.39,1.2,2.68,935.52,20000
+tick (marl),1.35,0.94,5.07,173.0,50000
+decision (marl),23.83,19.82,61.69,4408.28,20000

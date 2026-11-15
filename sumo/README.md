@@ -12,6 +12,7 @@ It replaces the original single 3x3 grid (`build_phase1.py`, `run_baseline.py`, 
 |---|---|
 | `build_islamabad.py` | Generates networks, vehicle types, demand (routes) and `.sumocfg` files |
 | `run_sim.py` | Runs a simulation through TraCI, optionally with ambulance signal pre-emption, and writes metrics |
+| `run_equiflow.py` | Runs the EquiFlow controller (the backend's controller + virtual cameras) on a network and writes metrics in the same format, as controller `equiflow` |
 
 Folders created automatically next to the scripts:
 
@@ -57,8 +58,11 @@ python run_sim.py --intersection diamond --gui
 # 4. with ambulance pre-emption
 python run_sim.py --intersection cross_signal --preempt --gui
 
-# 5. run every combination (8 intersections x 2 controllers x 4 scenarios)
+# 5. run every combination (9 intersections x 2 controllers x 4 scenarios)
 python run_sim.py --all
+
+# 6. the EquiFlow controller on every signalised network (controller "equiflow" in the results)
+python run_equiflow.py --all
 ```
 
 You can also open a generated config directly:
@@ -155,8 +159,9 @@ Unsignalised junctions (`t_priority`, `y_junction`, `roundabout`) are identical 
 Every simulation step, `run_sim.py` finds each ambulance whose next traffic light is closer than `--preempt-dist` metres (default 80). For that light it:
 
 1. remembers the current signal program,
-2. sets the ambulance's own movement to green and **every other movement to red**,
-3. hands control back by restoring the program once the ambulance has passed.
+2. gives every movement that is green now (and conflicts) a 3 s yellow, then sets the ambulance's own movement(s) to green and **every other movement to red**,
+3. serves several ambulances at one light first come, first served (a later ambulance on a conflicting movement waits),
+4. hands control back by restoring the program once the ambulance has passed.
 
 The number of pre-emption events is printed. Results are saved under the controller name `fixed+preempt` or `actuated+preempt`, so they sit beside the normal results for comparison.
 

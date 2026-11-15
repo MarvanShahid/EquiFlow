@@ -12,7 +12,9 @@ from collections import defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
-NETS = ["cross_signal", "t_signal", "t_priority", "y_junction", "five_way_signal", "roundabout", "sector_grid", "diamond"]
+NETS = ["cross_signal", "t_signal", "t_priority", "y_junction", "five_way_signal", "six_way", "roundabout",
+        "sector_grid", "diamond"]   # must match NETWORKS in build_islamabad.py (six_way was missing)
+CLEAR_S = 3.0   # pre-emption: conflicting greens get this long on yellow before they turn red
 SCENS = ["low", "medium", "high", "asymmetric"]
 ap = argparse.ArgumentParser()
 ap.add_argument("--intersection", choices=NETS, default="cross_signal")
@@ -52,7 +54,6 @@ def exe(n):
 def simulate(inter, ctrl, scen, seed, preempt, gui, pdist):
     net = ROOT / "networks" / f"{inter}_{ctrl}.net.xml"
     rou = ROOT / "routes" / f"{inter}_{scen}.rou.xml"
-    vt = ROOT / "routes" / "vtypes.add.xml"
     if not (net.is_file() and rou.is_file()):
         sys.exit("Missing network/routes - run: python build_islamabad.py")
     tag = f"{inter}_{ctrl}{'+preempt' if preempt else ''}_{scen}"
@@ -68,7 +69,7 @@ def simulate(inter, ctrl, scen, seed, preempt, gui, pdist):
 
     stopped_by_class = defaultdict(int)       # sum of stopped-vehicle counts per class
     steps = 0
-    held = {}                                 # tlsID -> (original program, ambulance id)
+    held = {}                                 # tlsID -> {program, links served, since, yellow links}
     amb_preempts = 0
     try:
         while traci.simulation.getMinExpectedNumber() > 0 and traci.simulation.getTime() < 3600:
@@ -80,24 +81,35 @@ def simulate(inter, ctrl, scen, seed, preempt, gui, pdist):
                     stopped_by_class[traci.vehicle.getTypeID(v)] += 1
 
             if preempt:
-                active = {}
+                now = traci.simulation.getTime()
+                active = defaultdict(set)              # tls -> link indices that approaching ambulances need
                 for v in ids:
                     if traci.vehicle.getTypeID(v) != "ambulance":
                         continue
                     nxt = traci.vehicle.getNextTLS(v)
                     if nxt and nxt[0][2] < pdist:
-                        tls, link_idx, _, state = nxt[0]
-                        active[tls] = (v, link_idx)
-                for tls, (v, idx) in active.items():
-                    if tls not in held:
-                        held[tls] = (traci.trafficlight.getProgram(tls), v)
-                        amb_preempts += 1
-                    n = len(traci.trafficlight.getRedYellowGreenState(tls))
-                    st = ["r"] * n
-                    st[idx] = "G"                      # only the ambulance's own movement is green; all others red
+                        tls, link_idx, _, _ = nxt[0]
+                        active[tls].add(link_idx)  # several ambulances at one light no longer overwrite each other
+                for tls, links in active.items():
+                    cur = traci.trafficlight.getRedYellowGreenState(tls)
+                    h = held.get(tls)
+                    if h is None or not (h["links"] & links):
+                        # new pre-emption, or the ambulance being served has passed and another is waiting:
+                        # serve the new movement(s) after a yellow on every other movement that is green now
+                        if h is None:
+                            h = held[tls] = {"program": traci.trafficlight.getProgram(tls)}
+                            amb_preempts += 1
+                        h.update(links=set(links), since=now,
+                                 yellow={i for i, c in enumerate(cur) if c in "Ggy" and i not in links})
+                    serve = h["links"]             # FIFO: a later ambulance on a conflicting movement waits
+                    if now - h["since"] < CLEAR_S and h["yellow"]:
+                        st = ["y" if i in h["yellow"] else ("G" if i in serve and cur[i] in "Gg" else "r")
+                              for i in range(len(cur))]
+                    else:
+                        st = ["G" if i in serve else "r" for i in range(len(cur))]
                     traci.trafficlight.setRedYellowGreenState(tls, "".join(st))
                 for tls in [t for t in held if t not in active]:
-                    traci.trafficlight.setProgram(tls, held.pop(tls)[0])   # hand control back to the controller
+                    traci.trafficlight.setProgram(tls, held.pop(tls)["program"])   # hand control back
     finally:
         traci.close()
 

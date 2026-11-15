@@ -4,7 +4,9 @@ import cv2, numpy as np
 import torch, open_clip
 from PIL import Image
 
-ROOT = Path(r"C:\Smester7\Projects\crops")
+HERE = Path(__file__).resolve().parent  # the Projects folder
+
+ROOT = HERE / "crops"
 SPLITS = ["train", "val", "test"]
 DEST = "other_vehicle"     # jahan move karna hai (alag folder chahiye to "other_emergency")
 APPLY = False              # pehle False: sirf report. Check ke baad True karo

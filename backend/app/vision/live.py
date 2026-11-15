@@ -44,12 +44,19 @@ class SharedClassifier:
 class DirectionTracker:
     """Detect -> track -> classify -> vote, for one approach."""
 
-    def __init__(self, cfg: VisionCfg, classifier: SharedClassifier):
+    def __init__(self, cfg: VisionCfg, classifier: SharedClassifier, zone: list[list[float]] | None = None):
         from ultralytics import YOLO  # lazy
         self.cfg = cfg
         self.cls = classifier
         self.det = YOLO(cfg.det_weights)
+        self.zone = np.array(zone, dtype=np.float32) if zone and len(zone) >= 3 else None
         self._reset_state()
+
+    def in_zone(self, x: float, y: float, W: int, H: int) -> bool:
+        if self.zone is None:
+            return True
+        poly = (self.zone * np.array([W, H], dtype=np.float32)).reshape(-1, 1, 2)
+        return cv2.pointPolygonTest(poly, (float(x), float(y)), False) >= 0
 
     def _reset_state(self) -> None:
         c = self.cfg
@@ -102,6 +109,10 @@ class DirectionTracker:
         ps = self.cls.prob_ambulance(crops) if crops else []
         seen: dict[int, tuple] = {}
         new_confirmed: list[AmbDet] = []
+        in_zone = queued = 0
+        if self.zone is not None:
+            poly = (self.zone * np.array([W, H], dtype=np.float32)).astype(np.int32).reshape(-1, 1, 2)
+            cv2.polylines(frame, [poly], True, (255, 160, 0), thick)
 
         for (tid, x1, y1, x2, y2), p in zip(keep, ps):
             self.last_frame[tid] = self.frame_no
@@ -111,6 +122,13 @@ class DirectionTracker:
             n_votes = sum(self.votes[tid])
             (xa, ya), (xb, yb) = self.centers[tid][0], self.centers[tid][-1]
             moved = math.hypot(xb - xa, yb - ya)
+            if self.in_zone((x1 + x2) / 2, y2, W, H):          # bottom-centre = where it is on the road
+                in_zone += 1
+                recent = list(self.centers[tid])[-c.queue_frames:]
+                if len(recent) >= 2:
+                    step = math.hypot(recent[-1][0] - recent[0][0], recent[-1][1] - recent[0][1]) / (len(recent) - 1)
+                    if step <= c.queue_max_move * W:
+                        queued += 1
 
             if (tid not in self.active and n_votes >= c.k
                     and float(np.mean(self.probs[tid])) >= c.mean_min and moved >= c.min_move * W):
@@ -135,7 +153,11 @@ class DirectionTracker:
         ambulances = [self._det(t, *seen[t], W, H) for t in self.active if t in seen]
         if self.frame_no % 100 == 0:
             self._prune()
-        return FrameResult(vehicles=len(keep), ambulances=ambulances, new_confirmed=new_confirmed, annotated=frame)
+        if self.zone is None:
+            return FrameResult(vehicles=len(keep), ambulances=ambulances, new_confirmed=new_confirmed,
+                               annotated=frame)
+        return FrameResult(vehicles=in_zone, ambulances=ambulances, new_confirmed=new_confirmed, annotated=frame,
+                           queue=queued)
 
     @staticmethod
     def _det(tid, p, x1, y1, x2, y2, W, H) -> AmbDet:

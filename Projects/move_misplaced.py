@@ -1,8 +1,10 @@
 import shutil
 from pathlib import Path
 
-ROOT = Path(r"C:\Smester7\Projects\crops")
-OUT = Path(r"C:\Smester7\Projects\crops_misplaced")
+HERE = Path(__file__).resolve().parent  # the Projects folder
+
+ROOT = HERE / "crops"
+OUT = HERE / "crops_misplaced"
 KNOWN = ("pub_", "pk_", "local_", "web_")
 DRY = False            # pehle True, theek lage to False
 

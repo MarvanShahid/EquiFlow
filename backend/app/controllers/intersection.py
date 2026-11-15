@@ -6,7 +6,10 @@ Guarantees (covered by tests/test_controller.py):
   * an ambulance on approach A turns A green and the other three red
   * preemption is FIFO when several ambulances are present
   * a stuck detection cannot hold the junction longer than max_preempt_s
-  * after a preemption, approaches that waited get extra green (fair recovery)
+  * after a preemption, approaches that waited get extra green (fair recovery), longest wait first,
+    more of it for longer queues
+  * an empty green ends early (gap-out) only after gap_out_min_green_s, only if another approach has
+    demand, never during priority, and always through yellow + all-red
 
 The controller never reads a clock. Callers pass `now` (seconds), so it is
 deterministic in tests and can run inside a SUMO/MARL simulation step."""
@@ -90,7 +93,11 @@ class IntersectionController:
         if self.stage is Stage.GREEN:
             cut = target is not None and target != self.cur and elapsed >= self.cfg.min_green_s
             expired = target is None and elapsed >= self.stage_dur
-            if cut or expired:
+            gap = target is None and not expired and self._gap_out(elapsed)
+            if gap:
+                self._emit("green_ended_early", approach=self.cur, after_s=round(elapsed, 1),
+                           planned_s=round(self.stage_dur, 1))
+            if cut or expired or gap:
                 self._start_yellow(now)
         elif self.stage is Stage.YELLOW:
             if elapsed >= self.timing.yellow_s:
@@ -143,6 +150,13 @@ class IntersectionController:
 
     def _active(self, a: str, now: float) -> bool:
         return a not in self.suppressed and self._raw_active(a, now)
+
+    def _gap_out(self, elapsed: float) -> bool:
+        if not self.cfg.gap_out or self.cur is None or elapsed < self.cfg.gap_out_min_green_s:
+            return False
+        if self.vehicles.get(self.cur, 0) > 0:
+            return False
+        return any(self.vehicles.get(a, 0) > 0 for a in self.approaches if a != self.cur)
 
     def _waiting(self, a: str, now: float) -> float:
         if a == self.cur and self.stage in (Stage.GREEN, Stage.YELLOW):
@@ -209,14 +223,32 @@ class IntersectionController:
         self.stats.total_preempt_s += dur
         self._emit("preempt_ended", approach=self.preempt_target, duration_s=round(dur, 1),
                    served=sorted(self.served))
-        if self.served:
+        if self.served and self.cfg.recovery:
             extra = min(self.cfg.recovery_max_s, self.cfg.recovery_factor * dur)
             others = sorted((a for a in self.approaches if a not in self.served),
-                            key=lambda a: -self._waiting(a, now))
-            self.recovery_plan = [(a, self.timing.green_s + extra) for a in others]
+                            key=lambda a: (-self._waiting(a, now), -self.vehicles.get(a, 0)))
+            qmax = max((self.vehicles.get(a, 0) for a in others), default=0)
+            w = min(1.0, max(0.0, self.cfg.recovery_queue_weight))
+
+            def extra_for(a: str) -> float:
+                share = self.vehicles.get(a, 0) / qmax if qmax > 0 else 1.0
+                return extra * ((1 - w) + w * share)
+
+            if self.cfg.recovery_mode == "queue" and qmax > 0:
+                # serve the delayed approaches that actually have a queue, longest wait first, each for about as
+                # long as its queue needs to clear (bounded below by the gap-out minimum, above by green + max extra)
+                lo = self.cfg.gap_out_min_green_s
+                hi = self.timing.green_s + self.cfg.recovery_max_s
+                self.recovery_plan = [(a, min(hi, max(lo, self.cfg.recovery_headway_s * self.vehicles.get(a, 0)
+                                                      + extra_for(a))))
+                                      for a in others if self.vehicles.get(a, 0) > 0]
+            else:    # no queue information (or "fixed" mode): the Iteration 2 v1 rule
+                self.recovery_plan = [(a, self.timing.green_s + extra_for(a)) for a in others]
             if self.recovery_plan:
                 self._emit("recovery_planned", plan=[a for a, _ in self.recovery_plan],
-                           extra_green_s=round(extra, 1))
+                           extra_green_s=round(extra, 1),
+                           greens_s={a: round(d, 1) for a, d in self.recovery_plan},
+                           queues={a: self.vehicles.get(a, 0) for a in others})
         if self.stage is Stage.GREEN and self.cur in self.served:
             self.stage_dur = 0.0  # release the junction right away
         self.preempt_started = None

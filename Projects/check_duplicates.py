@@ -3,6 +3,8 @@ from pathlib import Path
 import numpy as np, imagehash
 from PIL import Image, ImageOps
 
+HERE = Path(__file__).resolve().parent  # the Projects folder
+
 warnings.filterwarnings("ignore")      # palette/transparency wali warning band
 
 def h64(p):
@@ -22,8 +24,8 @@ def h64_both(p):
     except Exception:
         return None
 
-train = [p for p in Path(r"C:\Smester7\Projects\equiflow_det\images\train").iterdir() if p.is_file()]
-pk = [p for p in Path(r"C:\Smester7\Projects\Dataset\Pakistani_Ambulance\images").iterdir() if p.is_file()]
+train = [p for p in (HERE / "equiflow_det" / "images" / "train").iterdir() if p.is_file()]
+pk = [p for p in (HERE / "Dataset" / "Pakistani_Ambulance" / "images").iterdir() if p.is_file()]
 
 th = [(p, h64(p)) for p in train]
 th = [(p, h) for p, h in th if h is not None]
