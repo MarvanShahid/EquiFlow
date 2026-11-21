@@ -4,8 +4,9 @@ mode: auto                    # falls back to simulation (and says why in /api/h
 controller: adaptive          # fixed_time | adaptive
 
 vision:
-  det_weights: yolo26s.pt                                         # Model 1: COCO vehicle detector (+ ByteTrack)
-  cls_weights: 'C:\Smester7\Projects\runs\cls_v4-2\weights\best.pt' # Model 2: your ambulance / other_vehicle classifier
+  # relative paths are relative to this file (the backend folder)
+  det_weights: ../Projects/yolo26s.pt                           # Model 1: COCO vehicle detector (+ ByteTrack)
+  cls_weights: ../Projects/runs/cls_v4-2/weights/best.pt        # Model 2: your ambulance / other_vehicle classifier
   device: 0                   # GPU 0, or "cpu"
   imgsz: 1280                 # lower (960 / 640) if four feeds are too slow
   process_every: 1            # 2 = run the models on every second frame
@@ -20,6 +21,8 @@ vision:
 timing: {green_s: 15, yellow_s: 3, all_red_s: 2}
 preempt: {min_green_s: 3, clear_hold_s: 4, max_preempt_s: 60, recovery_factor: 0.5, recovery_max_s: 15}
 mqtt: {enabled: false, host: localhost, port: 1883, prefix: equiflow}
+log: {enabled: true, dir: logs, exclude: [ambulance_position]}   # CSV event log per run
+# server: {api_key: "change-me"}   # require X-API-Key on every write (or set EQUIFLOW_API_KEY)
 
 intersections:
   - id: J1
@@ -27,7 +30,17 @@ intersections:
     lat: 33.6844
     lng: 73.0479
     sources:                  # approach -> video file | rtsp:// URL | webcam index | "sim"
-      North: 'C:\Users\LEGEN\Desktop\your_project\v1.mp4'
-      South: 'C:\Users\LEGEN\Desktop\your_project\v2.mp4'
-      East:  'C:\Users\LEGEN\Desktop\your_project\test12.mp4'
-      West:  'C:\Users\LEGEN\Desktop\your_project\test111.mp4'
+      # put the videos in Projects/videos (see islamabad_traffic_videos_link.txt there)
+      North: ../Projects/videos/v1.mp4
+      South: ../Projects/videos/v2.mp4
+      East:  ../Projects/videos/test12.mp4
+      West:  ../Projects/videos/test11.mp4
+    # FR-04 (optional): the lanes that queue for this signal, as [x, y] points in 0..1 image coordinates.
+    # Only vehicles inside count as demand, and the ones standing still are reported as the queue.
+    # zones:
+    #   North: [[0.30, 0.55], [0.70, 0.55], [0.95, 1.0], [0.05, 1.0]]
+
+# Live SUMO view on the dashboard home page (see config.yaml)
+sumo: {autostart: true, network: sector_grid, scenario: medium, controller: equiflow, speed: 2,
+       camera_range_m: 120, phasing: phases,
+       controller_params: {min_green_s: 6, max_green_s: 30, per_vehicle_s: 1.0}}

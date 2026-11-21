@@ -2,11 +2,13 @@ import random
 from pathlib import Path
 from PIL import Image, ImageFilter
 
+HERE = Path(__file__).resolve().parent  # the Projects folder
+
 random.seed(0)
-PUB   = Path(r"C:\Smester7\Projects\equiflow_det")
-LOCAL = Path(r"C:\Smester7\Projects\Dataset\local")
-PK    = Path(r"C:\Smester7\Projects\Dataset\Pakistani_Ambulance")      # Kaggle: sirf TEST mein
-OUT   = Path(r"C:\Smester7\Projects\updated_crops")
+PUB   = HERE / "equiflow_det"
+LOCAL = HERE / "Dataset" / "local"
+PK    = HERE / "Dataset" / "Pakistani_Ambulance"      # Kaggle: sirf TEST mein
+OUT   = HERE / "updated_crops"
 # apni ambulance-free videos ke asli naam likho. Ambulance wali (test2.mp4, test12) yahan NAHI.
 LOCAL_SPLIT = {
     "test6": "train",

@@ -1,5 +1,5 @@
-import Dashboard from "@/components/Dashboard";
+import LiveNetwork from "@/components/sumo/LiveNetwork";
 
 export default function Page() {
-  return <Dashboard />;
+  return <LiveNetwork />;
 }

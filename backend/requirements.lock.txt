@@ -1,0 +1,16 @@
+# Exact versions the test suite passed with (Python 3.13.18, Linux). Install with:
+#   pip install -r requirements.lock.txt
+# requirements.txt keeps the looser minimum versions. Also passed on Windows / Python 3.14.3 (DELL machine).
+fastapi==0.163.0
+uvicorn==0.54.0
+pydantic==2.13.5
+PyYAML==6.0.3
+opencv-python-headless==5.0.0.93
+numpy==2.5.3
+traci==1.28.0
+sumolib==1.28.0
+eclipse-sumo==1.28.0
+paho-mqtt==2.2.0
+pytest==9.1.1
+httpx==0.28.1
+starlette==1.7.0

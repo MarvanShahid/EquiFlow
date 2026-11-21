@@ -40,6 +40,7 @@ class AmbulanceEventIn(BaseModel):
     confidence: float = Field(1.0, ge=0, le=1)
     cx: float | None = Field(None, ge=0, le=1)
     cy: float | None = Field(None, ge=0, le=1)
+    ts: float | None = Field(None, description="when the producer saw it, unix seconds; stale events are rejected")
 
 
 def _rt(request_or_ws):
@@ -103,9 +104,9 @@ def ambulances(request: Request):
 def ambulance_event(request: Request, body: AmbulanceEventIn):
     """Ingest from an external producer (a separate vision process, SUMO ground truth, ...).
     Send it as a heartbeat (about once a second) while the ambulance is visible."""
-    _inter(request, body.intersection_id).ingest(
-        body.approach, body.present, body.track_id, body.confidence, body.cx, body.cy)
-    return {"ok": True}
+    ok = _inter(request, body.intersection_id).ingest(
+        body.approach, body.present, body.track_id, body.confidence, body.cx, body.cy, ts=body.ts)
+    return {"ok": ok} if ok else {"ok": False, "rejected": "stale"}
 
 
 @router.get("/metrics")

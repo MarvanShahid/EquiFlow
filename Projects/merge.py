@@ -45,9 +45,9 @@ for src, cfg in SOURCES.items():
             try:
                 with Image.open(img) as im:
                     h = str(imagehash.dhash(im, hash_size=12))
-            except Exception:
+            except Exception as e:
                 print("Skipping unreadable image:", img, e)
-                continue          
+                continue
             if h in seen: continue
             seen.add(h)
             key = f"{src}:{img.stem.split('.rf.')[0]}"

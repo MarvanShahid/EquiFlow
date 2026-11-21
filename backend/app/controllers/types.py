@@ -41,6 +41,15 @@ class PreemptConfig:
     max_preempt_s: float = 60.0     # fail-safe: a stuck/false detection cannot hold the junction forever
     recovery_factor: float = 0.5    # extra green per second of preemption, given to approaches that waited
     recovery_max_s: float = 15.0    # cap on that extra green
+    recovery: bool = True           # False = no fair recovery (ablation: back to the base controller at once)
+    recovery_queue_weight: float = 0.5   # 0 = every waiting approach gets the same extra green; 1 = all of it
+                                         # in proportion to its queue (FR-10: recovery uses queue length too)
+    recovery_mode: str = "queue"    # "queue": green sized to each queue (headway x vehicles), empty approaches
+                                    # skipped; "fixed": every waiting approach gets green_s + extra (Iteration 2 v1)
+    recovery_headway_s: float = 2.0 # seconds of green per queued vehicle in "queue" mode
+    gap_out: bool = True            # FR-07: end a green early when its approach is empty and another has demand
+    gap_out_min_green_s: float = 5.0     # ... but never before this much green (and never during priority)
+    stale_s: float = 2.0            # FR-05: external detection events older than this are rejected
 
 
 @dataclass

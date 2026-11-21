@@ -10,8 +10,17 @@ timing: {green_s: 15, yellow_s: 3, all_red_s: 2}
 preempt: {min_green_s: 3, clear_hold_s: 4, max_preempt_s: 60, recovery_factor: 0.5, recovery_max_s: 15}
 sim: {auto_ambulance: true, min_gap_s: 35, max_gap_s: 80, ambulance_s: 9}
 mqtt: {enabled: false, host: localhost, port: 1883, prefix: equiflow}
+# Live SUMO view (dashboard home page). Needs SUMO (SUMO_HOME or pip install eclipse-sumo).
+# controller: equiflow = our controller with ambulance priority | fixed | actuated (SUMO baselines)
+# controller_params: adaptive greens for the SUMO junctions (shorter greens worked best in run_equiflow.py)
+sumo: {autostart: true, network: sector_grid, scenario: medium, controller: equiflow, speed: 2,
+       camera_range_m: 120, phasing: phases,
+       controller_params: {min_green_s: 6, max_green_s: 30, per_vehicle_s: 1.0}}
 server:
   cors_origins: ["http://localhost:3000", "http://127.0.0.1:3000"]
+  api_key: null       # set a long random string to require X-API-Key on every write (app/security.py)
 
 intersections:
   - {id: J1, name: "Main Intersection", lat: 33.6844, lng: 73.0479}
+# CSV event log for evaluation: one file per run in backend/logs/ (scripts/preempt_report.py summarises it)
+log: {enabled: true, dir: logs, exclude: [ambulance_position]}

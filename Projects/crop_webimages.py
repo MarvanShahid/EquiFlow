@@ -3,9 +3,11 @@ from pathlib import Path
 import cv2
 from ultralytics import YOLO
 
+HERE = Path(__file__).resolve().parent  # the Projects folder
+
 if __name__ == "__main__":
-    ROOT = Path(r"C:\Smester7\Projects\crops")
-    BACKUP = Path(r"C:\Smester7\Projects\web_originals"); BACKUP.mkdir(exist_ok=True)
+    ROOT = HERE / "crops"
+    BACKUP = HERE / "web_originals"; BACKUP.mkdir(exist_ok=True)
     KNOWN = ("pub_", "pk_", "local_", "web_")
     PAD = 0.12
     det = YOLO("yolo26s.pt")

@@ -4,9 +4,11 @@ from pathlib import Path
 import cv2, numpy as np
 from ultralytics import YOLO
 
-WEIGHTS = r"C:\Smester7\Projects\runs\v0\weights\best.pt"
-VIDEO   = r"C:\Smester7\Projects\videos\test8.mp4"
-OUT_DIR = Path(r"C:\Smester7\Projects\tracking_out"); OUT_DIR.mkdir(exist_ok=True)
+HERE = Path(__file__).resolve().parent  # the Projects folder
+
+WEIGHTS = str(HERE / "runs" / "v0" / "weights" / "best.pt")
+VIDEO   = str(HERE / "videos" / "test8.mp4")
+OUT_DIR = HERE / "tracking_out"; OUT_DIR.mkdir(exist_ok=True)
 
 AMB_CONF = 0.35    
 M, K = 8, 4       

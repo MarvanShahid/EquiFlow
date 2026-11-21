@@ -4,7 +4,9 @@ import random
 import cv2
 import numpy as np
 
-ROOT = Path(r"C:\Smester7\Projects\equiflow_det")
+HERE = Path(__file__).resolve().parent  # the Projects folder
+
+ROOT = HERE / "equiflow_det"
 random.seed(42)
 
 for src in ["d1", "d2", "d3", "d4", "d5", "d6"]:

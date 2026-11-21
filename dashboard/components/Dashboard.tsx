@@ -22,7 +22,13 @@ export default function Dashboard() {
   return (
     <main className="shell">
       <header className="top">
-        <h1>EquiFlow</h1>
+        <div>
+          <h1>Camera feeds</h1>
+          <p className="lede">
+            The four approach cameras of the pilot junction, annotated by the vision models (vehicle detector + ByteTrack,
+            ambulance classifier, K-of-M voting), and the signals they drive.
+          </p>
+        </div>
         {signals.length > 1 && (
           <nav aria-label="Intersections" className="tabs">
             {signals.map((s) => (

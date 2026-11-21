@@ -1,7 +1,10 @@
 from ultralytics import YOLO
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent  # the Projects folder
 
 if __name__ == "__main__":
     model = YOLO("yolo26n-cls.pt")       
-    model.train(data=r"C:\Smester7\Projects\crops", imgsz=96, epochs=30, batch=128,
-                device=0, project=r"C:\Smester7\Projects\runs", name="cls_v4")
-    model.val(data=r"C:\Smester7\Projects\crops", split="test")
+    model.train(data=str(HERE / "crops"), imgsz=96, epochs=30, batch=128,
+                device=0, project=str(HERE / "runs"), name="cls_v4")
+    model.val(data=str(HERE / "crops"), split="test")

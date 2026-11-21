@@ -4,11 +4,13 @@ from pathlib import Path
 import cv2
 from ultralytics import YOLO
 
+HERE = Path(__file__).resolve().parent  # the Projects folder
+
 DET_WEIGHTS = "yolo26s.pt"
-CLS_WEIGHTS = r"C:\Smester7\Projects\runs\cls_v1-3\weights\best.pt"
-VIDEO_DIR = Path(r"C:\Smester7\Projects\videos")
-CROPS = Path(r"C:\Smester7\Projects\crops")
-GT = Path(r"C:\Smester7\Projects\ground_truth.csv")
+CLS_WEIGHTS = str(HERE / "runs" / "cls_v4-2" / "weights" / "best.pt")
+VIDEO_DIR = HERE / "videos"
+CROPS = HERE / "crops"
+GT = HERE / "ground_truth.csv"
 SPLIT = "train"
 IMGSZ, PAD, MIN_SIDE = 1280, 0.12, 20
 EVERY, EVERY_NEAR = 6, 2          # normal: har 6th frame; ambulance window ke aas paas: har 2nd

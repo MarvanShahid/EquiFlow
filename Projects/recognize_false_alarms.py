@@ -2,8 +2,10 @@ import csv
 from collections import defaultdict
 from pathlib import Path
 
-ROOT = Path(r"C:\Smester7\Projects\tracking_out")   # one subfolder per video, each with events.csv
-GT = Path(r"C:\Smester7\Projects\ground_truth.csv")  # columns: video,start_s,end_s
+HERE = Path(__file__).resolve().parent  # the Projects folder
+
+ROOT = HERE / "tracking_out"   # one subfolder per video, each with events.csv
+GT = HERE / "ground_truth.csv"  # columns: video,start_s,end_s
 MARGIN = 1.0  # a confirmation up to this many seconds after the window ends still counts as a hit
 
 # Load ground truth: video -> list of (start, end) ambulance windows

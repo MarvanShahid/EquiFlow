@@ -66,10 +66,15 @@ class AdaptiveController(BaseController):
         return Decision(pick, max(self.min_green_s, min(self.max_green_s, green)))
 
 
-REGISTRY: dict[str, type[BaseController]] = {
+def _marl(timing: Timing, **params) -> BaseController:
+    from .marl import MarlController   # numpy only; imported lazily to keep this module light
+    return MarlController(timing, **params)
+
+
+REGISTRY: dict = {
     "fixed_time": FixedTimeController,
     "adaptive": AdaptiveController,
-    # "marl": MarlController,   # Phase 3
+    "marl": _marl,                      # Phase 3: fairness-aware multi-agent RL (controllers/marl.py)
 }
 
 

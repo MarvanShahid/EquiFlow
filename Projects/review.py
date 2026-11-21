@@ -1,9 +1,11 @@
 from pathlib import Path
 import cv2
 
-IMG_DIR = Path(r"C:\Smester7\Projects\Dataset\Pakistani_Ambulance\images")
-PRE_DIR = Path(r"C:\Smester7\Projects\prelabels\pk\labels")
-OUT_DIR = Path(r"C:\Smester7\Projects\Dataset\Pakistani_Ambulance\labels")
+HERE = Path(__file__).resolve().parent  # the Projects folder
+
+IMG_DIR = HERE / "Dataset" / "Pakistani_Ambulance" / "images"
+PRE_DIR = HERE / "prelabels" / "pk" / "labels"
+OUT_DIR = HERE / "Dataset" / "Pakistani_Ambulance" / "labels"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 MAX_W, FONT = 1100, cv2.FONT_HERSHEY_SIMPLEX
 
@@ -56,6 +58,6 @@ while 0 <= i < len(imgs):
             action = chr(key)
     save(out, boxes)
     if action == "q": break
-    i += 1 if action == "n" else -1
+    i = i + 1 if action == "n" else max(0, i - 1)   # 'b' on the first image stays on it instead of quitting
 
 cv2.destroyAllWindows()

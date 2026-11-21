@@ -47,6 +47,7 @@ class IntersectionRuntime:
             emit=lambda type, **kw: bus.publish(type, intersection_id=icfg.id, **kw), now=time.monotonic())
         self.sources: dict[str, BaseSource] = {}
         self.fps = {a: 0.0 for a in APPROACHES}
+        self.queues: dict[str, int | None] = {a: None for a in APPROACHES}
         self.registry: dict[tuple[str, int], dict] = {}
         self.last_position_ts: dict[tuple[str, int], float] = {}
         self.detections_total = 0
@@ -61,7 +62,8 @@ class IntersectionRuntime:
             v = self.cfg.vision
             if spec != "sim" and self.live_ok:
                 from .vision.live import DirectionTracker, LiveSource
-                self.sources[a] = LiveSource(a, spec, DirectionTracker(v, self.classifier), v, self.on_frame)
+                self.sources[a] = LiveSource(a, spec, DirectionTracker(v, self.classifier, self.icfg.zones.get(a)),
+                                             v, self.on_frame)
             else:
                 self.sources[a] = SimSource(a, self.cfg.sim, self.on_frame, v.stream_width, v.jpeg_quality)
 
@@ -85,11 +87,22 @@ class IntersectionRuntime:
     # ------------------------------------------------------------- inputs
     def on_frame(self, approach: str, res: FrameResult, fps: float) -> None:
         self.fps[approach] = fps
+        self.queues[approach] = res.queue
         self._record(approach, res.ambulances, res.new_confirmed, vehicles=res.vehicles)
 
     def ingest(self, approach: str, present: bool, track_id: int | None, confidence: float,
-               cx: float | None, cy: float | None) -> None:
-        """External producer (another process / MQTT bridge / SUMO ground truth)."""
+               cx: float | None, cy: float | None, ts: float | None = None) -> bool:
+        """External producer (another process / MQTT bridge / SUMO ground truth).
+
+        `ts` is when the producer saw the ambulance (unix seconds). An event older than
+        preempt.stale_s (a replayed, delayed or queued message) is rejected and logged, so a stale
+        detection can never request priority (FR-05). Returns False when rejected."""
+        if ts is not None:
+            age = time.time() - ts
+            if age > self.cfg.preempt.stale_s or age < -self.cfg.preempt.stale_s:   # too old, or clock skew
+                self.bus.publish("stale_event_rejected", intersection_id=self.id, approach=approach,
+                                 track_id=track_id, age_s=round(age, 2), stale_s=self.cfg.preempt.stale_s)
+                return False
         dets, new = [], []
         if present:
             tid = track_id if track_id is not None else -1
@@ -99,6 +112,7 @@ class IntersectionRuntime:
             if rec is None or time.time() - rec["last_seen"] > self.cfg.preempt.clear_hold_s:
                 new = [det]
         self._record(approach, dets, new, vehicles=None)
+        return True
 
     def _record(self, approach: str, ambs: list[AmbDet], new: list[AmbDet], vehicles: int | None) -> None:
         now_m, now_w = time.monotonic(), time.time()
@@ -158,6 +172,7 @@ class IntersectionRuntime:
         snap.update(
             name=self.icfg.name or self.id, lat=self.icfg.lat, lng=self.icfg.lng,
             detections_total=self.detections_total,
+            queues=dict(self.queues),
             sources={a: s.info() for a, s in self.sources.items()})
         return snap
 

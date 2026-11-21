@@ -5,10 +5,12 @@ from pathlib import Path
 import cv2, numpy as np
 from ultralytics import YOLO
 
+HERE = Path(__file__).resolve().parent  # the Projects folder
+
 DET_WEIGHTS = "yolo26s.pt"
-CLS_WEIGHTS = r"C:\Smester7\Projects\runs\cls_v4-2\weights\best.pt"
-VIDEO_DIR = Path(r"C:\Smester7\Projects\videos")
-OUT_ROOT = Path(r"C:\Smester7\Projects\tracking_out")
+CLS_WEIGHTS = str(HERE / "runs" / "cls_v4-2" / "weights" / "best.pt")
+VIDEO_DIR = HERE / "videos"
+OUT_ROOT = HERE / "tracking_out"
 IMGSZ = 1280
 TH_FRAME = 0.6
 M, K = 8, 5
@@ -21,6 +23,8 @@ cls = YOLO(CLS_WEIGHTS)
 AMB = next(k for k, v in cls.names.items() if v == "ambulance")
 
 MIN_MOVE = 0.00
+EVENT_FIELDS = ["track_id", "first_vote_frame", "confirm_frame", "confirm_time_s", "delay_s",
+                "mean_p", "max_p", "dx", "dy", "heading_deg"]
 
 from ultralytics.trackers.basetrack import BaseTrack
 
@@ -171,11 +175,11 @@ def run(name):
 
     writer.release()
 
-    if events:
-        with open(out / "events.csv", "w", newline="") as fh:
-            w = csv.DictWriter(fh, fieldnames=events[0].keys())
-            w.writeheader()
-            w.writerows(events)
+    # always (re)write events.csv, even with no events, so an old file from a previous run is never scored
+    with open(out / "events.csv", "w", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=EVENT_FIELDS)
+        w.writeheader()
+        w.writerows(events)
 
     print(
         f"{name}: {f + 1} frames ({(f + 1) / fps:.1f}s) | "

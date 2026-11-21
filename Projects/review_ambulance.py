@@ -1,7 +1,9 @@
 from pathlib import Path
 import cv2
 
-FOLDER = Path(r"C:\Smester7\Projects\Dataset\local\test2.mp4")     # test12 ke liye badal dena
+HERE = Path(__file__).resolve().parent  # the Projects folder
+
+FOLDER = HERE / "Dataset" / "local" / "test2.mp4"     # test12 ke liye badal dena
 IMG_DIR, LBL_DIR = FOLDER / "images", FOLDER / "labels"
 MAX_W, FONT = 1500, cv2.FONT_HERSHEY_SIMPLEX
 COLORS = {0: (0, 0, 255), 1: (0, 200, 0)}          # laal = ambulance, hara = other_vehicle

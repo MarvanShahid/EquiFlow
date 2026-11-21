@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 import threading
-import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, Callable
 
 import cv2
@@ -19,10 +18,11 @@ class AmbDet:
 
 @dataclass
 class FrameResult:
-    vehicles: int                       # tracked vehicles seen this frame
+    vehicles: int                       # tracked vehicles this frame (inside the approach zone, if one is set)
     ambulances: list[AmbDet]            # confirmed ambulance tracks currently active
     new_confirmed: list[AmbDet]         # tracks that became confirmed on this frame
     annotated: Any = None               # BGR image with boxes drawn (numpy array)
+    queue: int | None = None            # vehicles standing still inside the zone (None = no zone configured)
 
 
 OnResult = Callable[[str, FrameResult, float], None]  # (approach, result, fps)
