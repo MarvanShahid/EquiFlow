@@ -44,4 +44,4 @@ intersections:
 # Live SUMO view on the dashboard home page (see config.yaml)
 sumo: {autostart: true, network: sector_grid, scenario: medium, controller: equiflow, speed: 2,
        camera_range_m: 120, phasing: phases,
-       controller_params: {min_green_s: 6, max_green_s: 30, per_vehicle_s: 1.0}}
+       controller_params: {min_green_s: 6, max_green_s: 30, per_vehicle_s: 1.0, wait_weight: 0.3}}

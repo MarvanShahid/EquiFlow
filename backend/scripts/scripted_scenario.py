@@ -42,6 +42,7 @@ PASS_S = 4.0          # seconds of green an ambulance needs to clear the junctio
 def run(out_dir: Path, fast: bool = False, quiet: bool = False) -> tuple[list[dict], Path]:
     cfg = AppConfig(mode="sim", controller="adaptive", sim=SimCfg(auto_ambulance=False),
                     intersections=[IntersectionCfg(id="J1", name="Scripted junction")])
+    cfg.preempt.recovery = True     # this scenario verifies the logged preemption -> recovery sequence (FR-09)
     if fast:
         cfg.timing.green_s, cfg.timing.yellow_s, cfg.timing.all_red_s = 6, 1, 1
         cfg.preempt.min_green_s, cfg.preempt.clear_hold_s = 1, 2

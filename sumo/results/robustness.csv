@@ -1,49 +1,97 @@
-network,scenario,seed,miss_prob,fp_prob,ambulance_wait_s,car_wait_s,priority_runs,false_confirmations,detection_to_green_s,corridor_requests
-cross_signal,high,6,0.0,0.0,0.0,3.95,14,0,2.21,0
-cross_signal,high,6,0.0,0.02,0.0,3.95,14,0,2.21,0
-cross_signal,high,6,0.0,0.05,0.0,3.95,14,0,2.21,0
-cross_signal,high,6,0.0,0.1,0.0,3.95,14,0,2.21,0
-cross_signal,high,6,0.0,0.2,0.0,4.01,25,11,2.24,0
-cross_signal,high,6,0.0,0.4,1.5,4.57,142,397,4.28,0
-cross_signal,high,6,0.3,0.0,0.0,3.95,14,0,2.14,0
-cross_signal,high,6,0.3,0.02,0.0,3.81,14,0,2.43,0
-cross_signal,high,6,0.3,0.05,0.07,4.2,14,0,1.71,0
-cross_signal,high,6,0.3,0.1,0.0,4.2,14,0,1.64,0
-cross_signal,high,6,0.3,0.2,0.0,4.02,23,10,1.86,0
-cross_signal,high,6,0.3,0.4,0.57,4.55,134,360,4.3,0
-cross_signal,high,6,0.6,0.0,0.0,4.14,14,0,1.71,0
-cross_signal,high,6,0.6,0.02,0.0,4.2,14,0,1.5,0
-cross_signal,high,6,0.6,0.05,0.0,3.82,14,0,2.21,0
-cross_signal,high,6,0.6,0.1,0.0,3.81,14,0,2.29,0
-cross_signal,high,6,0.6,0.2,0.0,3.83,23,10,2.65,0
-cross_signal,high,6,0.6,0.4,0.5,4.19,120,269,4.33,0
-cross_signal,high,6,0.85,0.0,0.43,4.11,14,0,2.86,0
-cross_signal,high,6,0.85,0.02,0.14,4.17,13,0,2.0,0
-cross_signal,high,6,0.85,0.05,0.07,3.95,14,0,2.0,0
-cross_signal,high,6,0.85,0.1,0.21,3.91,14,0,2.14,0
-cross_signal,high,6,0.85,0.2,0.36,3.35,20,6,3.15,0
-cross_signal,high,6,0.85,0.4,1.29,4.06,118,165,3.81,0
-sector_grid,high,6,0.0,0.0,0.07,6.58,33,0,2.0,11
-sector_grid,high,6,0.0,0.02,0.07,6.58,33,0,2.0,11
-sector_grid,high,6,0.0,0.05,0.07,6.58,33,0,2.0,11
-sector_grid,high,6,0.0,0.1,0.07,6.58,33,0,2.0,11
-sector_grid,high,6,0.0,0.2,0.0,7.11,88,33,2.05,26
-sector_grid,high,6,0.0,0.4,1.29,11.12,606,1061,3.99,545
-sector_grid,high,6,0.3,0.0,0.0,6.74,34,0,2.32,11
-sector_grid,high,6,0.3,0.02,0.07,6.58,33,0,2.0,11
-sector_grid,high,6,0.3,0.05,0.07,6.58,33,0,2.0,11
-sector_grid,high,6,0.3,0.1,0.07,6.58,33,0,2.0,11
-sector_grid,high,6,0.3,0.2,0.0,7.47,81,28,2.46,24
-sector_grid,high,6,0.3,0.4,0.86,11.32,586,991,4.18,523
-sector_grid,high,6,0.6,0.0,0.07,6.85,34,0,1.85,11
-sector_grid,high,6,0.6,0.02,0.0,6.72,34,0,2.35,11
-sector_grid,high,6,0.6,0.05,0.07,6.81,34,0,2.26,11
-sector_grid,high,6,0.6,0.1,0.21,6.92,35,0,2.74,11
-sector_grid,high,6,0.6,0.2,0.0,6.67,76,24,2.05,26
-sector_grid,high,6,0.6,0.4,0.93,10.25,584,859,4.09,466
-sector_grid,high,6,0.85,0.0,0.0,6.98,44,0,2.48,11
-sector_grid,high,6,0.85,0.02,0.0,6.67,40,0,2.2,11
-sector_grid,high,6,0.85,0.05,0.43,7.06,46,0,2.25,11
-sector_grid,high,6,0.85,0.1,0.07,6.7,45,0,1.91,11
-sector_grid,high,6,0.85,0.2,0.5,6.81,68,15,2.38,19
-sector_grid,high,6,0.85,0.4,1.79,8.45,467,419,3.37,232
+network,scenario,seed,miss_prob,fp_prob,vote,ambulance_wait_s,car_wait_s,priority_runs,false_confirmations,detection_to_green_s,corridor_requests
+cross_signal,high,6,0.0,0.0,5/8 mean>=0.65,0.0,3.4,14,0,1.79,0
+cross_signal,high,6,0.0,0.02,5/8 mean>=0.65,0.0,3.4,14,0,1.79,0
+cross_signal,high,6,0.0,0.05,5/8 mean>=0.65,0.0,3.4,14,0,1.79,0
+cross_signal,high,6,0.0,0.1,5/8 mean>=0.65,0.0,3.4,14,0,1.79,0
+cross_signal,high,6,0.0,0.2,5/8 mean>=0.65,0.0,3.24,21,8,2.62,0
+cross_signal,high,6,0.0,0.4,5/8 mean>=0.65,1.21,4.53,149,386,4.18,0
+cross_signal,high,6,0.3,0.0,5/8 mean>=0.65,0.0,3.4,14,0,1.79,0
+cross_signal,high,6,0.3,0.02,5/8 mean>=0.65,0.0,3.4,14,0,1.79,0
+cross_signal,high,6,0.3,0.05,5/8 mean>=0.65,0.0,3.4,14,0,1.71,0
+cross_signal,high,6,0.3,0.1,5/8 mean>=0.65,0.0,3.4,14,0,1.79,0
+cross_signal,high,6,0.3,0.2,5/8 mean>=0.65,0.0,3.31,23,10,2.0,0
+cross_signal,high,6,0.3,0.4,5/8 mean>=0.65,1.14,4.43,143,386,4.11,0
+cross_signal,high,6,0.6,0.0,5/8 mean>=0.65,0.0,3.4,14,0,1.29,0
+cross_signal,high,6,0.6,0.02,5/8 mean>=0.65,0.0,3.4,14,0,1.43,0
+cross_signal,high,6,0.6,0.05,5/8 mean>=0.65,0.0,3.38,14,0,1.5,0
+cross_signal,high,6,0.6,0.1,5/8 mean>=0.65,0.0,3.38,14,0,1.43,0
+cross_signal,high,6,0.6,0.2,5/8 mean>=0.65,0.0,3.61,21,8,2.05,0
+cross_signal,high,6,0.6,0.4,5/8 mean>=0.65,1.64,4.24,141,307,3.92,0
+cross_signal,high,6,0.85,0.0,5/8 mean>=0.65,0.57,3.51,13,0,2.62,0
+cross_signal,high,6,0.85,0.02,5/8 mean>=0.65,0.07,3.38,14,0,2.36,0
+cross_signal,high,6,0.85,0.05,5/8 mean>=0.65,0.21,3.45,14,0,2.36,0
+cross_signal,high,6,0.85,0.1,5/8 mean>=0.65,0.07,3.38,14,0,2.07,0
+cross_signal,high,6,0.85,0.2,5/8 mean>=0.65,0.43,3.52,17,4,2.76,0
+cross_signal,high,6,0.85,0.4,5/8 mean>=0.65,1.86,3.84,109,158,3.69,0
+sector_grid,high,6,0.0,0.0,5/8 mean>=0.65,0.0,4.68,29,0,2.59,0
+sector_grid,high,6,0.0,0.02,5/8 mean>=0.65,0.0,4.68,29,0,2.59,0
+sector_grid,high,6,0.0,0.05,5/8 mean>=0.65,0.0,4.68,29,0,2.59,0
+sector_grid,high,6,0.0,0.1,5/8 mean>=0.65,0.0,4.68,29,0,2.59,0
+sector_grid,high,6,0.0,0.2,5/8 mean>=0.65,0.0,4.7,48,20,2.04,0
+sector_grid,high,6,0.0,0.4,5/8 mean>=0.65,1.57,6.66,584,952,3.18,0
+sector_grid,high,6,0.3,0.0,5/8 mean>=0.65,0.0,4.68,29,0,2.55,0
+sector_grid,high,6,0.3,0.02,5/8 mean>=0.65,0.0,4.49,29,0,2.52,0
+sector_grid,high,6,0.3,0.05,5/8 mean>=0.65,0.0,4.68,29,0,2.59,0
+sector_grid,high,6,0.3,0.1,5/8 mean>=0.65,0.0,4.77,30,1,2.77,0
+sector_grid,high,6,0.3,0.2,5/8 mean>=0.65,0.0,4.63,52,23,2.58,0
+sector_grid,high,6,0.3,0.4,5/8 mean>=0.65,1.14,6.26,577,894,3.2,0
+sector_grid,high,6,0.6,0.0,5/8 mean>=0.65,0.0,4.26,29,0,2.41,0
+sector_grid,high,6,0.6,0.02,5/8 mean>=0.65,0.0,4.62,29,0,3.34,0
+sector_grid,high,6,0.6,0.05,5/8 mean>=0.65,0.0,4.83,29,0,2.93,0
+sector_grid,high,6,0.6,0.1,5/8 mean>=0.65,0.0,4.36,29,0,2.48,0
+sector_grid,high,6,0.6,0.2,5/8 mean>=0.65,0.0,4.49,46,18,2.26,0
+sector_grid,high,6,0.6,0.4,5/8 mean>=0.65,1.21,5.79,503,745,3.05,0
+sector_grid,high,6,0.85,0.0,5/8 mean>=0.65,0.0,4.76,29,0,1.38,0
+sector_grid,high,6,0.85,0.02,5/8 mean>=0.65,0.36,4.42,29,0,2.72,0
+sector_grid,high,6,0.85,0.05,5/8 mean>=0.65,0.14,4.35,28,0,2.07,0
+sector_grid,high,6,0.85,0.1,5/8 mean>=0.65,0.43,4.22,29,0,2.48,0
+sector_grid,high,6,0.85,0.2,5/8 mean>=0.65,0.14,4.28,36,9,2.72,0
+sector_grid,high,6,0.85,0.4,5/8 mean>=0.65,1.86,5.12,320,377,2.75,0
+cross_signal,high,6,0.0,0.0,3/8 mean>=0.7,0.0,3.4,14,0,1.79,0
+cross_signal,high,6,0.0,0.02,3/8 mean>=0.7,0.0,3.4,14,0,1.79,0
+cross_signal,high,6,0.0,0.05,3/8 mean>=0.7,0.0,3.4,14,0,1.79,0
+cross_signal,high,6,0.0,0.1,3/8 mean>=0.7,0.0,3.4,14,0,1.79,0
+cross_signal,high,6,0.0,0.2,3/8 mean>=0.7,0.0,3.4,14,0,1.79,0
+cross_signal,high,6,0.0,0.4,3/8 mean>=0.7,0.71,3.83,109,145,3.41,0
+cross_signal,high,6,0.3,0.0,3/8 mean>=0.7,0.0,3.4,14,0,1.79,0
+cross_signal,high,6,0.3,0.02,3/8 mean>=0.7,0.0,3.4,14,0,1.79,0
+cross_signal,high,6,0.3,0.05,3/8 mean>=0.7,0.0,3.4,14,0,1.79,0
+cross_signal,high,6,0.3,0.1,3/8 mean>=0.7,0.0,3.4,14,0,1.79,0
+cross_signal,high,6,0.3,0.2,3/8 mean>=0.7,0.0,3.29,16,2,2.38,0
+cross_signal,high,6,0.3,0.4,3/8 mean>=0.7,0.5,3.67,107,135,3.13,0
+cross_signal,high,6,0.6,0.0,3/8 mean>=0.7,0.0,3.4,14,0,1.64,0
+cross_signal,high,6,0.6,0.02,3/8 mean>=0.7,0.0,3.4,14,0,1.79,0
+cross_signal,high,6,0.6,0.05,3/8 mean>=0.7,0.0,3.38,14,0,1.71,0
+cross_signal,high,6,0.6,0.1,3/8 mean>=0.7,0.0,3.4,14,0,1.79,0
+cross_signal,high,6,0.6,0.2,3/8 mean>=0.7,0.0,3.4,18,4,2.22,0
+cross_signal,high,6,0.6,0.4,3/8 mean>=0.7,0.43,3.96,100,155,3.72,0
+cross_signal,high,6,0.85,0.0,3/8 mean>=0.7,0.21,3.47,14,0,2.79,0
+cross_signal,high,6,0.85,0.02,3/8 mean>=0.7,0.14,3.46,14,0,2.21,0
+cross_signal,high,6,0.85,0.05,3/8 mean>=0.7,0.14,3.38,14,0,2.21,0
+cross_signal,high,6,0.85,0.1,3/8 mean>=0.7,0.14,3.39,14,0,2.43,0
+cross_signal,high,6,0.85,0.2,3/8 mean>=0.7,0.07,3.47,21,7,2.67,0
+cross_signal,high,6,0.85,0.4,3/8 mean>=0.7,0.79,4.28,90,128,3.81,0
+sector_grid,high,6,0.0,0.0,3/8 mean>=0.7,0.0,4.68,29,0,2.59,0
+sector_grid,high,6,0.0,0.02,3/8 mean>=0.7,0.0,4.68,29,0,2.59,0
+sector_grid,high,6,0.0,0.05,3/8 mean>=0.7,0.0,4.68,29,0,2.59,0
+sector_grid,high,6,0.0,0.1,3/8 mean>=0.7,0.0,4.68,29,0,2.59,0
+sector_grid,high,6,0.0,0.2,3/8 mean>=0.7,0.0,4.47,32,4,2.16,0
+sector_grid,high,6,0.0,0.4,3/8 mean>=0.7,0.0,5.24,323,369,2.48,0
+sector_grid,high,6,0.3,0.0,3/8 mean>=0.7,0.0,4.68,29,0,2.59,0
+sector_grid,high,6,0.3,0.02,3/8 mean>=0.7,0.0,4.68,29,0,2.59,0
+sector_grid,high,6,0.3,0.05,3/8 mean>=0.7,0.0,4.68,29,0,2.59,0
+sector_grid,high,6,0.3,0.1,3/8 mean>=0.7,0.0,4.77,30,1,2.77,0
+sector_grid,high,6,0.3,0.2,3/8 mean>=0.7,0.0,4.55,36,7,2.24,0
+sector_grid,high,6,0.3,0.4,3/8 mean>=0.7,0.0,5.87,332,380,2.7,0
+sector_grid,high,6,0.6,0.0,3/8 mean>=0.7,0.0,4.36,29,0,2.72,0
+sector_grid,high,6,0.6,0.02,3/8 mean>=0.7,0.0,4.68,29,0,2.55,0
+sector_grid,high,6,0.6,0.05,3/8 mean>=0.7,0.0,4.4,29,0,2.07,0
+sector_grid,high,6,0.6,0.1,3/8 mean>=0.7,0.0,4.68,29,0,2.41,0
+sector_grid,high,6,0.6,0.2,3/8 mean>=0.7,0.0,4.75,44,15,1.93,0
+sector_grid,high,6,0.6,0.4,3/8 mean>=0.7,0.57,5.47,306,374,3.01,0
+sector_grid,high,6,0.85,0.0,3/8 mean>=0.7,0.0,4.82,29,0,2.69,0
+sector_grid,high,6,0.85,0.02,3/8 mean>=0.7,0.14,4.3,29,0,2.52,0
+sector_grid,high,6,0.85,0.05,3/8 mean>=0.7,0.0,4.6,29,0,2.41,0
+sector_grid,high,6,0.85,0.1,3/8 mean>=0.7,0.0,4.48,30,1,1.93,0
+sector_grid,high,6,0.85,0.2,3/8 mean>=0.7,0.21,4.56,43,15,2.57,0
+sector_grid,high,6,0.85,0.4,3/8 mean>=0.7,0.57,5.26,261,280,2.83,0

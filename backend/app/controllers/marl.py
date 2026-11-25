@@ -7,7 +7,8 @@ candidate, so the same network works for junctions with 2, 3 or more phases.
   state/action features: queue on g, how long g has waited, the rest of the junction's queue and
   its longest wait, whether g just had green, the green length d, ...
   reward (between two decisions): -(halting vehicles x seconds) - a fairness penalty that grows
-  with the longest wait at the junction beyond 45 s
+  with the longest wait at the junction beyond 45 s - (halted vehicles that have already waited more
+  than 20 s x seconds), which aims the policy at the 95th-percentile wait
   guard: an approach that has waited max_wait_s (90 s) is served next, whatever the network says
 
 It only answers "who gets the next green, and for how long". Ambulance preemption, yellow/all-red
@@ -151,11 +152,12 @@ class MarlController(BaseController):
 
     def __init__(self, timing: Timing, weights: str = "", max_wait_s: float = 90, epsilon: float = 0.0,
                  learner: Learner | None = None, fairness_from_s: float = 45.0, fairness_weight: float = 0.5,
-                 seed: int = 0, **_):
+                 long_wait_s: float = 20.0, long_weight: float = 1.0, seed: int = 0, **_):
         self.timing = timing
         self.max_wait_s = max_wait_s
         self.learner = learner
         self.fair_from, self.fair_w = fairness_from_s, fairness_weight
+        self.long_wait_s, self.long_w = long_wait_s, long_weight
         self.rng = random.Random(seed)
         self.fallback = None
         if learner is not None:
@@ -177,8 +179,11 @@ class MarlController(BaseController):
         self._since = 0.0
 
     # called every simulation step by the SUMO runner while learning
-    def accumulate(self, halting: int, max_wait: float, dt: float) -> None:
-        self._cost += (halting + self.fair_w * max(0.0, max_wait - self.fair_from) / 5.0) * dt
+    def accumulate(self, halting: int, max_wait: float, dt: float, long_waiting: int = 0) -> None:
+        """long_waiting: halted vehicles that have already waited more than long_wait_s (about the 95th
+        percentile), each costing long_weight extra per second - aims the policy at the tail of the waits."""
+        self._cost += (halting + self.fair_w * max(0.0, max_wait - self.fair_from) / 5.0
+                       + self.long_w * long_waiting) * dt
         self._since += dt
 
     def next_phase(self, ctx: Context) -> Decision:

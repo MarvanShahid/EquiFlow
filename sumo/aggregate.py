@@ -20,12 +20,17 @@ from collections import defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
-ORDER = ["fixed", "actuated", "fixed+preempt", "equiflow", "equiflow-marl", "equiflow-norecovery",
-         "equiflow-nogapout", "equiflow-nocorridor", "equiflow-recovery-v1"]
+ORDER = ["fixed", "actuated", "fixed+preempt", "equiflow", "equiflow-marl", "equiflow-nogapout",
+         "equiflow-noextend", "equiflow-tail-v1", "equiflow-recovery", "equiflow-recovery-order",
+         "equiflow-recovery-v1", "equiflow-corridor", "equiflow-corridor-v1"]
 NAMES = {"fixed": "Fixed-time", "actuated": "Actuated", "fixed+preempt": "Fixed-time + priority",
-         "equiflow": "EquiFlow", "equiflow-marl": "EquiFlow (MARL)", "equiflow-norecovery": "EquiFlow, no recovery",
-         "equiflow-nogapout": "EquiFlow, no gap-out", "equiflow-nocorridor": "EquiFlow, no corridor",
-         "equiflow-recovery-v1": "EquiFlow, old recovery rule"}
+         "equiflow": "EquiFlow", "equiflow-marl": "EquiFlow (MARL)",
+         "equiflow-nogapout": "EquiFlow, no gap-out", "equiflow-noextend": "EquiFlow, no green extension",
+         "equiflow-tail-v1": "EquiFlow, first tail settings",
+         "equiflow-recovery": "EquiFlow + recovery (queue)", "equiflow-recovery-order": "EquiFlow + recovery (re-order)",
+         "equiflow-recovery-v1": "EquiFlow + recovery (first rule)",
+         "equiflow-corridor": "EquiFlow + corridor (just in time)",
+         "equiflow-corridor-v1": "EquiFlow + corridor (25 s ETA)"}
 # metric -> (label, lower is better)
 METRICS = {
     "car_wait_s": ("Car mean wait (s)", True),
@@ -35,6 +40,8 @@ METRICS = {
     "share_wait_over_60s": ("Vehicles waiting > 60 s (share)", True),
     "worst_approach_mean_wait_s": ("Worst approach, mean wait (s)", True),
     "jain_approach_wait": ("Jain fairness index across approaches (1 = equal)", False),
+    "affected_mean_wait_s": ("Vehicles held by an ambulance, mean wait (s)", True),
+    "affected_p95_wait_s": ("Vehicles held by an ambulance, 95th-percentile wait (s)", True),
     "ambulance_wait_s": ("Ambulance mean wait (s)", True),
     "ambulance_travel_s": ("Ambulance mean travel time (s)", True),
     "detection_to_green_s": ("Detection to green (s)", True),
@@ -113,9 +120,10 @@ def main():
     _write(d / "summary_stats.csv", stats_rows)
     S = {(r["controller"], r["metric"]): r for r in stats_rows}
 
+    scens = [s for s in ("low", "medium", "high", "asymmetric", "emergency") if any(k[2] == s for k in runs)]
     scen_rows = []
     for c in ctrls:
-        for scen in ("low", "medium", "high", "asymmetric"):
+        for scen in scens:
             for m in METRICS:
                 mean, sd, ci, n = describe([v[m] for k, v in runs.items() if k[0] == c and k[2] == scen])
                 scen_rows.append({"controller": c, "scenario": scen, "metric": m, "mean": mean, "sd": sd,
@@ -179,8 +187,9 @@ def main():
         L.append(f"| {label} | " + " | ".join(fmt(S[(c, m)]["mean"], S[(c, m)]["ci95"], digits) for c in main_c) + " |")
     L.append("| Runs | " + " | ".join(str(n_runs[c]) for c in main_c) + " |")
 
-    abl = [c for c in ("equiflow", "equiflow-recovery-v1", "equiflow-norecovery", "equiflow-nogapout",
-                       "equiflow-nocorridor") if c in ctrls]
+    abl = [c for c in ("equiflow", "equiflow-noextend", "equiflow-nogapout", "equiflow-tail-v1", "equiflow-recovery",
+                       "equiflow-recovery-order", "equiflow-recovery-v1", "equiflow-corridor", "equiflow-corridor-v1")
+           if c in ctrls]
     if len(abl) > 1:
         L += ["", "## Ablations (what each part of EquiFlow contributes)", "",
               "| Metric | " + " | ".join(NAMES.get(c, c) for c in abl) + " |", "|---|" + "---|" * len(abl)]
@@ -189,14 +198,15 @@ def main():
             L.append(f"| {label} | " + " | ".join(fmt(S[(c, m)]["mean"], S[(c, m)]["ci95"], digits) for c in abl) + " |")
         L.append("| Runs | " + " | ".join(str(n_runs[c]) for c in abl) + " |")
         L.append("")
-        L.append("The corridor ablation runs only on sector_grid and diamond; compare it with EquiFlow on those "
-                 "networks in paired.csv (the paired rows use matched runs only).")
+        L.append("The two corridor ablations run only on sector_grid and diamond; compare them with EquiFlow on "
+                 "those networks in paired.csv (the paired rows use matched runs only).")
 
     L += ["", f"## Paired comparison: {NAMES.get(ref, ref)} minus each controller, on identical runs", "",
           "Negative = EquiFlow lower (for waits, better). * = the 95% CI excludes 0. Win share = runs where "
           "EquiFlow is better.", "",
           "| Versus | Metric | Mean difference ± 95% CI | EquiFlow wins | Runs |", "|---|---|---|---|---|"]
-    keym = ("car_wait_s", "p95_wait_s", "max_wait_s", "jain_approach_wait", "ambulance_wait_s", "recovery_s_mean")
+    keym = ("car_wait_s", "p95_wait_s", "max_wait_s", "jain_approach_wait", "affected_mean_wait_s",
+            "ambulance_wait_s", "recovery_s_mean")
     for r in paired:
         if r["metric"] not in keym:
             continue
@@ -208,12 +218,12 @@ def main():
     L += ["", "## By demand level (car mean wait, s)", "",
           "| Demand | " + " | ".join(NAMES.get(c, c) for c in main_c) + " |", "|---|" + "---|" * len(main_c)]
     SC = {(r["controller"], r["scenario"], r["metric"]): r for r in scen_rows}
-    for scen in ("low", "medium", "high", "asymmetric"):
+    for scen in scens:
         L.append(f"| {scen} | " + " | ".join(fmt(SC[(c, scen, 'car_wait_s')]['mean'], SC[(c, scen, 'car_wait_s')]['ci95'])
                                            for c in main_c) + " |")
     L += ["", "## By demand level (95th-percentile wait, s)", "",
           "| Demand | " + " | ".join(NAMES.get(c, c) for c in main_c) + " |", "|---|" + "---|" * len(main_c)]
-    for scen in ("low", "medium", "high", "asymmetric"):
+    for scen in scens:
         L.append(f"| {scen} | " + " | ".join(fmt(SC[(c, scen, 'p95_wait_s')]['mean'], SC[(c, scen, 'p95_wait_s')]['ci95'])
                                            for c in main_c) + " |")
 

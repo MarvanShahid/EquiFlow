@@ -4,15 +4,24 @@ Seeds 6-10 by default: the MARL controller was trained on seeds 1-5 (marl/train_
 runs are held out from its training (mid-report Section 7.5). All controllers use the same seeds,
 networks and demand, through the same harness (run_equiflow.simulate), so every row is comparable.
 
-Controllers
-  fixed                  SUMO's fixed-time plan
-  actuated               SUMO's actuated plan (gap-based, the strong adaptive baseline)
-  fixed+preempt          fixed-time + ambulance priority, no recovery, no gap-out (emergency-only preemption)
-  equiflow               adaptive + priority + green corridor + fair recovery + gap-out (the full system)
-  equiflow-marl          same, with the MARL base controller
-  equiflow-norecovery    ablation: recovery off
-  equiflow-nogapout      ablation: gap-out off
-  equiflow-nocorridor    ablation: green corridor off (multi-junction networks only)
+Controllers (equiflow = the recommended configuration since Iteration 2b: recovery and corridor off)
+  fixed                     SUMO's fixed-time plan
+  actuated                  SUMO's actuated plan (gap-based, the strong adaptive baseline)
+  fixed+preempt             fixed-time + ambulance priority, no recovery, no gap-out, no extension (emergency-only)
+  equiflow                  adaptive (wait weight 0.3) + priority + gap-out + green extension (wait cap 30 s)
+  equiflow-marl             same, with the MARL base controller
+  equiflow-nogapout         ablation: gap-out off
+  equiflow-noextend         ablation: green extension off
+  equiflow-tail-v1          ablation: the first tail settings (adaptive wait weight 0.1, extension wait cap 40 s)
+  equiflow-recovery         variant: + fair recovery, queue-sized greens (the Iteration 2 default)
+  equiflow-recovery-order   variant: + fair recovery that only re-orders the delayed approaches
+  equiflow-recovery-v1      variant: + the first recovery rule (fixed green + extra for every delayed approach)
+  equiflow-corridor         variant: + just-in-time green corridor (multi-junction networks only)
+  equiflow-corridor-v1      variant: + the Iteration 2 corridor rule, 25 s ETA (multi-junction networks only)
+
+Stress test for fair recovery (heavy traffic, ~40 ambulances per hour):
+    python run_matrix.py --scenarios emergency --out results/stress --controllers equiflow equiflow-recovery \
+        equiflow-recovery-order equiflow-recovery-v1 fixed+preempt actuated
 
     python run_matrix.py                          # everything -> results/heldout/
     python run_matrix.py --seeds 6 7 --controllers equiflow actuated --jobs 4
@@ -41,14 +50,24 @@ import run_equiflow as rq  # noqa: E402
 CONTROLLERS = {
     "fixed": dict(controller="fixed"),
     "actuated": dict(controller="actuated"),
-    "fixed+preempt": dict(controller="equiflow", base="fixed_time", recovery=False, gap_out=False),
+    "fixed+preempt": dict(controller="equiflow", base="fixed_time", recovery=False, gap_out=False,
+                          preempt={"extend": False}),
     "equiflow": dict(controller="equiflow", base="adaptive"),
     "equiflow-marl": dict(controller="equiflow", base="marl"),
-    "equiflow-norecovery": dict(controller="equiflow", base="adaptive", recovery=False),
     "equiflow-nogapout": dict(controller="equiflow", base="adaptive", gap_out=False),
-    "equiflow-nocorridor": dict(controller="equiflow", base="adaptive", corridor=False),
-    # Iteration 2 v1 recovery rule (every waiting approach: green_s + extra), kept for the record
-    "equiflow-recovery-v1": dict(controller="equiflow", base="adaptive", preempt={"recovery_mode": "fixed"}),
+    "equiflow-noextend": dict(controller="equiflow", base="adaptive", preempt={"extend": False}),
+    "equiflow-tail-v1": dict(controller="equiflow", base="adaptive", preempt={"extend_wait_cap_s": 40},
+                             sumo={"controller_params": {"min_green_s": 6, "max_green_s": 30, "per_vehicle_s": 1.0,
+                                                         "wait_weight": 0.1}}),
+    "equiflow-recovery": dict(controller="equiflow", base="adaptive", recovery=True,
+                              preempt={"recovery_mode": "queue"}),
+    "equiflow-recovery-order": dict(controller="equiflow", base="adaptive", recovery=True,
+                                    preempt={"recovery_mode": "order"}),
+    "equiflow-recovery-v1": dict(controller="equiflow", base="adaptive", recovery=True,
+                                 preempt={"recovery_mode": "fixed"}),
+    "equiflow-corridor": dict(controller="equiflow", base="adaptive", corridor=True,
+                              sumo={"corridor_mode": "just_in_time"}),
+    "equiflow-corridor-v1": dict(controller="equiflow", base="adaptive", corridor=True, sumo={"corridor_mode": "eta"}),
 }
 MULTI_JUNCTION = ["sector_grid", "diamond"]
 
@@ -65,7 +84,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--controllers", nargs="+", choices=list(CONTROLLERS), default=list(CONTROLLERS))
     ap.add_argument("--networks", nargs="+", choices=rq.SIGNALISED, default=rq.SIGNALISED)
-    ap.add_argument("--scenarios", nargs="+", choices=rq.SCENS, default=rq.SCENS)
+    ap.add_argument("--scenarios", nargs="+", choices=rq.ALL_SCENS, default=rq.SCENS)
     ap.add_argument("--seeds", nargs="+", type=int, default=[6, 7, 8, 9, 10])
     ap.add_argument("--jobs", type=int, default=max(1, (os.cpu_count() or 2)))
     ap.add_argument("--out", default=str(ROOT / "results" / "heldout"))
@@ -83,7 +102,7 @@ def main():
         done = {(r["controller"], r["intersection"], r["scenario"], int(r["seed"])) for r in csv.DictReader(fair_f.open())}
     jobs = []
     for label, inter, scen, seed in itertools.product(a.controllers, a.networks, a.scenarios, a.seeds):
-        if label == "equiflow-nocorridor" and inter not in MULTI_JUNCTION:
+        if label in ("equiflow-corridor", "equiflow-corridor-v1") and inter not in MULTI_JUNCTION:
             continue
         if (label, inter, scen, seed) in done:
             continue

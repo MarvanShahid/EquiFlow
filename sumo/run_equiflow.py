@@ -37,14 +37,22 @@ from app.sumo_live import SumoLive, build_geometry  # noqa: E402
 
 SIGNALISED = ["cross_signal", "t_signal", "five_way_signal", "six_way", "sector_grid", "diamond"]
 SCENS = ["low", "medium", "high", "asymmetric"]
+STRESS = ["emergency"]          # heavy traffic + ~3x the ambulances (fair-recovery stress test); not in the main matrix
+ALL_SCENS = SCENS + STRESS
 CLASSES = ["car", "motorcycle", "bus", "truck", "ambulance"]
 
 
 def simulate(inter, scen, seed, step=1.0, base="adaptive", label=None, corridor=None, miss=None, fp=None,
              quiet=False, controller="equiflow", trip_dir=None, event_log=None, recovery=None, gap_out=None,
-             end_s=None, preempt=None):
-    """Run one hour; return (rows for summary_by_class.csv, extra stats)."""
+             end_s=None, preempt=None, sumo=None, vision=None):
+    """Run one hour; return (rows for summary_by_class.csv, extra stats).
+    preempt / sumo / vision: overrides for those config sections, e.g. sumo={"corridor_mode": "eta"},
+    vision={"k": 3, "mean_min": 0.70}."""
     cfg = load_config()
+    for k, v in (sumo or {}).items():
+        setattr(cfg.sumo, k, v)
+    for k, v in (vision or {}).items():
+        setattr(cfg.vision, k, v)
     if corridor is not None:
         cfg.sumo.corridor = corridor
     if miss is not None:
@@ -131,12 +139,16 @@ def simulate(inter, scen, seed, step=1.0, base="adaptive", label=None, corridor=
     rec = [e["recovery_s"] for e in eps if e.get("recovery_s") is not None]
     stats["recovery_s_mean"] = round(sum(rec) / len(rec), 1) if rec else None
     stats["gap_outs"] = sum(1 for r in ev_rows if r["type"] == "green_ended_early")
-    fair = fairness(tripinfo)
+    fair = fairness(tripinfo, getattr(sim, "amb_affected", set()))
     stats["fairness"] = fair
+    stats["extensions"] = sum(c.stats.extensions for c in ctrls.values())
     stats["run"] = {"intersection": inter, "controller": label, "scenario": scen, "seed": seed}
     stats["config"] = {"preempt": cfg.preempt.model_dump(), "timing": cfg.timing.model_dump(),
                        "corridor": cfg.sumo.corridor, "camera_miss_prob": cfg.sumo.camera_miss_prob,
                        "camera_fp_prob": cfg.sumo.camera_fp_prob, "base": base, "step_s": step,
+                       "corridor_mode": cfg.sumo.corridor_mode,
+                       "vote": {"k": cfg.vision.k, "m": cfg.vision.m, "th_frame": cfg.vision.th_frame,
+                                "mean_min": cfg.vision.mean_min},
                        "end_s": sim.end_s, "controller_params": cfg.sumo.controller_params}
     if not quiet:
         print(f"  priority runs {stats['priority_runs']}, corridor requests {stats['corridor_requests']}, "
@@ -155,17 +167,21 @@ def _pct(xs, q):
     return round(xs[f] + (xs[c] - xs[f]) * (k - f), 2)
 
 
-def fairness(tripinfo):
+def fairness(tripinfo, affected=frozenset()):
     """Waiting-time distribution of ordinary (non-ambulance) vehicles and how evenly the approaches
     are served. Approach = the edge a vehicle entered on. Jain's index over the per-approach mean
-    waits: 1 = every approach waits the same, 1/n = one approach carries all the waiting."""
-    waits, per_appr = [], defaultdict(list)
+    waits: 1 = every approach waits the same, 1/n = one approach carries all the waiting.
+    `affected`: ordinary vehicles that were stopped at a junction while an ambulance was on another of its
+    approaches (sumo_live.amb_affected) - the vehicles ambulance priority can delay."""
+    waits, per_appr, aff = [], defaultdict(list), []
     for t in ET.parse(tripinfo).getroot().findall("tripinfo"):
         if t.get("vType") == "ambulance":
             continue
         w = float(t.get("waitingTime"))
         waits.append(w)
         per_appr[t.get("departLane", "").rsplit("_", 1)[0]].append(w)
+        if t.get("id") in affected:
+            aff.append(w)
     means = [sum(v) / len(v) for v in per_appr.values() if v]
     jain = (sum(means) ** 2 / (len(means) * sum(m * m for m in means))) if means and any(means) else 1.0
     return {"vehicles": len(waits), "mean_wait_s": round(sum(waits) / len(waits), 2) if waits else None,
@@ -173,14 +189,18 @@ def fairness(tripinfo):
             "max_wait_s": round(max(waits), 1) if waits else None,
             "share_wait_over_60s": round(sum(w > 60 for w in waits) / len(waits), 4) if waits else None,
             "worst_approach_mean_wait_s": round(max(means), 2) if means else None,
-            "jain_approach_wait": round(jain, 4), "approaches": len(means)}
+            "jain_approach_wait": round(jain, 4), "approaches": len(means),
+            "affected_vehicles": len(aff),
+            "affected_mean_wait_s": round(sum(aff) / len(aff), 2) if aff else None,
+            "affected_p95_wait_s": _pct(aff, 0.95), "affected_max_wait_s": round(max(aff), 1) if aff else None}
 
 
 FAIR_FIELDS = ["intersection", "controller", "scenario", "seed", "vehicles", "mean_wait_s", "p50_wait_s",
                "p95_wait_s", "p99_wait_s", "max_wait_s", "share_wait_over_60s", "worst_approach_mean_wait_s",
-               "jain_approach_wait", "approaches", "ambulance_wait_s", "ambulance_travel_s", "priority_runs",
-               "detection_to_green_s", "recovery_s_mean", "gap_outs", "corridor_requests", "false_confirms",
-               "wall_s"]
+               "jain_approach_wait", "approaches", "affected_vehicles", "affected_mean_wait_s",
+               "affected_p95_wait_s", "affected_max_wait_s", "ambulance_wait_s", "ambulance_travel_s",
+               "priority_runs", "detection_to_green_s", "recovery_s_mean", "gap_outs", "extensions",
+               "corridor_requests", "false_confirms", "wall_s"]
 
 
 def save_fairness(rows, stats, f):
@@ -188,7 +208,8 @@ def save_fairness(rows, stats, f):
     row = {**stats["run"], **stats["fairness"], "ambulance_wait_s": amb.get("mean_waiting_s", ""),
            "ambulance_travel_s": amb.get("mean_travel_time_s", ""), "priority_runs": stats["priority_runs"],
            "detection_to_green_s": stats["latency_avg_s"], "recovery_s_mean": stats["recovery_s_mean"],
-           "gap_outs": stats["gap_outs"], "corridor_requests": stats["corridor_requests"],
+           "gap_outs": stats["gap_outs"], "extensions": stats.get("extensions", 0),
+           "corridor_requests": stats["corridor_requests"],
            "false_confirms": stats["false_confirms"], "wall_s": stats["wall_s"]}
     _upsert(Path(f), [row], FAIR_FIELDS, key=("intersection", "controller", "scenario", "seed"))
 
@@ -272,7 +293,7 @@ def _save(rows, f):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--intersection", choices=SIGNALISED, default="cross_signal")
-    ap.add_argument("--scenario", choices=SCENS, default="medium")
+    ap.add_argument("--scenario", choices=ALL_SCENS, default="medium")
     ap.add_argument("--seeds", type=int, nargs="+", default=[1])
     ap.add_argument("--base", choices=["adaptive", "marl", "fixed_time"], default="adaptive")
     ap.add_argument("--controller", choices=["equiflow", "fixed", "actuated"], default="equiflow",

@@ -24,13 +24,19 @@ class PreemptCfg(BaseModel):
     max_preempt_s: float = 60
     recovery_factor: float = 0.5
     recovery_max_s: float = 15
-    recovery: bool = True
+    # Off by default since Iteration 2b: in 1 160 held-out SUMO runs and a 40-ambulance-per-hour stress test no
+    # recovery rule (queue, order, fixed) beat having none (docs/RESULTS.md 3.2). Kept as an option.
+    recovery: bool = False
     recovery_queue_weight: float = 0.5
     recovery_mode: str = "queue"
     recovery_headway_s: float = 2.0
     gap_out: bool = True
     gap_out_min_green_s: float = 5
     stale_s: float = 2.0
+    extend: bool = True              # actuated-style green extension (controllers/types.py PreemptConfig)
+    extend_max_green_s: float = 45
+    extend_ratio: float = 1.0
+    extend_wait_cap_s: float = 30   # chosen on tuning seeds 1-2 (sumo pilots), not on the held-out seeds
 
 
 class VisionCfg(BaseModel):
@@ -93,9 +99,16 @@ class SumoCfg(BaseModel):
     marl_params: dict = Field(default_factory=lambda: {"weights": "../marl/weights/marl_policy.npz"})
     # green corridor: once a camera confirms an ambulance, signals further along its route that it will
     # reach within corridor_eta_s (and corridor_range_m) start clearing for it before it gets there
-    corridor: bool = True
+    corridor: bool = False             # off: on these networks it gave ambulances no measurable gain (RESULTS.md 3.1)
     corridor_eta_s: float = 25.0
     corridor_range_m: float = 450.0
+    # "just_in_time": request a downstream signal only when the ambulance's ETA is within the time that signal
+    # needs to switch to it (min green + yellow + all-red) plus corridor_margin_s, or - if its phase is already
+    # green - when that green would end before the ambulance arrives and the ambulance is closer than a switch
+    # away and back (min green + 2 x (yellow + all-red)) plus the margin. "eta": request as soon as ETA <=
+    # corridor_eta_s (the Iteration 2 rule).
+    corridor_mode: Literal["just_in_time", "eta"] = "just_in_time"
+    corridor_margin_s: float = 3.0
     # robustness tests: per-frame chance the detector misses a vehicle / scores a non-ambulance as one
     camera_miss_prob: float = 0.0
     camera_fp_prob: float = 0.0

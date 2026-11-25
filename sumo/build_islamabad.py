@@ -182,7 +182,9 @@ BLUELIGHT_PARAMS = """    <param key="has.bluelight.device" value="true"/>
 MIX = {"car": 0.62, "motorcycle": 0.25, "bus": 0.06, "truck": 0.07}
 VCLASS = {"car": "passenger", "motorcycle": "motorcycle", "bus": "bus", "truck": "truck", "ambulance": "emergency"}
 # total normal-vehicle insertion period (s/veh) per scenario, seed, ambulances per hour
-SCENARIOS = {"low": (10.0, 11, 6), "medium": (6.0, 22, 10), "high": (3.5, 33, 14), "asymmetric": (5.0, 44, 10)}
+SCENARIOS = {"low": (10.0, 11, 6), "medium": (6.0, 22, 10), "high": (3.5, 33, 14), "asymmetric": (5.0, 44, 10),
+             # stress test for fair recovery: heavy traffic and about three times as many ambulances
+             "emergency": (3.5, 55, 40)}
 
 def gen_demand(net, name, scen):
     period, seed, n_amb = SCENARIOS[scen]
@@ -229,11 +231,15 @@ if __name__ == "__main__":
     ap.add_argument("--only", nargs="*", choices=list(NETWORKS), help="subset of intersections")
     ap.add_argument("--scenarios", nargs="*", choices=list(SCENARIOS), default=list(SCENARIOS))
     ap.add_argument("--bluelight", action="store_true", help="give ambulances SUMO's blue-light device (flashing light, others yield; may cause collisions on tight junctions)")
+    ap.add_argument("--demand-only", action="store_true", help="keep the existing networks; only (re)generate demand")
     a = ap.parse_args()
     BLUELIGHT = a.bluelight
     for name in (a.only or NETWORKS):
         print(f"\n===== {name} =====")
-        nets = {c: build_network(name, c) for c in ("fixed", "actuated")}
+        if a.demand_only:
+            nets = {c: ROOT / "networks" / f"{name}_{c}.net.xml" for c in ("fixed", "actuated")}
+        else:
+            nets = {c: build_network(name, c) for c in ("fixed", "actuated")}
         for scen in a.scenarios:
             gen_demand(nets["fixed"], name, scen)       # same demand file used for both controllers
             write_configs(name, scen)

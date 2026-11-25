@@ -123,3 +123,86 @@ def test_tc03_detection_that_stops_expires_within_clear_hold():
     ctl.observe("West", True, t)
     assert ctl.is_ambulance_active("West", t)
     assert not ctl.is_ambulance_active("West", t + P["clear_hold_s"] + DT)
+
+
+# ------------------------------------------------------------------ green extension (heavy traffic, Iteration 2b)
+EXT = dict(extend=True, extend_max_green_s=25, extend_ratio=1.0, extend_wait_cap_s=60, gap_out=False)
+
+
+def _green_length(ctl, t, limit=120):
+    """run until the current green ends; return (approach, seconds of green)"""
+    a, t0 = ctl.cur, t
+    while ctl.lamps().get(a) == "green" and t - t0 < limit:
+        t = run(ctl, t, DT)
+    return a, t - t0, t
+
+
+def test_extension_keeps_the_busiest_green_up_to_its_maximum():
+    ctl, ev = make(**EXT)
+    first = ctl.cur
+    ctl.vehicles.update({a: 2 for a in ctl.approaches})
+    ctl.vehicles[first] = 9                         # still the busiest when the planned green ends
+    a, g, _ = _green_length(ctl, 0)
+    assert a == first and abs(g - EXT["extend_max_green_s"]) <= 2 * DT, g
+    assert [kw for k, kw in ev if k == "green_extended"] and ctl.stats.extensions == 1
+
+
+def test_extension_stops_when_another_approach_is_busier_or_has_waited_too_long():
+    ctl, _ = make(**EXT)
+    first = ctl.cur
+    ctl.vehicles.update({a: 9 for a in ctl.approaches})
+    ctl.vehicles[first] = 3                         # not the busiest: no extension
+    a, g, _ = _green_length(ctl, 0)
+    assert abs(g - T.green_s) <= 2 * DT, g
+
+    ctl, _ = make(**{**EXT, "extend_max_green_s": 120, "extend_wait_cap_s": 20})
+    first = ctl.cur
+    ctl.vehicles.update({a: 1 for a in ctl.approaches})
+    ctl.vehicles[first] = 9                         # busiest, but the others' wait reaches the cap
+    a, g, _ = _green_length(ctl, 0)
+    assert T.green_s < g <= 20 + 2 * DT, g
+
+
+def test_extension_off_or_during_priority_and_recovery_changes_nothing():
+    ctl, ev = make(**{**EXT, "extend": False})
+    first = ctl.cur
+    ctl.vehicles.update({a: 1 for a in ctl.approaches})
+    ctl.vehicles[first] = 9
+    _, g, _ = _green_length(ctl, 0)
+    assert abs(g - T.green_s) <= 2 * DT and not any(k == "green_extended" for k, _ in ev)
+
+    ctl, ev = make(**EXT)
+    ctl.vehicles.update({"North": 9, "East": 9, "South": 1, "West": 1})
+    t = run(ctl, 0, 30, lambda x: ctl.observe("East", True, x) if x < 20 else None)   # ambulance on East
+    t = run(ctl, t, 60)                                                               # recovery greens follow
+    rec = [kw for k, kw in ev if k == "phase_changed" and kw["source"] == "recovery"]
+    assert rec, "expected recovery greens"
+    assert not any(k == "green_extended" and kw["approach"] == "East" and kw["planned_s"] > T.green_s
+                   for k, kw in ev)
+    for k, kw in ev:                                      # an extension is only ever of a base green
+        if k == "green_extended":
+            assert kw["planned_s"] <= T.green_s + 0.1
+
+
+def test_fr10_order_mode_only_reorders_and_lets_the_base_controller_size_greens():
+    ctl, ev = make(recovery_mode="order", gap_out=False, extend=False)
+    ctl.vehicles.update({"North": 0, "East": 0, "South": 9, "West": 3})
+    t = run(ctl, 0, 1)
+    t = run(ctl, t, 26, lambda x: ctl.observe("East", True, x) if x < 20 else None)
+    plan = next(kw for k, kw in ev if k == "recovery_planned")
+    assert set(plan["plan"]) == {"South", "West"}, plan            # empty approaches skipped
+    assert all(v is None for v in plan["greens_s"].values())        # lengths not fixed by recovery
+    run(ctl, t, 80)
+    rec = [kw for k, kw in ev if k == "phase_changed" and kw["source"] == "recovery"]
+    assert [kw["approach"] for kw in rec][:1] in (["South"], ["West"])
+    assert all(abs(kw["green_s"] - T.green_s) < 0.05 for kw in rec)  # FixedTime base: its own green length
+
+
+def test_fr10_order_mode_skips_an_approach_whose_queue_cleared():
+    ctl, ev = make(recovery_mode="order", gap_out=False, extend=False)
+    ctl.vehicles.update({"North": 4, "East": 0, "South": 4, "West": 4})
+    t = run(ctl, 0, 1)
+    t = run(ctl, t, 26, lambda x: ctl.observe("East", True, x) if x < 20 else None)
+    ctl.vehicles.update({"North": 0, "South": 0, "West": 0})     # queues gone before their turn
+    run(ctl, t, 60)
+    assert not any(k == "phase_changed" and kw["source"] == "recovery" for k, kw in ev)

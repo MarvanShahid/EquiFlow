@@ -1,0 +1,9 @@
+network_demand_in_training,metric,marl_minus_adaptive,ci95,n
+True,car_wait_s,,,0
+True,p95_wait_s,,,0
+True,jain_approach_wait,,,0
+True,ambulance_wait_s,,,0
+False,car_wait_s,,,0
+False,p95_wait_s,,,0
+False,jain_approach_wait,,,0
+False,ambulance_wait_s,,,0

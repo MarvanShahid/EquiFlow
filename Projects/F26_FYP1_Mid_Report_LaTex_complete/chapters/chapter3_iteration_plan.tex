@@ -29,11 +29,13 @@ Compared fairness-control, emergency-preemption and detection literature. & Done
 Trained a labelled ambulance / other-vehicle classifier; checked the splits for duplicates and evaluated it
 once on the held-out test split. & Done; Section~\ref{sec:it2-classifier}. Dataset-licence notes pending.\\
 4 & Evaluate impact on ordinary traffic as well as ambulance travel time. &
-1\,000 held-out SUMO runs comparing fixed-time, actuated, fixed-time with priority and EquiFlow on car wait,
-tail wait, worst approach and Jain index. & Done; Section~\ref{sec:it2-results}.\\
+1\,400 held-out SUMO runs comparing fixed-time, actuated, fixed-time with priority and EquiFlow on car wait,
+tail wait, worst approach, Jain index and the wait of the vehicles an ambulance holds. & Done;
+Section~\ref{sec:it2-results}.\\
 5 & Make recovery after preemption an explicit feature. &
-Queue-sized recovery greens (longest wait first) and a fairness-aware MARL base controller, both implemented
-and ablated. & Implemented; no measurable fairness benefit yet (Section~\ref{sec:it2-ablation}).\\
+Three recovery rules (queue-sized, re-order only, fixed) and a fairness-aware MARL base controller, all
+implemented, ablated and stress-tested. & Implemented; no recovery rule beats having none, so recovery is off by
+default (Section~\ref{sec:it2-ablation}).\\
 \bottomrule
 \end{longtable}
 
@@ -114,13 +116,16 @@ Repository structure & Done & vision, marl, sumo, comm, dashboard, backend, docs
 ByteTrack tracking & Done & 12 real videos scored; 7 of 7 ambulance passes confirmed
 (Table~\ref{tab:it2-tracking}).\\
 Route-aware preemption & Done & Safe yellow and all-red, green corridor on the multi-junction networks.\\
-Fair recovery / MARL & Done, no measurable benefit & Ablations show no significant effect of recovery;
-MARL ties the heuristic (Section~\ref{sec:it2-ablation}).\\
+Fair recovery / MARL & Done; recovery without benefit & No recovery rule helps, in normal traffic or a
+40-ambulance stress test, so it is off by default; retrained MARL wins on car wait but not on tail waits
+(Section~\ref{sec:it2-ablation}).\\
 FastAPI / MQTT integration & Done & REST, WebSocket, MQTT, CSV event log; scripted scenario passes.\\
 Test-split and latency evaluation & Done & 93.5\% recall, 96.5\% precision on the test split
 (Table~\ref{tab:it2-cls-test}); about 45\,ms per frame on an RTX 4050 (Table~\ref{tab:it2-latency}).\\
-Repeatable baseline comparisons & Done & 1\,000 one-hour runs on held-out seeds with 95\% confidence intervals
-and paired differences.\\
+Repeatable baseline comparisons & Done & 1\,400 one-hour runs on held-out seeds with 95\% confidence intervals
+and paired differences, plus a stress scenario and a camera-error sweep for both votes.\\
+Improvements found by the evaluation & Done & Green extension and tail tuning (heavy-demand gap to actuated
+closed), re-order recovery, just-in-time corridor, retrained MARL (Section~\ref{sec:it2-results}).\\
 \bottomrule
 \end{longtable}
 
@@ -139,11 +144,18 @@ split.
 missed two of the seven ambulance passes in the real videos; an offline sweep moved it to 3 of 8. Because the same
 videos chose and scored the setting, a leave-one-video-out estimate is reported alongside.
 \item \textbf{One labelled video (test7) has no source file} and was dropped from the tracking evaluation.
-\item \textbf{Fair recovery and MARL did not show the expected benefit.} Both are implemented and evaluated, but
-recovery has no statistically significant effect and MARL only ties the hand-tuned adaptive controller.
+\item \textbf{Fair recovery and MARL did not show the expected benefit.} Both are implemented and evaluated.
+No recovery rule, including a new one that only re-orders the delayed approaches, beats having no recovery,
+in normal traffic or in a stress test with about 40 ambulances per hour, so recovery is now off by default. MARL,
+retrained with a reward aimed at long waits, beats the adaptive controller on car wait but not on tail waits.
+The green corridor did not make ambulances faster on the evaluated networks and is off by default too.
+\item \textbf{The evaluation led to a second round of controller work.} Green extension (actuated-style) with
+tail-wait tuning, a re-order-only recovery rule, a just-in-time green corridor and the retrained MARL policy were
+added after the first held-out evaluation, tuned on seeds 1--2 and evaluated again on the held-out seeds 6--10.
+The heavy-demand tail-wait gap to actuated control closed (95th percentile $+0.3$\,s, not significant).
 \end{itemize}
 No dated project log was kept, so schedule slippage is not quantified. The recovery plan for FYP-2 follows the
 risks identified at the mid-report: the working rule-based controller and the SUMO evaluation remain the
-baseline, the heuristic recovery stays in place while a recovery policy with a measurable fairness benefit is
-studied, MARL training is extended, and more labelled real video and local ambulance images are collected to
+baseline, the delay of the vehicles an ambulance holds (the remaining cost of priority) is the main fairness
+target, MARL training is extended, and more labelled real video and local ambulance images are collected to
 make the detection results statistically meaningful.

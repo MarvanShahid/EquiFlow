@@ -512,6 +512,7 @@ class SumoLive:
         corridor_amb: set[str] = set()          # vehicles a camera confirmed as ambulances
         corridor_sent: set[tuple[str, str]] = set()
         self.corridor_requests = 0
+        self.amb_affected: set[str] = set()
         ctrls: dict[str, IntersectionController] = {}
         decisions: dict[str, deque] = {t["id"]: deque(maxlen=8) for t in tls_list}
         last_green_end: dict[str, dict[str, float]] = {t["id"]: {a["id"]: 0.0 for a in t["approaches"]} for t in tls_list}
@@ -633,6 +634,17 @@ class SumoLive:
                     self._event(tid, "ambulance_detected", approach=aid, track_id=vid,
                                 confidence=round(sum(tr.probs) / len(tr.probs), 3), distance_m=round(dist, 1),
                                 sim_time=now)
+            # ---------------- approach-level fairness: ordinary vehicles stopped at a junction while a real
+            # ambulance is within camera range on another of its approaches (the vehicles priority can delay).
+            # Ground truth, so it is measured the same way for every controller.
+            for t in tls_list:
+                amb_here = {aid for aid, items in seen[t["id"]].items()
+                            if any(d["type"] == "ambulance" for _, d, _, _ in items)}
+                if amb_here:
+                    for aid, items in seen[t["id"]].items():
+                        if aid not in amb_here:
+                            self.amb_affected.update(vid for vid, d, _, _ in items
+                                                     if d["v"] < 0.1 and d["type"] != "ambulance")
             # ---------------- green corridor: signals further along a confirmed ambulance's route start
             # clearing before it reaches their own cameras (route-aware preemption)
             if mode == "equiflow" and sc.corridor:
@@ -655,6 +667,19 @@ class SumoLive:
                         group = amb_phase[tls_id].get(aid) if aid else None
                         if group is None:
                             continue
+                        eta = dist / v
+                        if sc.corridor_mode == "just_in_time":
+                            c = ctrls[tls_id]
+                            ttg = c.time_to_green(group, now)
+                            if ttg == 0.0:      # already green: hold it only if it would end before arrival
+                                # and the ambulance is closer than a switch away and back would take
+                                back = c.cfg.min_green_s + 2 * (c.timing.yellow_s + c.timing.all_red_s)
+                                needed = (c.green_remaining(now) < eta + sc.corridor_margin_s
+                                          and eta <= back + sc.corridor_margin_s)
+                            else:               # start clearing only when it is needed to be green on time
+                                needed = eta <= ttg + sc.corridor_margin_s
+                            if not needed:
+                                continue
                         ctrls[tls_id].inject(group, step * 2 + 0.5, now)   # refreshed every step while it applies
                         if (vid, tls_id) not in corridor_sent:
                             corridor_sent.add((vid, tls_id))
@@ -672,8 +697,9 @@ class SumoLive:
                         present = any(amb_appr.get(aid) and amb_phase[tid].get(aid) == p["id"] for aid in amb_appr)
                         c.observe(p["id"], present, now, vehicles=sum(per_lane[ln] for ln in p["lanes"]))
                     if hasattr(c.base, "accumulate"):     # learning controller: cost since its last decision
-                        halting = sum(1 for items in seen[tid].values() for _, d, _, _ in items if d["v"] < 0.1)
-                        c.base.accumulate(halting, max(c._waiting(p, now) for p in c.approaches), step)
+                        halted = [d for items in seen[tid].values() for _, d, _, _ in items if d["v"] < 0.1]
+                        long_w = sum(1 for d in halted if d["wait"] > getattr(c.base, "long_wait_s", 1e9))
+                        c.base.accumulate(len(halted), max(c._waiting(p, now) for p in c.approaches), step, long_w)
                     c.tick(now)
                     glamps = c.lamps()
                     state = "r" * t["n_links"]

@@ -18,7 +18,7 @@ Results and their discussion: [RESULTS.md](RESULTS.md). Report chapter: [latex/c
 | FR-08 | Priority for a confirmed ambulance | Done | `controllers/intersection.py` | `tests/test_controller.py` |
 | FR-09 | Log preemption start, clearance, recovery | Done | event log + `scripts/preempt_report.py` | `scripts/scripted_scenario.py` (PASS) |
 | FR-10 | Recovery uses queue and wait | Done | longest wait first, green sized to queue (2 s per vehicle, 5-30 s), empty approaches skipped | `test_fr10_...` (2 tests) |
-| FR-11 | Compare with fixed-time and adaptive | Done | `sumo/run_matrix.py` | `sumo/results/heldout/` (1 000 runs) |
+| FR-11 | Compare with fixed-time and adaptive | Done | `sumo/run_matrix.py` | `sumo/results/heldout/` (1 400 runs) |
 | FR-12 | Export metrics + configuration | Done | `run_manifest.csv`: full config, software versions, git commit, MARL weights hash per run | `sumo/results/heldout/run_manifest.csv` |
 
 ## Test cases (mid-report Table 7.1)
@@ -35,7 +35,7 @@ Results and their discussion: [RESULTS.md](RESULTS.md). Report chapter: [latex/c
 | TC-09 baseline run | Pass | `sumo/results/heldout/` |
 | TC-10 same seed, same result | Pass | `tests/test_sumo.py::test_tc10_...` |
 
-**40 automated tests, all passing** (Linux / Python 3.10 and Windows / Python 3.14).
+**45 automated tests, all passing** (Linux / Python 3.10, and WSL Ubuntu / Python 3.14 with SUMO 1.28; on this laptop's Windows side Smart App Control blocks SUMO's `geos_c.dll`, so the 3 SUMO tests run in WSL).
 
 ## Acceptance criteria (Table 4.5)
 
@@ -66,8 +66,8 @@ Results and their discussion: [RESULTS.md](RESULTS.md). Report chapter: [latex/c
 | Held-out scenarios for learned policies (7.5) | Seeds 6-10 for every controller; MARL trained on 1-5. `marl_heldout.csv` also splits trained vs unseen network/demand |
 | Mean and variation across seeds (7.1) | Mean, SD and 95% CI: `summary_stats.csv`; paired differences on identical runs: `paired.csv` |
 | Emergency-only preemption baseline (7.2) | `fixed+preempt` |
-| No-recovery comparison on max / high-percentile wait (1.9) | `equiflow-norecovery` ablation (result: no significant difference; see RESULTS.md Section 3) |
-| Sensitivity analysis (7.6) | 4 demand levels; camera miss / false-alarm sweep `results/robustness.csv` |
+| No-recovery comparison on max / high-percentile wait (1.9) | Three recovery rules against none, in normal traffic and a 40-ambulance-per-hour stress test: none helps, so recovery is off by default (RESULTS.md Sections 3, 3.2) |
+| Sensitivity analysis (7.6) | 4 demand levels + an emergency stress scenario; camera miss / false-alarm sweep for both the 5-of-8 and the live 3-of-8 vote `results/robustness.csv` |
 | Plots | `docs/figures/` (PNG + PDF), from `sumo/make_plots.py` |
 | Failure-case analysis | `RESULTS.md` Section 7 |
 | Tracking on real video | `Projects/tracking_out/tracking_scores.md` (`cls_v5_img128`, re-tuned votes): all 12 available videos (test7 has no source video and is not scored); **7 of 7 ambulance passes detected**, 6 false events, mean confirmation 0.94 s after the window starts. Leave-one-video-out estimate: 7 of 7, 11 false events. With `cls_v4-2` (`tracking_scores_cls_v4-2.md`): 6 of 7, 13 false events, 0.26 s |
@@ -124,10 +124,33 @@ CUDA NMS kernel, and ByteTrack's SciPy assignment (`use_lap=False`) instead of l
 Ground truth: `test5` checked, it has no ambulance, so its confirmations are real false events. `test7` has no
 source video and was removed from `ground_truth.csv`.
 
+## Iteration 2b: controller improvements identified by the evaluation
+
+Every item below was tuned on seeds 1-2 and evaluated on the held-out seeds 6-10 (1 400 runs, re-run for every
+controller, plus 180 stress-test runs). Full numbers: [RESULTS.md](RESULTS.md) Sections 2-5.
+
+| Open item | What was done | Result (held-out) |
+|---|---|---|
+| Heavy-traffic controller / per-vehicle green extension | Actuated-style extension in `IntersectionController`: a base green keeps going while its approach is still the busiest, up to 45 s, while no other queued approach has waited 30 s; never during priority or recovery (`preempt.extend*`) | Car wait −1.33 s (better in 95% of runs) and 95th percentile −1.16 s; no significant cost on the longest wait |
+| Heavy-traffic 95th-percentile gap | Waiting-time weight 0.3 in the adaptive controller (`sumo.controller_params.wait_weight`) and the 30 s extension wait cap (was 0.1 / 40 s) | Heavy-demand p95 gap to actuated +0.33 ± 2.87 s, not significant (Iteration 2: +1.68 s); longest wait −4.35 s vs the first settings |
+| Approach-level fairness for vehicles delayed by priority | New metric: ordinary vehicles stopped while a real ambulance is on another approach of the junction (`sumo_live.amb_affected`, `affected_*` columns) | EquiFlow 19.6 s; fixed + priority 25.2 s; fixed-time 36.2 s; actuated 12.4 s (never holds anyone) |
+| Fair recovery: stress test and redesign | `emergency` demand (~40 ambulances per hour); new `recovery_mode: order` (re-order only, base controller sizes the greens) | No rule beats having no recovery; re-order removes the harm (n.s. differences) but adds no benefit. **Recovery off by default** (`preempt.recovery: false`) |
+| More selective green corridor | `sumo.corridor_mode: just_in_time` | 4.3 s less wait for held vehicles than the old rule, but no corridor is better still and ambulances are no faster with one. **Corridor off by default** (`sumo.corridor: false`) |
+| MARL reward and training | Reward also charges halted vehicles that have waited > 20 s; retrained from scratch for 120 episodes with the final junction settings | Car wait −0.23 s vs adaptive (better); 95th percentile still +1.43 s (worse). Adaptive stays the default |
+| Camera-error sweep with the live 3-of-8 vote | `run_robustness.py --k 3 --mean-min 0.70` beside 5 of 8 | 3 of 8 with mean ≥ 0.70 gives fewer false priority runs (0-4 vs 8-20 per hour at 20% false frames) |
+
+Final EquiFlow against actuated (paired, held-out): car wait −2.00 ± 0.61 s, worst approach −2.32 s; 95th
+percentile, longest wait and Jain index statistically level; ambulance travel −10.1 s.
+
+Tests: 3 new ones for green extension and 2 for re-order recovery (`tests/test_requirements.py`), 45 in total.
+
+SUMO on this laptop: Windows Smart App Control blocks SUMO's `geos_c.dll`, so SUMO runs in WSL Ubuntu
+(`~/equiflow-venv` with `backend/requirements.lock.txt`).
+
 ## Commands for everything else
 
 ```bash
-cd backend && pytest                                  # 40 tests
+cd backend && pytest                                  # 45 tests
 python scripts/scripted_scenario.py                   # exit test (PASS)
 cd ../sumo
 python run_matrix.py && python aggregate.py           # ~45 min on 2 cores

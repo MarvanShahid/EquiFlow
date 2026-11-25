@@ -25,9 +25,12 @@ COLORS = {"fixed": "#2a78d6", "actuated": "#eb6834", "fixed+preempt": "#1baf7a",
           "equiflow-marl": "#e87ba4"}
 ABLATION_GREY = "#9a9893"
 NAMES = {"fixed": "Fixed-time", "actuated": "Actuated", "fixed+preempt": "Fixed-time\n+ priority",
-         "equiflow": "EquiFlow", "equiflow-marl": "EquiFlow\n(MARL)", "equiflow-norecovery": "no\nrecovery",
-         "equiflow-nogapout": "no\ngap-out", "equiflow-nocorridor": "no\ncorridor",
-         "equiflow-recovery-v1": "old\nrecovery"}
+         "equiflow": "EquiFlow", "equiflow-marl": "EquiFlow\n(MARL)", "equiflow-recovery": "+ recovery\n(queue)",
+         "equiflow-recovery-order": "+ recovery\n(re-order)", "equiflow-tail-v1": "first tail\nsettings",
+         "equiflow-corridor": "+ corridor",
+         "equiflow-nogapout": "no\ngap-out", "equiflow-noextend": "no green\nextension",
+         "equiflow-nocorridor": "no\ncorridor", "equiflow-corridor-v1": "old\ncorridor",
+         "equiflow-recovery-v1": "+ recovery\n(first rule)"}
 MAIN = ["fixed", "actuated", "fixed+preempt", "equiflow", "equiflow-marl"]
 
 plt.rcParams.update({
@@ -93,26 +96,28 @@ def fig_main(S):
 
 def fig_fairness(S):
     ctrls = [c for c in MAIN if (c, "car_wait_s") in S]
-    fig, axs = plt.subplots(1, 3, figsize=(11, 3.4))
+    fig, axs = plt.subplots(1, 4, figsize=(14, 3.4))
     bars(axs[0], ctrls, S, "max_wait_s", "Longest single wait")
     bars(axs[1], ctrls, S, "worst_approach_mean_wait_s", "Worst-served approach: mean wait")
-    bars(axs[2], ctrls, S, "jain_approach_wait", "Jain fairness index across approaches", unit="1 = equal",
+    bars(axs[2], ctrls, S, "affected_mean_wait_s", "Vehicles held by an ambulance: mean wait")
+    bars(axs[3], ctrls, S, "jain_approach_wait", "Jain index across approaches", unit="1 = equal",
          digits=3)
-    axs[2].set_ylim(0, 1.12)
+    axs[3].set_ylim(0, 1.12)
     fig.tight_layout()
     save(fig, "fig_fairness")
 
 
 def fig_ablation(S):
-    ctrls = [c for c in ("equiflow", "equiflow-recovery-v1", "equiflow-norecovery", "equiflow-nogapout")
+    ctrls = [c for c in ("equiflow", "equiflow-noextend", "equiflow-nogapout", "equiflow-tail-v1",
+                         "equiflow-recovery", "equiflow-recovery-order", "equiflow-recovery-v1")
              if (c, "car_wait_s") in S]
     if len(ctrls) < 2:
         return
-    fig, axs = plt.subplots(1, 3, figsize=(11, 3.3))
+    fig, axs = plt.subplots(1, 3, figsize=(18, 3.8))
     bars(axs[0], ctrls, S, "car_wait_s", "Cars: mean wait")
     bars(axs[1], ctrls, S, "p95_wait_s", "95th-percentile wait")
-    bars(axs[2], ctrls, S, "recovery_s_mean", "Recovery interval after priority")
-    fig.suptitle("What each part of EquiFlow contributes (grey = one part switched off)", x=0.01, ha="left",
+    bars(axs[2], ctrls, S, "affected_mean_wait_s", "Vehicles held by an ambulance: mean wait")
+    fig.suptitle("What each part of EquiFlow contributes (grey = one part switched off, changed or added)", x=0.01, ha="left",
                  fontsize=11, fontweight="bold", color=INK)
     fig.tight_layout()
     save(fig, "fig_ablation")
@@ -144,26 +149,28 @@ def fig_robustness():
     f = ROOT / "results" / "robustness.csv"
     if not f.exists():
         return
-    rows = list(csv.DictReader(f.open()))
-    fps = sorted({float(r["fp_prob"]) for r in rows})
-    misses = sorted({float(r["miss_prob"]) for r in rows})
-    ramp = ["#a8c8ef", "#6aa2e3", "#2a78d6", "#1a4f91"]          # one hue, light -> dark = more misses
+    rows = [r for r in csv.DictReader(f.open()) if r.get("seed") == "6"]
+    votes = sorted({r.get("vote") or "5/8 mean>=0.65" for r in rows}, reverse=True)
+    vcol = ["#2a78d6", "#eda100", "#1baf7a"]
     fig, axs = plt.subplots(1, 2, figsize=(10, 3.3))
-    for i, m in enumerate(misses):
-        for ax, key, title in ((axs[0], "false_confirmations", "False priority runs per hour"),
-                               (axs[1], "ambulance_wait_s", "Ambulance mean wait (s)")):
+    for i, vote in enumerate(votes):
+        vr = [r for r in rows if (r.get("vote") or "5/8 mean>=0.65") == vote]
+        for ax, key, xkey, fixed, title in (
+                (axs[0], "false_confirmations", "fp_prob", ("miss_prob", 0.0), "False priority runs per hour"),
+                (axs[1], "ambulance_wait_s", "miss_prob", ("fp_prob", 0.0), "Ambulance mean wait (s)")):
+            xs = sorted({float(r[xkey]) for r in vr})
             pts = []
-            for fp in fps:
-                v = [float(r[key]) for r in rows if float(r["miss_prob"]) == m and float(r["fp_prob"]) == fp]
+            for x in xs:
+                v = [float(r[key]) for r in vr if float(r[xkey]) == x and float(r[fixed[0]]) == fixed[1]]
                 if v:
-                    pts.append((fp, sum(v) / len(v)))
+                    pts.append((x, sum(v) / len(v)))
             if pts:
-                ax.plot([p[0] * 100 for p in pts], [p[1] for p in pts], color=ramp[i % 4], linewidth=2, marker="o",
-                        markersize=5, markeredgecolor=SURF, markeredgewidth=1.5,
-                        label=f"{int(m * 100)}% of frames missed")
-                ax.set_title(title, loc="left")
+                ax.plot([p[0] * 100 for p in pts], [p[1] for p in pts], color=vcol[i % 3], linewidth=2, marker="o",
+                        markersize=5, markeredgecolor=SURF, markeredgewidth=1.5, label=f"vote {vote}")
+            ax.set_title(title, loc="left")
+    axs[0].set_xlabel("frames wrongly scored as ambulance (%), no missed frames")
+    axs[1].set_xlabel("frames missed (%), no false alarms")
     for ax in axs:
-        ax.set_xlabel("frames wrongly scored as ambulance (%)")
         ax.set_ylim(bottom=0)
         ax.tick_params(length=0)
     axs[0].legend(fontsize=7)

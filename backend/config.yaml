@@ -15,7 +15,7 @@ mqtt: {enabled: false, host: localhost, port: 1883, prefix: equiflow}
 # controller_params: adaptive greens for the SUMO junctions (shorter greens worked best in run_equiflow.py)
 sumo: {autostart: true, network: sector_grid, scenario: medium, controller: equiflow, speed: 2,
        camera_range_m: 120, phasing: phases,
-       controller_params: {min_green_s: 6, max_green_s: 30, per_vehicle_s: 1.0}}
+       controller_params: {min_green_s: 6, max_green_s: 30, per_vehicle_s: 1.0, wait_weight: 0.3}}
 server:
   cors_origins: ["http://localhost:3000", "http://127.0.0.1:3000"]
   api_key: null       # set a long random string to require X-API-Key on every write (app/security.py)

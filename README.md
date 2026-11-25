@@ -70,8 +70,10 @@ Each approach has a four-lamp head: **ambulance (blue)** plus red, yellow, green
 - **Normal:** a base controller chooses who gets the next green. `fixed_time` cycles N→E→S→W. `adaptive` serves the busiest approach (from the vehicle counts the detector produces), with green length growing with the count and a hard maximum-wait bound (`max_wait_s`, default 90 s) so no approach starves.
 - **Ambulance confirmed on approach A:** after the current green's minimum time, it goes yellow, then all-red, then **A turns green and the other three stay red** with A's blue lamp lit. Yellow and all-red are never skipped. Two ambulances are served first come, first served.
 - **Release:** the junction is released 4 s after the ambulance was last seen (`clear_hold_s`). A fail-safe (`max_preempt_s`, 60 s) releases a stuck detection.
-- **Fair recovery:** approaches that waited and have a queue are served afterwards, longest-waiting first, each for about as long as its queue needs (`recovery_headway_s`, 2 s per vehicle; `recovery_mode: fixed` restores the first rule).
+- **Fair recovery (optional, off by default since Iteration 2b):** with `preempt.recovery: true`, approaches that waited and have a queue are served afterwards, longest-waiting first. `recovery_mode: order` only re-orders them (the base controller sizes each green; recommended), `queue` sizes each green to its queue (2 s per vehicle), `fixed` is the first rule. In the held-out evaluation none of them beat having no recovery (docs/RESULTS.md 3.2).
 - **Gap-out:** a green that has run 5 s ends early (through yellow and all-red) when its approach is empty and another approach has demand (`gap_out`, `gap_out_min_green_s`). Never during priority.
+- **Green extension:** a base green that reaches its planned length keeps going while its approach is still the busiest, up to 45 s, while no other queued approach has waited 30 s (`extend`, `extend_max_green_s`, `extend_wait_cap_s`). Never during priority or recovery.
+- **Green corridor (SUMO, optional, off by default):** `sumo.corridor: true` asks signals further along a confirmed ambulance's route for priority just in time (`corridor_mode: just_in_time`). On the evaluated networks it did not make ambulances faster.
 - **Stale events:** detections posted with a `ts` older than 2 s are rejected and logged (`stale_s`).
 
 The "detection to green" metric is the key demo number for Phase 6: how long after the vision confirmed an ambulance did its approach turn green.
@@ -117,19 +119,20 @@ python run_equiflow.py --all --event-log results/event_logs   # + per-run event 
 The full evaluation (every controller on the same 120 network x demand x seed runs, seeds 6-10, held out
 from MARL training):
 ```bash
-python run_matrix.py          # -> results/heldout/ (~45 min on 2 cores)
+python run_matrix.py          # -> results/heldout/ (~20 min on 10 cores)
 python aggregate.py           # means, 95% CIs, paired comparisons -> results/heldout/RESULTS_TABLES.md
 python benchmark.py; python make_plots.py; python latex_tables.py     # performance, docs/figures, LaTeX tables
 ```
 
 | Held-out, mean of 120 runs | Fixed-time | Actuated | Fixed + priority | **EquiFlow** | EquiFlow MARL |
 |---|---|---|---|---|---|
-| Ambulance wait at signals | 13.75 s | 7.42 s | 0.19 s | **0.10 s** | 0.07 s |
-| Car wait | 16.87 s | 6.28 s | 10.38 s | **5.38 s** | 5.39 s |
-| 95th-percentile wait | 51.7 s | 17.9 s | 29.6 s | **18.5 s** | 20.3 s |
+| Ambulance wait at signals | 13.75 s | 7.42 s | 0.19 s | **0.10 s** | 0.10 s |
+| Car wait | 16.87 s | 6.28 s | 10.36 s | **4.28 s** | 4.05 s |
+| 95th-percentile wait | 51.7 s | 17.9 s | 29.4 s | **16.9 s** | 18.3 s |
 
-Gap-out is the biggest gain for ordinary traffic; fair recovery shows no measurable effect; the green corridor
-saves ambulances 0.2 s but costs others up to 8 s. Full results, ablations and failure analysis:
+Green extension and gap-out are the biggest gains for ordinary traffic. Fair recovery and the green corridor are
+implemented but off by default: in 1 400 held-out runs and a 40-ambulance-per-hour stress test neither helped.
+Full results, ablations and failure analysis:
 [docs/RESULTS.md](docs/RESULTS.md). Requirement-by-requirement status: [docs/ITERATION2.md](docs/ITERATION2.md).
 The Results page of the dashboard reads `results/heldout/` when it exists.
 
@@ -147,7 +150,7 @@ The Results page of the dashboard reads `results/heldout/` when it exists.
 
 ```bash
 cd backend
-pytest                      # 40 tests; or: python tests/test_controller.py
+pytest                      # 45 tests; or: python tests/test_controller.py
 ```
 - `test_sumo.py`: SUMO geometry, signal phases, a headless run with ambulance priority, the green corridor and camera noise (skipped without SUMO)
 - `test_marl.py`: MARL decisions, the 90 s fairness guard, learning updates, save/load
@@ -155,7 +158,7 @@ pytest                      # 40 tests; or: python tests/test_controller.py
 - `test_runtime.py`: end to end in simulation
 - `test_live_pipeline.py`: your K-of-M voting rule and stationary filter, using stand-in models
 - `test_eventlog.py`: the CSV event log, the preemption-episode table, and the scripted Iteration 2 scenario
-- `test_requirements.py`: TC-03 stale events, TC-04 / FR-07 gap-out, FR-10 queue-sized recovery, recovery off
+- `test_requirements.py`: TC-03 stale events, TC-04 / FR-07 gap-out, FR-10 queue-sized and re-order recovery, recovery off, green extension
 - `test_security.py`: API key on write endpoints
 - `test_sumo.py::test_tc10_...`: same seed and configuration give identical results
 

@@ -66,7 +66,7 @@ bridge and a CSV event log.
 the ambulance classifier on each tracked crop (cls\_v5\_img128, retrained in this iteration at 128\,px), and a
 confirmation vote over the last 8 frames. The live camera configuration needs 3 ambulance votes (frame score
 $\geq$ 0.6) and a mean score of at least 0.70, re-tuned for the new classifier
-(Section~\ref{sec:it2-tracking}); the SUMO evaluation and the backend default use the stricter 5 of 8 with mean
+(Section~\ref{sec:it2-tracking}); the SUMO evaluation and the backend default use 5 of 8 with mean
 $\geq$ 0.65. Optional per-approach polygons restrict counting to the lanes that queue for the signal and
 report stationary vehicles as the queue.
 \item \textbf{Signal control} (\texttt{backend/app/controllers/}): base controllers, the MARL policy
@@ -83,13 +83,27 @@ this chapter.
 \paragraph{Gap-out.} A green that has run at least 5\,s ends early when no vehicle is within 120\,m of its
 stop line and another approach has demand. It is never applied during priority and always passes through
 the full yellow and all-red.
+\paragraph{Green extension.} Actuated control lengthens a green vehicle by vehicle, while the adaptive controller
+fixes each green's length when it starts. A base-controller green that reaches its planned length therefore keeps
+going while its approach is still at least as busy as every other one, up to 45\,s, and only while no other
+approach with a queue has waited 30\,s. To keep the tail of the waiting-time distribution short, the adaptive
+controller also weights waiting time more when it chooses the next green (weight 0.3 instead of 0.1). It is never applied during priority or recovery, and every green still
+ends through the full yellow and all-red. The two limits were chosen on tuning seeds 1--2, not on the held-out
+seeds.
 \paragraph{Priority.} After the vote confirms an ambulance, the current green finishes its minimum time,
 then yellow and all-red, and the ambulance's approach turns green alone. Priority ends 4\,s after the
 ambulance was last seen, or after 60\,s as a fail-safe. Two ambulances are served first come, first served.
 \paragraph{Fair recovery.} After priority, the approaches that were held red and have a queue are served in
 order of longest wait, each for about as long as its queue needs to clear (2\,s per queued vehicle, at least
-5\,s, at most 30\,s). A first version gave every delayed approach a fixed 15\,s green plus extra; it was
-replaced after the ablation in Section~\ref{sec:it2-ablation} showed it lengthened the longest waits.
+5\,s, at most 30\,s). A first version gave every delayed approach a fixed 15\,s green plus extra, and a third
+rule only re-orders the delayed approaches and leaves each green's length to the base controller. Because none of
+them improved on having no recovery (Section~\ref{sec:it2-ablation}), recovery is off by default and kept as an
+option; the scripted exit scenario switches it on to verify the logged recovery sequence.
+\paragraph{Green corridor.} Once a camera confirms an ambulance, signals further along its route are asked for
+priority \emph{just in time}: only when the ambulance's arrival time is within the time that signal needs to
+switch to it (minimum green, yellow and all-red) plus 3\,s, or, if its phase is already green, when that green
+would otherwise end just before the ambulance arrives. The first version cleared every signal within 25\,s of
+arrival. Neither made ambulances faster on the evaluated networks, so the corridor is off by default.
 \paragraph{Stale detections.} An externally reported detection older than 2\,s (or more than 2\,s in the
 future) is rejected and logged, so a delayed or replayed message cannot request priority.
 
@@ -99,6 +113,10 @@ Every controller used the same 120 network/demand/seed combinations with seeds 6
 trained on seeds 1--5, so all evaluation runs are held out. Ambulances are confirmed by a virtual camera per
 approach using the real voting rule. Results are reported as mean $\pm$ 95\% confidence interval over runs,
 and as \emph{paired} differences on identical runs, which removes the large differences between networks.
+Besides network-wide waits, an approach-level measure counts the vehicles an ambulance actually holds: ordinary
+vehicles stopped at a junction while a real ambulance is within camera range on another of its approaches. It is
+ground truth, so it is measured the same way for controllers that give no priority. A stress scenario (heavy
+traffic and about 40 ambulances per hour, three times the heavy level) tests fair recovery separately.
 
 \input{chapters/results_tables}
 
@@ -114,18 +132,19 @@ and as \emph{paired} differences on identical runs, which removes the large diff
 
 Table~\ref{tab:it2-main} and Figure~\ref{fig:it2-main} give the main comparison. EquiFlow reduces the
 ambulance's mean wait at signals from 13.75\,s (fixed-time) and 7.42\,s (actuated) to 0.10\,s, and its travel
-time by 16.5\,s and 10.1\,s respectively. Ordinary traffic does not pay for this on average: car wait is
-5.38\,s against 16.87\,s for fixed-time and 6.28\,s for actuated. The paired comparison
-(Table~\ref{tab:it2-paired}) shows the advantage over actuated is statistically significant but small
-($-0.90 \pm 0.74$\,s) and comes from a minority of runs: EquiFlow is better in 38\% of paired runs. Its
-95th-percentile and longest waits are statistically indistinguishable from actuated, and its Jain fairness
-index across approaches is significantly higher ($+0.021$, better in 73\% of runs).
+time by 16.5\,s (28\%) and 10.1\,s (19\%) respectively. Ordinary traffic also waits less: car wait is 4.28\,s
+against 16.87\,s for fixed-time and 6.28\,s for actuated. The paired comparison (Table~\ref{tab:it2-paired})
+puts the advantage over actuated at $-2.00 \pm 0.61$\,s (better in 68\% of paired runs), and the worst-served
+approach waits 2.3\,s less. The 95th-percentile wait ($-0.96 \pm 1.32$\,s), the longest single wait
+($+3.1 \pm 3.3$\,s) and the Jain index across approaches are statistically level with actuated. The price of
+priority is paid by the vehicles an ambulance holds: they wait 19.6\,s on average, against 12.4\,s with actuated
+control (which never holds them), 25.2\,s with fixed-time plus simple priority and 36.2\,s with fixed-time.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{figures/fig_fairness.pdf}
-\caption{Fairness: longest single wait, the worst-served approach's mean wait, and Jain's index across
-approaches.}
+\caption{Fairness: longest single wait, the worst-served approach's mean wait, the mean wait of the vehicles
+held by an ambulance, and Jain's index across approaches.}
 \label{fig:it2-fairness}
 \end{figure}
 
@@ -136,9 +155,11 @@ approaches.}
 \label{fig:it2-demand}
 \end{figure}
 
-Under heavy demand (Figure~\ref{fig:it2-demand}) the advantage over actuated shrinks (6.92 against
-7.25\,s) and EquiFlow's 95th-percentile wait is higher (22.44 against 20.76\,s): actuated control extends a
-green vehicle by vehicle, while the adaptive controller fixes each green's length when it starts.
+Under heavy demand (Figure~\ref{fig:it2-demand}) EquiFlow's car wait is below actuated (6.15 against
+7.25\,s; 6.92\,s in the first evaluation), and its 95th-percentile wait is now level (21.10 against 20.76\,s, a
+paired difference of $+0.33 \pm 2.87$\,s, against $+1.68$\,s in the first evaluation). This is despite every
+EquiFlow phase change costing 3\,s of yellow and 2\,s of all-red, against 4\,s of yellow and no all-red in SUMO's
+actuated plans; the all-red is kept for safety.
 
 \subsection{Ablations}
 \label{sec:it2-ablation}
@@ -149,15 +170,27 @@ green vehicle by vehicle, while the adaptive controller fixes each green's lengt
 \label{fig:it2-ablation}
 \end{figure}
 
-Table~\ref{tab:it2-ablation} and Figure~\ref{fig:it2-ablation} switch one component off at a time.
-\emph{Gap-out} is the largest single benefit: without it car wait rises by 1.18\,s and the 95th-percentile
-wait by 2.22\,s (better in 97\% of paired runs). \emph{Fair recovery} has no measurable effect: with it
-switched off, no metric changes significantly. The first recovery rule was slightly harmful (longest wait
-2.3\,s worse than the current rule). We attribute this to short priority intervals (about 12--15\,s), an
-adaptive base controller that already serves the longest-waiting busy approach, the 90\,s maximum-wait guard,
-and network-wide metrics that dilute an effect confined to the vehicles caught by a priority interval.
-The \emph{green corridor} (evaluated on the two multi-junction networks) makes ambulances 0.21\,s faster but
-raises the longest wait of ordinary vehicles by 8.2\,s.
+Table~\ref{tab:it2-ablation} and Figure~\ref{fig:it2-ablation} switch one component off, change it, or add an
+optional one back. \emph{Green extension} gives the largest gain in average waits: without it car wait rises by
+1.33\,s (better with it in 95\% of paired runs) and the 95th-percentile wait by 1.16\,s, with no significant
+change in the longest wait. In the first evaluation round extension cost 6.6\,s on the longest wait; the tighter
+30\,s wait cap and the higher waiting-time weight removed that cost (the first settings have a 4.4\,s longer
+longest wait), at 0.3\,s of car wait. \emph{Gap-out} improves every measure: without it car wait rises by 1.15\,s
+and the 95th-percentile wait by 2.11\,s (better in 99\% of runs).
+
+\emph{Fair recovery} gives no benefit with any of the three rules. Adding the queue-sized rule raises car wait
+by 0.08\,s and the 95th-percentile wait by 0.26\,s; the re-order-only rule changes nothing significantly except a
+0.25\,s higher 95th-percentile wait; the first rule is worst (95th percentile +0.74\,s, longest wait +2.2\,s). The
+stress scenario (about 40 ambulances per hour, 30 runs per controller) gives the same answer: the queue-sized rule
+raises the 95th-percentile wait by 1.3\,s, the first rule by 4.0\,s, and the re-order rule by nothing measurable.
+Re-ordering removes the harm but adds no benefit: an adaptive controller that already serves the
+longest-waiting busy approach next leaves nothing for a separate recovery phase to fix. Recovery is therefore off
+by default.
+
+On the two multi-junction networks (Table~\ref{tab:it2-corridor}) the \emph{green corridor} turns downstream
+signals green a little earlier but does not change ambulance travel time, while the vehicles it holds wait
+longer: 2.4\,s with the just-in-time rule and 6.8\,s with the first rule. With junctions 300\,m apart, local
+priority alone is fast enough, so the corridor is off by default.
 
 \subsection{MARL controller}
 \begin{figure}[htbp]
@@ -167,26 +200,29 @@ raises the longest wait of ordinary vehicles by 8.2\,s.
 \label{fig:it2-marl}
 \end{figure}
 
-On held-out seeds the MARL base controller ties the adaptive heuristic on car wait ($-0.00 \pm 0.17$\,s) and
-ambulance wait, but has a higher 95th-percentile wait (+1.85\,s) and a lower Jain index
-(Table~\ref{tab:it2-marl}). The gap is the same on network/demand combinations it was trained on and on
-unseen ones, so the policy is not over-fitted; it has not yet learned to beat the heuristic after 55 short
-training episodes.
+The first MARL policy (55 training episodes) tied the adaptive heuristic on car wait but had a 1.85\,s higher
+95th-percentile wait. Its reward was therefore extended to charge every halted vehicle that has already waited
+more than 20\,s (about the 95th-percentile wait), and it was retrained from scratch for 120 episodes on seeds
+1--5 with the final junction settings. On the held-out seeds it now beats the heuristic on car wait
+($-0.23 \pm 0.18$\,s), but the heuristic's own tail tuning moved further, so MARL's 95th-percentile wait is
+$1.43 \pm 0.55$\,s higher and its longest wait 2.9\,s higher, with the same picture on network/demand combinations
+it was trained on and on unseen ones (Table~\ref{tab:it2-marl}). The adaptive controller stays the default.
 
 \subsection{Robustness to camera errors}
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{figures/fig_robustness.pdf}
 \caption{False priority runs and ambulance wait as the virtual camera misses frames or scores ordinary
-vehicles as ambulances (heavy demand, seed 6).}
+vehicles as ambulances, for the 5-of-8 vote and the live 3-of-8 vote (heavy demand, seed 6).}
 \label{fig:it2-robust}
 \end{figure}
 
-With up to 10\% of frames wrongly scored as ambulance, the voting rule produces no false priority at all;
-at 20\% it produces 6--33 false priority runs per hour, and at 40\% hundreds (Figure~\ref{fig:it2-robust}).
-Missing even 85\% of frames barely matters (ambulance wait at most 1.8\,s). The classifier's per-crop
-false-alarm rate is 0.9\% on the test split, well inside this margin. This sweep used the 5-of-8 vote; the live
-camera rule (3 of 8) confirms faster and is therefore less tolerant of noisy frames, and has not yet been swept.
+The sweep was run for both votes (Figure~\ref{fig:it2-robust}). With up to 10\% of frames wrongly scored as
+ambulance, neither produces any false priority. At 20\% the 5-of-8 vote (mean $\geq$ 0.65) produces 8--20 false
+priority runs per hour and the live 3-of-8 vote (mean $\geq$ 0.70) only 0--4; at 40\% they produce 386--952
+and 145--369. The live vote is therefore more tolerant of noisy frames, not less: its stricter mean-score
+threshold matters more than the lower vote count. Missing even 85\% of frames barely matters (ambulance wait at
+most 0.6\,s). The classifier's per-crop false-alarm rate is 0.9\% on the test split, well inside this margin.
 
 \subsection{Ambulance classifier}
 \label{sec:it2-classifier}
@@ -248,10 +284,12 @@ Short ambulance tracks missed with a 5-of-8 vote (test12) & too few confident fr
 Early confirmations (test12, 1.4\,s before the label) & hand-labelled windows are approximate & label from the first visible frame \\
 Recall 88\% on Pakistani ambulances (test) & few local ambulance crops in training & collect more local ambulance crops \\
 Mislabelled duplicate crops (4 in validation) & copies made while sorting crops & resolved: split manifest + duplicate check \\
-False priority at $\geq$20\% per-frame false alarms & vote too permissive for very noisy input & keep per-frame FP $\ll$ 20\% \\
-Higher p95 wait than actuated under heavy demand & green length fixed at its start & per-vehicle green extension \\
-Corridor raises longest wait by 8\,s & downstream junctions clear too early & shorter corridor horizon \\
-No measurable effect of fair recovery & short priority intervals; diluted metrics & approach-level metrics; stress scenarios \\
+False priority at $\geq$20\% per-frame false alarms & vote too permissive for very noisy input & keep per-frame FP $\ll$ 20\%; live 3-of-8 vote is 4$\times$ more tolerant \\
+Higher p95 wait than actuated under heavy demand & green length fixed at its start & resolved: extension + tail tuning (gap +0.3\,s, n.s.) \\
+Green extension lengthened the longest wait (+6.6\,s) & others held up to the 40\,s cap & resolved: 30\,s cap, wait weight 0.3 \\
+Corridor gives no measurable ambulance benefit & junctions 300\,m apart & off by default; just-in-time rule kept as an option \\
+Fair recovery gives no benefit (harmful when frequent) & adaptive order already serves delayed approaches & off by default; re-order rule removes the harm \\
+MARL better on car wait, worse on tail waits & heuristic tail tuning moved further & longer training, tail-weighted reward \\
 \hline
 \end{tabular}}
 \end{table}
@@ -260,14 +298,18 @@ No measurable effect of fair recovery & short priority intervals; diluted metric
 All control results are from simulation; the SUMO cameras are virtual (exact ambulance positions with
 simulated classifier scores), so the real camera pipeline and the SUMO evaluation share the controller and the
 voting rule but not the video. The live vote (3 of 8) was tuned on the same 12 clips it is scored on, which
-hold only 7 ambulance passes, and the camera-error sweep used the stricter 5-of-8 vote. Fairness is measured
-network-wide. Authentication is off by default and must be enabled for any deployment.
+hold only 7 ambulance passes. The fair-recovery stress scenario is one synthetic demand pattern. Authentication
+is off by default and must be enabled for any deployment.
 
 \section{Iteration Outcome}
 The exit criterion is met: the scripted scenario (\texttt{scripts/scripted\_scenario.py}) sends one ambulance,
 then two simultaneous ambulances; each is confirmed by detection, receives a protected green, and is followed
-by recovery greens, and the whole sequence is recorded in the event log. All 40 automated tests pass. The classifier
-was evaluated on the held-out test split and replaced by a better retrained model, and all available videos were
-processed. The main open items for FYP-2 are a recovery policy with a measurable fairness benefit, longer MARL
-training, more labelled real video (and a camera-error sweep with the live 3-of-8 vote), and hard negatives for
-ambulance look-alikes.
+by recovery greens, and the whole sequence is recorded in the event log. All 45 automated tests pass. The classifier
+was evaluated on the held-out test split and replaced by a better retrained model, all available videos were
+processed, and the improvements the first evaluation pointed to were implemented and evaluated on the held-out
+seeds: green extension and tail tuning (which closed the heavy-demand gap to actuated control), an approach-level
+fairness measure, a re-order-only recovery rule and a recovery stress test, a just-in-time corridor, a retrained
+MARL policy and the camera-error sweep for the live vote. Fair recovery and the corridor did not help and are off
+by default. The main open items for FYP-2 are reducing the delay of the vehicles an ambulance holds (the cost of
+priority that remains), MARL training that also wins on tail waits, more labelled real video, and hard negatives
+for ambulance look-alikes.

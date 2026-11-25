@@ -82,6 +82,25 @@ class IntersectionController:
     def is_ambulance_active(self, approach: str, now: float) -> bool:
         return self._active(approach, now)
 
+    def time_to_green(self, approach: str, now: float) -> float:
+        """Shortest time (s) in which `approach` could be green if it were requested now, honouring the
+        minimum green, yellow and all-red. 0 if it is green already."""
+        elapsed = now - self.stage_start
+        t = self.timing
+        if self.stage is Stage.GREEN:
+            if self.cur == approach:
+                return 0.0
+            return max(0.0, self.cfg.min_green_s - elapsed) + t.yellow_s + t.all_red_s
+        if self.stage is Stage.YELLOW:
+            return max(0.0, t.yellow_s - elapsed) + t.all_red_s
+        return max(0.0, t.all_red_s - elapsed)
+
+    def green_remaining(self, now: float) -> float:
+        """Planned green left on the current approach (0 when not green)."""
+        if self.stage is not Stage.GREEN:
+            return 0.0
+        return max(0.0, self.stage_dur - (now - self.stage_start))
+
     # ------------------------------------------------------------------ tick
     def tick(self, now: float) -> None:
         self._refresh(now)
@@ -92,7 +111,7 @@ class IntersectionController:
         elapsed = now - self.stage_start
         if self.stage is Stage.GREEN:
             cut = target is not None and target != self.cur and elapsed >= self.cfg.min_green_s
-            expired = target is None and elapsed >= self.stage_dur
+            expired = target is None and elapsed >= self.stage_dur and not self._extend(elapsed, now)
             gap = target is None and not expired and self._gap_out(elapsed)
             if gap:
                 self._emit("green_ended_early", approach=self.cur, after_s=round(elapsed, 1),
@@ -157,6 +176,26 @@ class IntersectionController:
         if self.vehicles.get(self.cur, 0) > 0:
             return False
         return any(self.vehicles.get(a, 0) > 0 for a in self.approaches if a != self.cur)
+
+    def _extend(self, elapsed: float, now: float) -> bool:
+        """Keep a base-controller green past its planned length while its approach is still the busiest
+        (actuated-style), bounded by extend_max_green_s and by how long the others have waited."""
+        c = self.cfg
+        if not c.extend or self.cur is None or self.recovering or self._source != "base":
+            return False
+        if elapsed >= c.extend_max_green_s:
+            return False
+        mine = self.vehicles.get(self.cur, 0)
+        others = [a for a in self.approaches if a != self.cur]
+        if mine <= 0 or mine < c.extend_ratio * max((self.vehicles.get(a, 0) for a in others), default=0):
+            return False
+        if any(self.vehicles.get(a, 0) > 0 and self._waiting(a, now) >= c.extend_wait_cap_s for a in others):
+            return False
+        if not self._extended:
+            self._extended = True
+            self.stats.extensions += 1
+            self._emit("green_extended", approach=self.cur, planned_s=round(self.stage_dur, 1), vehicles=mine)
+        return True
 
     def _waiting(self, a: str, now: float) -> float:
         if a == self.cur and self.stage in (Stage.GREEN, Stage.YELLOW):
@@ -234,7 +273,11 @@ class IntersectionController:
                 share = self.vehicles.get(a, 0) / qmax if qmax > 0 else 1.0
                 return extra * ((1 - w) + w * share)
 
-            if self.cfg.recovery_mode == "queue" and qmax > 0:
+            if self.cfg.recovery_mode == "order" and qmax > 0:
+                # only re-order: the delayed approaches that have a queue go first, longest wait first, but each
+                # green's length is left to the base controller, decided when that green starts (None = undecided)
+                self.recovery_plan = [(a, None) for a in others if self.vehicles.get(a, 0) > 0]
+            elif self.cfg.recovery_mode == "queue" and qmax > 0:
                 # serve the delayed approaches that actually have a queue, longest wait first, each for about as
                 # long as its queue needs to clear (bounded below by the gap-out minimum, above by green + max extra)
                 lo = self.cfg.gap_out_min_green_s
@@ -247,7 +290,7 @@ class IntersectionController:
             if self.recovery_plan:
                 self._emit("recovery_planned", plan=[a for a, _ in self.recovery_plan],
                            extra_green_s=round(extra, 1),
-                           greens_s={a: round(d, 1) for a, d in self.recovery_plan},
+                           greens_s={a: (round(d, 1) if d is not None else None) for a, d in self.recovery_plan},
                            queues={a: self.vehicles.get(a, 0) for a in others})
         if self.stage is Stage.GREEN and self.cur in self.served:
             self.stage_dur = 0.0  # release the junction right away
@@ -257,8 +300,14 @@ class IntersectionController:
     def _next_approach(self, now: float) -> tuple[str, float, str]:
         if self.preempt_target:
             return self.preempt_target, self.timing.green_s, "preempt"
-        if self.recovery_plan:
+        while self.recovery_plan:
             a, d = self.recovery_plan.pop(0)
+            if d is None:                         # "order" mode: base controller sizes the green, now
+                if self.vehicles.get(a, 0) <= 0:
+                    continue                      # its queue cleared meanwhile: nothing to recover
+                ctx = self._context(now, self.cur)
+                ctx.approaches = (a,)
+                d = self.base.next_phase(ctx).green_s
             return a, d, "recovery"
         a, d = self._decide(now, self.cur)
         return a, d, "base"
@@ -269,6 +318,8 @@ class IntersectionController:
         self.stage_start = now
         self.stage_dur = dur
         self.recovering = source == "recovery"
+        self._source = source
+        self._extended = False
         if source == "preempt":
             self._granted(a, now)
         self._emit("phase_changed", approach=a, source=source, green_s=round(dur, 1))
