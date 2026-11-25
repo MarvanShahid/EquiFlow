@@ -10,7 +10,8 @@ What it measures
 
     cd Projects
     python eval_detector.py                         # test split, threshold 0.5, latency on
-    python eval_detector.py --split val             # reproduce the mid-report validation numbers
+    python eval_detector.py --split val             # val split with the pipeline model (cls_v5_img128)
+    python eval_detector.py --split val --weights runs/cls_v4-2/weights/best.pt --imgsz 96   # mid-report model
     python eval_detector.py --threshold 0.6         # the per-frame threshold the tracker uses (th_frame)
     python eval_detector.py --no-latency --device cpu
     python eval_detector.py --target-recall 0.95    # pick the threshold on VAL for 95% recall, report TEST at it
@@ -296,9 +297,9 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--data", default=str(HERE / "crops"), help="crops dataset root (has train/val/test)")
     ap.add_argument("--split", default="test", choices=["test", "val", "train"])
-    ap.add_argument("--weights", default=str(HERE / "runs" / "cls_v4-2" / "weights" / "best.pt"))
+    ap.add_argument("--weights", default=str(HERE / "runs" / "cls_v5_img128" / "weights" / "best.pt"))
     ap.add_argument("--det-weights", default=str(HERE / "yolo26s.pt"), help="vehicle detector for latency")
-    ap.add_argument("--imgsz", type=int, default=96)
+    ap.add_argument("--imgsz", type=int, default=128, help="classifier input size (cls_v5_img128: 128, cls_v4-2: 96)")
     ap.add_argument("--det-imgsz", type=int, default=1280)
     ap.add_argument("--threshold", type=float, default=0.5)
     ap.add_argument("--device", default=None, help="0 for the first GPU, cpu; default: GPU if available")

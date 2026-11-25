@@ -1,0 +1,19 @@
+{
+  "weights": "C:\\Smester7\\FYP_Equiflow\\EquiFlow\\Projects\\runs\\cls_v4-2\\weights\\best.pt",
+  "imgsz": 96,
+  "pr_auc": 0.9732,
+  "th0.5": {
+    "accuracy": 0.9834,
+    "precision": 0.9563,
+    "recall": 0.9184,
+    "f1": 0.937,
+    "false_alarm_rate": 0.0065
+  },
+  "th0.3": {
+    "accuracy": 0.9824,
+    "precision": 0.9327,
+    "recall": 0.9371,
+    "f1": 0.9349,
+    "false_alarm_rate": 0.0105
+  }
+}

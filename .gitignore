@@ -32,6 +32,9 @@ Projects/runs/*
 !Projects/runs/cls_v4-2/
 !Projects/runs/cls_v4-2/weights/
 !Projects/runs/cls_v4-2/weights/best.pt
+!Projects/runs/cls_v5_img128/
+!Projects/runs/cls_v5_img128/weights/
+!Projects/runs/cls_v5_img128/weights/best.pt
 
 # Diagnostic / generated files
 Projects/diag/
@@ -71,6 +74,8 @@ backend/logs/
 # keep detector evaluation results (python Projects/eval_detector.py)
 !Projects/runs/eval_test/
 !Projects/runs/eval_val/
+!Projects/runs/eval_test_v5_img128/
+!Projects/runs/eval_test_r95/
 Projects/runs/eval_*/scores.csv
 # per-run SUMO event logs (run_equiflow.py --event-log)
 sumo/results/event_logs/

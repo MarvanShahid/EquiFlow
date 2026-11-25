@@ -1,14 +1,13 @@
 video,processed,used_for_training_crops,ambulance_passes,detected,missed,false_events,false_event_times_s,latency_s
-test1,True,no,1,1,0,0,,0.20
-test11,False,test,0,,,,,
-test12,True,no,3,2,1,0,,0.00 0.68
-test2,True,no,1,1,0,0,,0.13
-test3,True,no,1,1,0,0,,0.43
-test4,True,no,1,1,0,1,12.16,0.13
-test5,True,no,0,0,0,9,0.83 3.03 4.9 6.67 8.8 9.37 10 10.8 11.47,
-test6,False,train,0,,,,,
-test7,False,train,0,,,,,
-test8,False,train,0,,,,,
-test9,True,val,0,0,0,1,1.16,
-v1,True,train,0,0,0,2,1.18 2.36,
-v2,False,train,0,,,,,
+test1,True,no,1,1,0,0,,0.48
+test11,True,test,0,0,0,0,,
+test12,True,no,3,3,0,2,76.64 76.8,2.00 0.00 0.60
+test2,True,no,1,1,0,0,,0.07
+test3,True,no,1,1,0,0,,3.37
+test4,True,no,1,1,0,1,8.08,0.07
+test5,True,no,0,0,0,3,0.07 9.1 10,
+test6,True,train,0,0,0,0,,
+test8,True,train,0,0,0,0,,
+test9,True,val,0,0,0,0,,
+v1,True,train,0,0,0,0,,
+v2,True,train,0,0,0,0,,

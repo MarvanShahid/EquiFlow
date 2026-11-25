@@ -1,0 +1,4 @@
+source,ambulance,other_vehicle,tp,fp,fn,tn,recall,false_alarm_rate
+local,0,89,0,1,0,88,,0.0112
+pk,235,0,217,0,18,0,0.9234,
+pub,533,2864,518,102,15,2762,0.9719,0.0356

@@ -1,0 +1,89 @@
+{
+  "split": "test",
+  "threshold": 0.0511,
+  "weights": "C:\\Smester7\\FYP_Equiflow\\EquiFlow\\Projects\\runs\\cls_v4-2\\weights\\best.pt",
+  "device": "cpu",
+  "evaluated_at": "2026-11-25T21:02:32",
+  "host": "LAPTOP-57BD18FI",
+  "counts": {
+    "ambulance": 768,
+    "other_vehicle": 2953
+  },
+  "confusion": {
+    "tp": 735,
+    "fp": 103,
+    "fn": 33,
+    "tn": 2850
+  },
+  "n": 3721,
+  "accuracy": 0.9635,
+  "precision": 0.8771,
+  "recall": 0.957,
+  "f1": 0.9153,
+  "specificity": 0.9651,
+  "false_alarm_rate": 0.0349,
+  "balanced_accuracy": 0.9611,
+  "majority_baseline": 0.7936,
+  "roc_auc": 0.9932,
+  "pr_auc": 0.9807,
+  "threshold_tuning": {
+    "on": "val",
+    "target_recall": 0.95,
+    "threshold": 0.0511,
+    "val_recall": 0.9515,
+    "val_precision": 0.8126,
+    "val_false_alarm_rate": 0.0345
+  },
+  "best_f1_threshold": {
+    "threshold": 0.55,
+    "f1": 0.943,
+    "precision": 0.9608,
+    "recall": 0.9258
+  },
+  "max_recall_at_precision_0.95": {
+    "threshold": 0.45,
+    "tp": 714,
+    "fp": 34,
+    "fn": 54,
+    "tn": 2919,
+    "precision": 0.9545,
+    "recall": 0.9297,
+    "f1": 0.942,
+    "false_alarm_rate": 0.0115
+  },
+  "per_source": [
+    {
+      "source": "local",
+      "ambulance": 0,
+      "other_vehicle": 89,
+      "tp": 0,
+      "fp": 1,
+      "fn": 0,
+      "tn": 88,
+      "recall": "",
+      "false_alarm_rate": 0.0112
+    },
+    {
+      "source": "pk",
+      "ambulance": 235,
+      "other_vehicle": 0,
+      "tp": 217,
+      "fp": 0,
+      "fn": 18,
+      "tn": 0,
+      "recall": 0.9234,
+      "false_alarm_rate": ""
+    },
+    {
+      "source": "pub",
+      "ambulance": 533,
+      "other_vehicle": 2864,
+      "tp": 518,
+      "fp": 102,
+      "fn": 15,
+      "tn": 2762,
+      "recall": 0.9719,
+      "false_alarm_rate": 0.0356
+    }
+  ]
+}

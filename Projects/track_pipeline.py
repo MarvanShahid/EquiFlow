@@ -8,15 +8,16 @@ from ultralytics import YOLO
 HERE = Path(__file__).resolve().parent  # the Projects folder
 
 DET_WEIGHTS = "yolo26s.pt"
-CLS_WEIGHTS = str(HERE / "runs" / "cls_v4-2" / "weights" / "best.pt")
+CLS_WEIGHTS = str(HERE / "runs" / "cls_v5_img128" / "weights" / "best.pt")
+CLS_IMGSZ = 128  # cls_v5_img128 was trained at 128 px (cls_v4-2: 96)
 VIDEO_DIR = HERE / "videos"
 OUT_ROOT = HERE / "tracking_out"
 IMGSZ = 1280
 TH_FRAME = 0.6
-M, K = 8, 5
+M, K = 8, 3  # re-tuned for cls_v5_img128 (was 5): tune_tracking.py
 PAD, MIN_SIDE = 0.12, 20
 OUT_W = 1920
-MEAN_MIN = 0.65
+MEAN_MIN = 0.70  # re-tuned for cls_v5_img128 (was 0.65)
 RELEASE = 1
 
 cls = YOLO(CLS_WEIGHTS)
@@ -107,7 +108,7 @@ def run(name):
 
         ps = [
             rr.probs.data[AMB].item()
-            for rr in cls.predict(crops, imgsz=96, device=0, verbose=False)
+            for rr in cls.predict(crops, imgsz=CLS_IMGSZ, device=0, verbose=False)
         ] if crops else []
 
         for (tid, x1, y1, x2, y2), p in zip(keep, ps):

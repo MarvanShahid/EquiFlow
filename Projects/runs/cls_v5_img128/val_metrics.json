@@ -1,0 +1,22 @@
+{
+  "weights": "C:\\Smester7\\FYP_Equiflow\\EquiFlow\\Projects\\runs\\cls_v5_img128\\weights\\best.pt",
+  "imgsz": 128,
+  "pr_auc": 0.979,
+  "th0.5": {
+    "accuracy": 0.9837,
+    "precision": 0.9499,
+    "recall": 0.9277,
+    "f1": 0.9387,
+    "false_alarm_rate": 0.0076
+  },
+  "th0.3": {
+    "accuracy": 0.9805,
+    "precision": 0.9199,
+    "recall": 0.9371,
+    "f1": 0.9284,
+    "false_alarm_rate": 0.0127
+  },
+  "model": "yolo26n-cls.pt",
+  "oversample": 1,
+  "epochs": 30
+}

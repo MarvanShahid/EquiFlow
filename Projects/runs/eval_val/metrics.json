@@ -1,0 +1,70 @@
+{
+  "split": "val",
+  "threshold": 0.5,
+  "weights": "C:\\Smester7\\FYP_Equiflow\\EquiFlow\\Projects\\runs\\cls_v4-2\\weights\\best.pt",
+  "device": "cpu",
+  "evaluated_at": "2026-11-25T21:04:18",
+  "host": "LAPTOP-57BD18FI",
+  "counts": {
+    "ambulance": 429,
+    "other_vehicle": 2755
+  },
+  "confusion": {
+    "tp": 394,
+    "fp": 18,
+    "fn": 35,
+    "tn": 2737
+  },
+  "n": 3184,
+  "accuracy": 0.9834,
+  "precision": 0.9563,
+  "recall": 0.9184,
+  "f1": 0.937,
+  "specificity": 0.9935,
+  "false_alarm_rate": 0.0065,
+  "balanced_accuracy": 0.9559,
+  "majority_baseline": 0.8653,
+  "roc_auc": 0.9921,
+  "pr_auc": 0.9732,
+  "best_f1_threshold": {
+    "threshold": 0.6,
+    "f1": 0.9391,
+    "precision": 0.9632,
+    "recall": 0.9161
+  },
+  "max_recall_at_precision_0.95": {
+    "threshold": 0.45,
+    "tp": 395,
+    "fp": 19,
+    "fn": 34,
+    "tn": 2736,
+    "precision": 0.9541,
+    "recall": 0.9207,
+    "f1": 0.9371,
+    "false_alarm_rate": 0.0069
+  },
+  "per_source": [
+    {
+      "source": "local",
+      "ambulance": 0,
+      "other_vehicle": 153,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "tn": 153,
+      "recall": "",
+      "false_alarm_rate": 0.0
+    },
+    {
+      "source": "pub",
+      "ambulance": 429,
+      "other_vehicle": 2602,
+      "tp": 394,
+      "fp": 18,
+      "fn": 35,
+      "tn": 2584,
+      "recall": 0.9184,
+      "false_alarm_rate": 0.0069
+    }
+  ]
+}

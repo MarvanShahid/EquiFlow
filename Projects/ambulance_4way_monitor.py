@@ -16,7 +16,7 @@ HERE = Path(__file__).resolve().parent  # the Projects folder
 
 # Model 1: vehicle detector (COCO) | Model 2: ambulance classifier (yours)
 DET_WEIGHTS = "yolo26s.pt"
-CLS_WEIGHTS = str(HERE / "runs" / "cls_v4-2" / "weights" / "best.pt")
+CLS_WEIGHTS = str(HERE / "runs" / "cls_v5_img128" / "weights" / "best.pt")
 
 VIDEO_PATHS = {
     "North": str(HERE / "videos" / "test11.mp4"),
@@ -29,12 +29,12 @@ DEVICE = 0                  # GPU 0. Use "cpu" if no GPU.
 IMGSZ = 1280                # detector input size
 DET_CONF = 0.35             # detector confidence
 VEHICLE_CLASSES = [2, 3, 5, 7]   # COCO: car, motorcycle, bus, truck
-CLS_IMGSZ = 96              # classifier input size
+CLS_IMGSZ = 128             # classifier input size (cls_v5_img128)
 
 # Voting rule (same as your tracking script)
 TH_FRAME = 0.6              # crop counts as "ambulance vote" if p >= this
-M, K = 8, 5                 # need K positive votes in the last M frames
-MEAN_MIN = 0.65             # mean p over last M frames must be >= this
+M, K = 8, 3                 # need K positive votes in the last M frames (re-tuned for cls_v5_img128, was 5)
+MEAN_MIN = 0.70             # mean p over last M frames must be >= this (re-tuned, was 0.65)
 RELEASE = 1                 # drop confirmation when votes <= this
 MIN_MOVE = 0.00             # min movement (fraction of frame width); raise to ignore stationary objects
 PAD, MIN_SIDE = 0.12, 20    # crop padding, min box side (pixels @ 1920 width)

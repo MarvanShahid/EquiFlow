@@ -1,0 +1,110 @@
+{
+  "split": "test",
+  "threshold": 0.5,
+  "weights": "runs/cls_v5_img128/weights/best.pt",
+  "device": "0",
+  "evaluated_at": "2026-11-25T22:43:45",
+  "host": "LAPTOP-57BD18FI",
+  "counts": {
+    "ambulance": 768,
+    "other_vehicle": 2953
+  },
+  "confusion": {
+    "tp": 718,
+    "fp": 26,
+    "fn": 50,
+    "tn": 2927
+  },
+  "n": 3721,
+  "accuracy": 0.9796,
+  "precision": 0.9651,
+  "recall": 0.9349,
+  "f1": 0.9497,
+  "specificity": 0.9912,
+  "false_alarm_rate": 0.0088,
+  "balanced_accuracy": 0.963,
+  "majority_baseline": 0.7936,
+  "roc_auc": 0.9946,
+  "pr_auc": 0.9846,
+  "best_f1_threshold": {
+    "threshold": 0.6,
+    "f1": 0.95,
+    "precision": 0.9727,
+    "recall": 0.9284
+  },
+  "max_recall_at_precision_0.95": {
+    "threshold": 0.3,
+    "tp": 726,
+    "fp": 38,
+    "fn": 42,
+    "tn": 2915,
+    "precision": 0.9503,
+    "recall": 0.9453,
+    "f1": 0.9478,
+    "false_alarm_rate": 0.0129
+  },
+  "per_source": [
+    {
+      "source": "local",
+      "ambulance": 0,
+      "other_vehicle": 89,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "tn": 89,
+      "recall": "",
+      "false_alarm_rate": 0.0
+    },
+    {
+      "source": "pk",
+      "ambulance": 235,
+      "other_vehicle": 0,
+      "tp": 207,
+      "fp": 0,
+      "fn": 28,
+      "tn": 0,
+      "recall": 0.8809,
+      "false_alarm_rate": ""
+    },
+    {
+      "source": "pub",
+      "ambulance": 533,
+      "other_vehicle": 2864,
+      "tp": 511,
+      "fp": 26,
+      "fn": 22,
+      "tn": 2838,
+      "recall": 0.9587,
+      "false_alarm_rate": 0.0091
+    }
+  ],
+  "latency": {
+    "classifier_batch1": {
+      "mean_ms": 14.22,
+      "median_ms": 12.85,
+      "p95_ms": 24.61,
+      "runs": 100
+    },
+    "classifier_batch16": {
+      "mean_ms": 44.17,
+      "median_ms": 42.39,
+      "p95_ms": 53.54,
+      "runs": 20,
+      "per_crop_ms": 2.76,
+      "batch": 16
+    },
+    "detector_frame": {
+      "mean_ms": 58.46,
+      "median_ms": 61.68,
+      "p95_ms": 72.31,
+      "runs": 33,
+      "imgsz": 1280,
+      "frame": "C:\\Users\\Adeel\\AppData\\Local\\Temp\\claude\\4371369b19ed3d09\\fb975212-4a24-4d09-93dd-349081263af3\\scratchpad\\frame.jpg"
+    },
+    "pipeline_estimate": {
+      "5_vehicles_ms": 72.3,
+      "10_vehicles_ms": 86.1,
+      "20_vehicles_ms": 113.7
+    }
+  }
+}

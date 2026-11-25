@@ -6,15 +6,16 @@ controller: adaptive          # fixed_time | adaptive
 vision:
   # relative paths are relative to this file (the backend folder)
   det_weights: ../Projects/yolo26s.pt                           # Model 1: COCO vehicle detector (+ ByteTrack)
-  cls_weights: ../Projects/runs/cls_v4-2/weights/best.pt        # Model 2: your ambulance / other_vehicle classifier
+  cls_weights: ../Projects/runs/cls_v5_img128/weights/best.pt   # Model 2: ambulance / other_vehicle classifier (Iteration 2 best)
+  cls_imgsz: 128              # classifier input size (cls_v5_img128 was trained at 128)
   device: 0                   # GPU 0, or "cpu"
   imgsz: 1280                 # lower (960 / 640) if four feeds are too slow
   process_every: 1            # 2 = run the models on every second frame
   # voting rule, identical to your tracking script
   th_frame: 0.6
   m: 8
-  k: 5
-  mean_min: 0.65
+  k: 3                        # re-tuned for cls_v5_img128 (was 5): Projects/tune_tracking.py
+  mean_min: 0.70              # re-tuned for cls_v5_img128 (was 0.65)
   release: 1
   min_move: 0.0               # try 0.01 to ignore stationary objects (your test12 false events)
 
