@@ -1,25 +1,149 @@
 \chapter{Proposal Feedback and Iteration Plan}
+\label{ch:iteration-plan}
+
 \section{Proposal Feedback Summary}
-Summarize feedback received during the proposal stage.
+Supervisor feedback was received over five meetings with Dr.~Suleman Khan. In the first meeting the team was
+asked to review papers related to the project idea; in the second, the project scope and modules were revised;
+in the third, dataset augmentation and preprocessing were discussed and a dashboard showing live updates was
+requested; and in the fifth, the supervisor asked for multiple real Pakistani traffic scenarios in the
+simulation. The meeting-wise feedback and the action taken are listed in the appendix. The action register below
+(Table~\ref{tab:action-register}) lists the research- and scope-driven actions taken from the proposal, with
+their status after Iteration~2.
+
 \section{Proposal Action Register}
-\begin{longtable}{p{0.06\textwidth}p{0.28\textwidth}p{0.25\textwidth}p{0.14\textwidth}p{0.17\textwidth}}
+\begin{longtable}{p{0.05\textwidth}p{0.27\textwidth}p{0.29\textwidth}p{0.29\textwidth}}
+\caption{Proposal action register.}\label{tab:action-register}\\
 \toprule
-No. & Feedback / Required Change & Action Taken & Status & Evidence\\
+No. & Required action / issue & Action taken & Status / evidence\\
 \midrule
-1 & & & &\\
-2 & & & &\\
-3 & & & &\\
+\endfirsthead
+\toprule
+No. & Required action / issue & Action taken & Status / evidence\\
+\midrule
+\endhead
+1 & Define a focused contribution beyond generic adaptive traffic lights. &
+Focus on ambulance priority with fairness-aware recovery. & Done; scope in Chapter~1.\\
+2 & Justify the research gap with a targeted comparison. &
+Compared fairness-control, emergency-preemption and detection literature. & Done; Chapter~2.\\
+3 & Do not claim detection without labelled data. &
+Trained a labelled ambulance / other-vehicle classifier; checked the splits for duplicates and evaluated it
+once on the held-out test split. & Done; Section~\ref{sec:it2-classifier}. Dataset-licence notes pending.\\
+4 & Evaluate impact on ordinary traffic as well as ambulance travel time. &
+1\,000 held-out SUMO runs comparing fixed-time, actuated, fixed-time with priority and EquiFlow on car wait,
+tail wait, worst approach and Jain index. & Done; Section~\ref{sec:it2-results}.\\
+5 & Make recovery after preemption an explicit feature. &
+Queue-sized recovery greens (longest wait first) and a fairness-aware MARL base controller, both implemented
+and ablated. & Implemented; no measurable fairness benefit yet (Section~\ref{sec:it2-ablation}).\\
 \bottomrule
 \end{longtable}
+
 \section{Iteration Strategy}
-Describe the iterative development strategy.
+We develop the system incrementally. Each iteration produces a runnable artifact and supporting evidence.
+Iteration~1 established the foundations that everything else depends on: sensing (ambulance recognition and a
+dashboard view) and simulation (SUMO scenarios and baselines). Iteration~2 adds tracking and control and
+integrates the modules. A learning-based controller is introduced only on top of the stable simulation state,
+action interface and baseline metrics from Iteration~1.
+
 \section{Iteration 1 Plan}
-Define objectives, selected features, deliverables, and evidence.
+\textbf{Objectives:} build the sensing and simulation foundations and a modular repository.
+\begin{itemize}
+\item Train a YOLO26 ambulance recognition model on a labelled dataset. \emph{Done.}
+\item Display detections on video in a live dashboard. \emph{Done.}
+\item Build SUMO scenarios (Islamabad intersection types, 5 vehicle classes, 4 demand scenarios). \emph{Done.}
+\item Implement fixed-time and actuated baseline controllers. \emph{Done.}
+\item Organise the repository as vision, marl, sumo, comm, dashboard and docs. \emph{Done.}
+\end{itemize}
+\textbf{Deliverables and evidence:} trained model and training logs, dashboard demonstration, SUMO toolkit,
+repository (Chapter~\ref{ch:iteration2} builds on these).
+
 \section{Iteration 2 Plan}
-Define objectives, selected features, deliverables, and evidence.
+\textbf{Objectives:} add tracking and control, then integrate the modules.
+\begin{itemize}
+\item Add ByteTrack tracking so detections persist across frames.
+\item Implement route-aware preemption with safe phase transitions and a green corridor where feasible.
+\item Implement and train a fairness-aware MARL controller and a recovery policy.
+\item Connect the modules through FastAPI and MQTT and link the dashboard to the live system.
+\item Complete the formal detector evaluation (test split, latency) and run repeatable baseline comparisons.
+\end{itemize}
+\textbf{Deliverables:} integrated prototype, experiment scripts, preliminary results and documented failure
+cases. \textbf{Exit criterion:} a scripted ambulance scenario triggers and completes a logged preemption with
+recovery. The outcome of each item is reported in Chapter~\ref{ch:iteration2}.
+
 \section{Work Breakdown and Responsibilities}
-Describe task allocation and ownership.
+\begin{table}[htbp]
+\centering
+\small
+\caption{Work breakdown and responsibilities.}
+\label{tab:work-breakdown}
+\begin{tabular}{p{0.24\textwidth}p{0.36\textwidth}p{0.3\textwidth}}
+\toprule
+Workstream & Primary responsibility & Supporting role / evidence\\
+\midrule
+Research and requirements & Literature review, requirements, citations. & Literature matrix and meeting notes.\\
+Data and detection (vision) & Dataset, model training, detector evaluation, tracking. &
+Training logs, split manifest, test-split evaluation, tracking scores.\\
+Simulation and control (sumo, marl) & SUMO networks, demand, baselines, emergency routes, MARL, priority and
+recovery. & Configuration, run manifest and reproducible runs.\\
+Integration (comm, dashboard) & FastAPI/MQTT interfaces, dashboard, end-to-end tests. &
+Code, event logs, scripted scenario, demonstrations.\\
+Documentation and release (docs) & Report, version control, test evidence, packaging. &
+Repository, pinned versions, results documents.\\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \section{Progress Against Plan}
-Compare planned milestones with actual progress.
+\begin{longtable}{p{0.27\textwidth}p{0.16\textwidth}p{0.47\textwidth}}
+\caption{Progress against plan after Iteration 2.}\label{tab:progress}\\
+\toprule
+Work item & Status & Evidence\\
+\midrule
+\endfirsthead
+\toprule
+Work item & Status & Evidence\\
+\midrule
+\endhead
+Problem and research gap & Done & Literature review; Chapter~2.\\
+Dataset preparation & Done & 32\,593 labelled crops in train/val/test after removing 39 duplicate or
+mislabelled files; split manifest with leakage check.\\
+YOLO26 ambulance recognition & Done & Mid-report model cls\_v4-2; retrained cls\_v5\_img128 now used
+(Table~\ref{tab:it2-cls-val}).\\
+Live detection dashboard & Done & Next.js dashboard linked to the live backend.\\
+SUMO toolkit and baselines & Done & Fixed-time and actuated controllers; Islamabad junction networks.\\
+Repository structure & Done & vision, marl, sumo, comm, dashboard, backend, docs.\\
+ByteTrack tracking & Done & 12 real videos scored; 7 of 7 ambulance passes confirmed
+(Table~\ref{tab:it2-tracking}).\\
+Route-aware preemption & Done & Safe yellow and all-red, green corridor on the multi-junction networks.\\
+Fair recovery / MARL & Done, no measurable benefit & Ablations show no significant effect of recovery;
+MARL ties the heuristic (Section~\ref{sec:it2-ablation}).\\
+FastAPI / MQTT integration & Done & REST, WebSocket, MQTT, CSV event log; scripted scenario passes.\\
+Test-split and latency evaluation & Done & 93.5\% recall, 96.5\% precision on the test split
+(Table~\ref{tab:it2-cls-test}); about 45\,ms per frame on an RTX 4050 (Table~\ref{tab:it2-latency}).\\
+Repeatable baseline comparisons & Done & 1\,000 one-hour runs on held-out seeds with 95\% confidence intervals
+and paired differences.\\
+\bottomrule
+\end{longtable}
+
 \section{Delays, Deviations and Recovery Plan}
-Explain deviations and recovery actions.
+Iteration~1 was scoped to the two stages that other stages depend on (sensing and simulation), so tracking,
+preemption, MARL and integration were deliberately moved to Iteration~2 instead of being started in parallel,
+together with the formal detector evaluation.
+
+In Iteration~2 every planned item was delivered, with these deviations:
+\begin{itemize}
+\item \textbf{Detector evaluation came last.} It needed the full crops dataset and a GPU, so it ran after the
+control and simulation work. The duplicate check it required found four mislabelled validation crops, which were
+removed; the classifier was then retrained and the better model (cls\_v5\_img128) was tested once on the held-out
+split.
+\item \textbf{The confirmation vote was re-tuned.} With the new classifier the original vote (5 of 8 frames)
+missed two of the seven ambulance passes in the real videos; an offline sweep moved it to 3 of 8. Because the same
+videos chose and scored the setting, a leave-one-video-out estimate is reported alongside.
+\item \textbf{One labelled video (test7) has no source file} and was dropped from the tracking evaluation.
+\item \textbf{Fair recovery and MARL did not show the expected benefit.} Both are implemented and evaluated, but
+recovery has no statistically significant effect and MARL only ties the hand-tuned adaptive controller.
+\end{itemize}
+No dated project log was kept, so schedule slippage is not quantified. The recovery plan for FYP-2 follows the
+risks identified at the mid-report: the working rule-based controller and the SUMO evaluation remain the
+baseline, the heuristic recovery stays in place while a recovery policy with a measurable fairness benefit is
+studied, MARL training is extended, and more labelled real video and local ambulance images are collected to
+make the detection results statistically meaningful.

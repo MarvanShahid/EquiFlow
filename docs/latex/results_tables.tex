@@ -128,20 +128,89 @@ decision (marl) & 23.83 & 19.82 & 61.69 & 4408.28 \\
 \begin{table}[htbp]
 \centering
 \small
-\caption{Tracking pipeline (YOLO26s + ByteTrack + classifier, 5-of-8 vote) on the Islamabad videos. A pass counts as detected if confirmed within 1\,s of its hand-labelled window.}
+\caption{Tracking pipeline (YOLO26s + ByteTrack + cls\_v5\_img128, 3-of-8 vote with mean score $\geq$ 0.70) on the Islamabad videos. A pass counts as detected if confirmed within 1\,s of its hand-labelled window.}
 \label{tab:it2-tracking}
 \begin{tabular}{lcccccc}
 \hline
 Video & Crops used in & Passes & Detected & Missed & False events & Latency (s) \\
 \hline
-test1 & no & 1 & 1 & 0 & 0 & 0.20 \\
-test12 & no & 3 & 2 & 1 & 0 & 0.00 0.68 \\
-test2 & no & 1 & 1 & 0 & 0 & 0.13 \\
-test3 & no & 1 & 1 & 0 & 0 & 0.43 \\
-test4 & no & 1 & 1 & 0 & 1 & 0.13 \\
-test5 & no & 0 & 0 & 0 & 9 & -- \\
-test9 & val & 0 & 0 & 0 & 1 & -- \\
-v1 & train & 0 & 0 & 0 & 2 & -- \\
+test1 & no & 1 & 1 & 0 & 0 & 0.48 \\
+test11 & test & 0 & 0 & 0 & 0 & -- \\
+test12 & no & 3 & 3 & 0 & 2 & 2.00 0.00 0.60 \\
+test2 & no & 1 & 1 & 0 & 0 & 0.07 \\
+test3 & no & 1 & 1 & 0 & 0 & 3.37 \\
+test4 & no & 1 & 1 & 0 & 1 & 0.07 \\
+test5 & no & 0 & 0 & 0 & 3 & -- \\
+test6 & train & 0 & 0 & 0 & 0 & -- \\
+test8 & train & 0 & 0 & 0 & 0 & -- \\
+test9 & val & 0 & 0 & 0 & 0 & -- \\
+v1 & train & 0 & 0 & 0 & 0 & -- \\
+v2 & train & 0 & 0 & 0 & 0 & -- \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Ambulance classifier on the held-out test split (Projects/eval\_detector.py, threshold 0.5; 768 ambulance and 2\,953 other-vehicle crops).}
+\label{tab:it2-cls-test}
+\begin{tabular}{lccccccc}
+\hline
+Model & Accuracy & Precision & Recall & F1 & False alarms & ROC-AUC & PR-AUC \\
+\hline
+cls\_v4-2 (mid-report) & 97.7\% & 95.7\% & 92.8\% & 0.942 & 1.1\% & 0.993 & 0.981 \\
+cls\_v5\_img128 (pipeline) & 98.0\% & 96.5\% & 93.5\% & 0.950 & 0.9\% & 0.995 & 0.985 \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Classifier training runs on the cleaned validation split (yolo26n-cls, 30 epochs; Projects/train\_cls\_v5.py). The model was chosen here and then run once on the test split.}
+\label{tab:it2-cls-val}
+\begin{tabular}{llccccc}
+\hline
+Run & Change & PR-AUC & Recall & Precision & F1 & False alarms \\
+\hline
+cls\_v4-2 & mid-report model & 0.973 & 91.8\% & 95.6\% & 0.937 & 0.7\% \\
+cls\_v5\_base & same settings, cleaned data & 0.975 & 91.8\% & 94.5\% & 0.931 & 0.8\% \\
+cls\_v5\_img128 & input 128\,px & 0.979 & 92.8\% & 95.0\% & 0.939 & 0.8\% \\
+cls\_v5\_os2 & ambulance crops $\times$2 & 0.975 & 93.7\% & 92.8\% & 0.933 & 1.1\% \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Re-tuning the confirmation vote for cls\_v5\_img128 on the 12 Islamabad videos (Projects/tune\_tracking.py, 360 settings replayed offline; window M = 8 frames).}
+\label{tab:it2-tune}
+\begin{tabular}{lcccccc}
+\hline
+Setting & Frame threshold & Mean score & K of 8 & Passes detected & False events & Latency (s) \\
+\hline
+before & 0.6 & 0.65 & 5 & 5 of 7 & 6 & 0.99 \\
+after & 0.6 & 0.7 & 3 & 7 of 7 & 6 & 0.94 \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Perception latency on an RTX 4050 laptop GPU (Projects/eval\_detector.py, a real 1280\,px video frame).}
+\label{tab:it2-latency}
+\begin{tabular}{lccc}
+\hline
+Stage & Mean (ms) & Median (ms) & p95 (ms) \\
+\hline
+YOLO26s vehicle detector, one frame & 27.71 & 26.93 & 32.01 \\
+classifier, one crop & 7.94 & 7.53 & 10.65 \\
+classifier, batch of 16 crops (1.71\,ms per crop) & 27.4 & 26.78 & 33.74 \\
+\hline
+full pipeline, 10 vehicles in view (estimate) & 44.8 & & \\
 \hline
 \end{tabular}
 \end{table}

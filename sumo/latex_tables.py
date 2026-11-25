@@ -128,8 +128,9 @@ def main():
     tf = ROOT.parent / "Projects" / "tracking_out" / "tracking_scores.csv"
     if tf.exists():
         L += [r"\begin{table}[htbp]", r"\centering", r"\small",
-              r"\caption{Tracking pipeline (YOLO26s + ByteTrack + classifier, 5-of-8 vote) on the Islamabad videos. "
-              r"A pass counts as detected if confirmed within 1\,s of its hand-labelled window.}",
+              r"\caption{Tracking pipeline (YOLO26s + ByteTrack + cls\_v5\_img128, 3-of-8 vote with mean score "
+              r"$\geq$ 0.70) on the Islamabad videos. A pass counts as detected if confirmed within 1\,s of its "
+              r"hand-labelled window.}",
               r"\label{tab:it2-tracking}", r"\begin{tabular}{lcccccc}", r"\hline",
               r"Video & Crops used in & Passes & Detected & Missed & False events & Latency (s) \\", r"\hline"]
         for r in csv.DictReader(tf.open()):
@@ -139,9 +140,97 @@ def main():
                      f"{r['missed']} & {r['false_events']} & {r['latency_s'] or '--'} \\\\")
         L += [r"\hline", r"\end{tabular}", r"\end{table}", ""]
 
+    L += classifier_tables()
+
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text("\n".join(L) + "\n", encoding="utf-8")
     print("wrote", OUT)
+
+
+def classifier_tables() -> list[str]:
+    """Ambulance classifier: test split, val comparison of the cls_v5 runs, vote re-tuning, GPU latency.
+    Sources: ../Projects/runs/eval_test*/metrics.json (eval_detector.py), runs/<name>/val_metrics.json
+    (train_cls_v5.py), tracking_out/tune/sweep.csv (tune_tracking.py)."""
+    import json
+
+    P = ROOT.parent / "Projects"
+    L: list[str] = []
+    pct = lambda x: f"{100 * float(x):.1f}\\%"  # noqa: E731
+
+    # test split
+    runs = [("cls\\_v4-2 (mid-report)", P / "runs" / "eval_test" / "metrics.json"),
+            ("cls\\_v5\\_img128 (pipeline)", P / "runs" / "eval_test_v5_img128" / "metrics.json")]
+    runs = [(n, json.loads(f.read_text())) for n, f in runs if f.exists()]
+    if runs:
+        L += [r"\begin{table}[htbp]", r"\centering", r"\small",
+              r"\caption{Ambulance classifier on the held-out test split (Projects/eval\_detector.py, threshold 0.5; "
+              r"768 ambulance and 2\,953 other-vehicle crops).}",
+              r"\label{tab:it2-cls-test}", r"\begin{tabular}{lccccccc}", r"\hline",
+              r"Model & Accuracy & Precision & Recall & F1 & False alarms & ROC-AUC & PR-AUC \\", r"\hline"]
+        for n, m in runs:
+            c = m["confusion"]  # F1 from counts: metrics.json stores it already rounded to 4 places
+            f1 = 2 * c["tp"] / (2 * c["tp"] + c["fp"] + c["fn"])
+            L.append(f"{n} & {pct(m['accuracy'])} & {pct(m['precision'])} & {pct(m['recall'])} & {f1:.3f} & "
+                     f"{pct(m['false_alarm_rate'])} & {m['roc_auc']:.3f} & {m['pr_auc']:.3f} \\\\")
+        L += [r"\hline", r"\end{tabular}", r"\end{table}", ""]
+
+    # val comparison of the training runs
+    names = [("cls_v4-2", "mid-report model"), ("cls_v5_base", "same settings, cleaned data"),
+             ("cls_v5_img128", "input 128\\,px"), ("cls_v5_os2", "ambulance crops $\\times$2")]
+    rows = [(n, d, json.loads((P / "runs" / n / "val_metrics.json").read_text()))
+            for n, d in names if (P / "runs" / n / "val_metrics.json").exists()]
+    if rows:
+        L += [r"\begin{table}[htbp]", r"\centering", r"\small",
+              r"\caption{Classifier training runs on the cleaned validation split (yolo26n-cls, 30 epochs; "
+              r"Projects/train\_cls\_v5.py). The model was chosen here and then run once on the test split.}",
+              r"\label{tab:it2-cls-val}", r"\begin{tabular}{llccccc}", r"\hline",
+              r"Run & Change & PR-AUC & Recall & Precision & F1 & False alarms \\", r"\hline"]
+        for n, d, m in rows:
+            t = m["th0.5"]
+            L.append(f"{esc(n)} & {d} & {m['pr_auc']:.3f} & {pct(t['recall'])} & {pct(t['precision'])} & "
+                     f"{t['f1']:.3f} & {pct(t['false_alarm_rate'])} \\\\")
+        L += [r"\hline", r"\end{tabular}", r"\end{table}", ""]
+
+    # vote re-tuning
+    sf = P / "tracking_out" / "tune" / "sweep.csv"
+    if sf.exists():
+        sweep = {(r["th_frame"], r["mean_min"], r["k"]): r for r in csv.DictReader(sf.open())}
+        pick = [("before", ("0.6", "0.65", "5")), ("after", ("0.6", "0.7", "3"))]
+        L += [r"\begin{table}[htbp]", r"\centering", r"\small",
+              r"\caption{Re-tuning the confirmation vote for cls\_v5\_img128 on the 12 Islamabad videos "
+              r"(Projects/tune\_tracking.py, 360 settings replayed offline; window M = 8 frames).}",
+              r"\label{tab:it2-tune}", r"\begin{tabular}{lcccccc}", r"\hline",
+              r"Setting & Frame threshold & Mean score & K of 8 & Passes detected & False events & Latency (s) \\",
+              r"\hline"]
+        for n, k in pick:
+            r = sweep.get(k)
+            if r:
+                L.append(f"{n} & {k[0]} & {k[1]} & {k[2]} & {r['detected']} of {r['passes']} & "
+                         f"{r['false_events']} & {r['mean_latency_s'] or '--'} \\\\")
+        L += [r"\hline", r"\end{tabular}", r"\end{table}", ""]
+
+    # GPU latency (eval_test: measured on mains power)
+    lf = P / "runs" / "eval_test" / "metrics.json"
+    if lf.exists() and "latency" in json.loads(lf.read_text()):
+        lat = json.loads(lf.read_text())["latency"]
+        L += [r"\begin{table}[htbp]", r"\centering", r"\small",
+              r"\caption{Perception latency on an RTX 4050 laptop GPU (Projects/eval\_detector.py, a real 1280\,px "
+              r"video frame).}",
+              r"\label{tab:it2-latency}", r"\begin{tabular}{lccc}", r"\hline",
+              r"Stage & Mean (ms) & Median (ms) & p95 (ms) \\", r"\hline"]
+        for key, label in (("detector_frame", "YOLO26s vehicle detector, one frame"),
+                           ("classifier_batch1", "classifier, one crop"),
+                           ("classifier_batch16", "classifier, batch of 16 crops")):
+            if key in lat:
+                x = lat[key]
+                extra = f" ({x['per_crop_ms']}\\,ms per crop)" if "per_crop_ms" in x else ""
+                L.append(f"{label}{extra} & {x['mean_ms']} & {x['median_ms']} & {x['p95_ms']} \\\\")
+        pe = lat.get("pipeline_estimate", {})
+        if pe:
+            L.append(r"\hline")
+            L.append(f"full pipeline, 10 vehicles in view (estimate) & {pe.get('10_vehicles_ms', '--')} & & \\\\")
+        L += [r"\hline", r"\end{tabular}", r"\end{table}", ""]
+    return L
 
 
 if __name__ == "__main__":
