@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { API_URL, apiHeaders } from "./api";
+import { API_URL, apiHeaders, withToken } from "./api";
 import type { LampColor, Mode } from "./types";
 
 export const SUMO_WS_URL = API_URL.replace(/^http/, "ws") + "/ws/sumo";
@@ -166,7 +166,7 @@ export function useSumo() {
     let attempt = 0;
     const connect = () => {
       setLink("connecting");
-      ws = new WebSocket(SUMO_WS_URL);
+      ws = new WebSocket(withToken(SUMO_WS_URL));
       ws.onopen = () => {
         attempt = 0;
         setLink("live");
@@ -202,7 +202,7 @@ export function useSumo() {
   useEffect(() => {
     let alive = true;
     const poll = () =>
-      fetch(`${API_URL}/api/sumo/status`)
+      fetch(`${API_URL}/api/sumo/status`, { headers: apiHeaders(false) })
         .then((r) => (r.ok ? r.json() : null))
         .then((s) => alive && s && setStatus(s))
         .catch(() => {});

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { API_URL, WS_URL } from "./api";
+import { API_URL, apiHeaders, wsUrl } from "./api";
 import type { EquiEvent, Snapshot } from "./types";
 
 export type Link = "connecting" | "live" | "offline";
@@ -20,14 +20,14 @@ export function useEquiflow() {
     let closed = false;
     let attempt = 0;
 
-    fetch(`${API_URL}/api/events?limit=60`)
+    fetch(`${API_URL}/api/events?limit=60`, { headers: apiHeaders(false) })
       .then((r) => (r.ok ? r.json() : []))
       .then((list: EquiEvent[]) => !closed && setEvents(list))
       .catch(() => {});
 
     const connect = () => {
       setLink("connecting");
-      ws = new WebSocket(WS_URL);
+      ws = new WebSocket(wsUrl());
       ws.onopen = () => {
         attempt = 0;
         setLink("live");

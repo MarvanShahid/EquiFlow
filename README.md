@@ -154,7 +154,7 @@ The Results page of the dashboard reads `results/heldout/` when it exists.
 
 ```bash
 cd backend
-pytest                      # 45 tests; or: python tests/test_controller.py
+pytest                      # 73 tests; or: python tests/test_controller.py
 ```
 - `test_sumo.py`: SUMO geometry, signal phases, a headless run with ambulance priority, the green corridor and camera noise (skipped without SUMO)
 - `test_marl.py`: MARL decisions, the 90 s fairness guard, learning updates, save/load
@@ -163,8 +163,17 @@ pytest                      # 45 tests; or: python tests/test_controller.py
 - `test_live_pipeline.py`: your K-of-M voting rule and stationary filter, using stand-in models
 - `test_eventlog.py`: the CSV event log, the preemption-episode table, and the scripted Iteration 2 scenario
 - `test_requirements.py`: TC-03 stale events, TC-04 / FR-07 gap-out, FR-10 queue-sized and re-order recovery, recovery off, green extension
-- `test_security.py`: API key on write endpoints
+- `test_security.py`: operator / viewer roles, login tokens, protected reads incl. WebSocket and video, lockout, rate limit, headers, audit, public-mode startup check
+- `test_signals.py`: signal output conflict monitor, fail-safe flash and reset, fault injection, one hour of the real controller
+- `test_lanes.py`: calibrated lane-level queues (homography, lane membership, queue length in metres)
 - `test_sumo.py::test_tc10_...`: same seed and configuration give identical results
+
+## Deployment and field testing
+
+- [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md): keys and roles, `server.public`, TLS reverse proxy, the signal-output
+  layer and its conflict monitor, and a deployment checklist.
+- [docs/FIELD_TEST.md](docs/FIELD_TEST.md): shadow-mode test on live traffic with `Projects/field_record.py`, lane
+  calibration with `Projects/calibrate_lanes.py`, and acceptance criteria.
 
 ## Iteration 2 evidence
 

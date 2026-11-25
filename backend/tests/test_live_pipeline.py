@@ -48,12 +48,12 @@ from app.config import VisionCfg  # noqa: E402
 from app.vision.live import DirectionTracker, SharedClassifier  # noqa: E402
 
 
-def run(ps, boxes, zone=None, **cfg):
+def run(ps, boxes, zone=None, lanes=None, calibration=None, **cfg):
     SCRIPT["p"], SCRIPT["boxes"] = ps, boxes
     c = VisionCfg(cls_weights="cls.pt", det_weights="det.pt", **cfg)
     cl = SharedClassifier(c)
     cl.model.cls_calls = 0
-    tr = DirectionTracker(c, cl, zone=zone)
+    tr = DirectionTracker(c, cl, zone=zone, lanes=lanes, calibration=calibration)
     out = []
     for _ in range(len(ps)):
         frame = np.zeros((360, 640, 3), np.uint8)
@@ -101,6 +101,26 @@ def test_fr04_zone_counts_only_vehicles_inside_and_queue_only_stationary_ones():
     assert moving_in[-1].vehicles == 1 and moving_in[-1].queue == 0
     no_zone = run([0.1] * 3, [(400, 100, 460, 160)])
     assert no_zone[-1].vehicles == 1 and no_zone[-1].queue is None    # old behaviour without a zone
+
+
+
+# calibrated lane-level queues: two lanes side by side, stop line at the bottom of the 640x360 frame,
+# calibration: the frame covers 7 m (x) by 36 m (y) of road, viewed from straight above
+LANES = [{"id": "L1", "polygon": [[0, 0], [0.5, 0], [0.5, 1], [0, 1]], "stop_line": [[0, 1], [0.5, 1]]},
+         {"id": "L2", "polygon": [[0.5, 0], [1, 0], [1, 1], [0.5, 1]], "stop_line": [[0.5, 1], [1, 1]]}]
+CAL = {"image": [[0, 0], [1, 0], [1, 1], [0, 1]], "world": [[0, 36], [7, 36], [7, 0], [0, 0]]}
+
+
+def test_lanes_report_vehicles_queue_and_queue_length_in_metres():
+    res = run([0.1] * 8, STILL, lanes=LANES, calibration=CAL)    # bottom-centre (130, 160): lane L1, y = 160/360
+    lanes = res[-1].lanes
+    assert lanes["L1"]["vehicles"] == 1 and lanes["L1"]["queued"] == 1
+    assert lanes["L2"] == {"vehicles": 0, "queued": 0, "queue_m": 0.0}
+    expect = 36 * (1 - 160 / 360) + 2.5                          # metres from the stop line + half a vehicle
+    assert abs(lanes["L1"]["queue_m"] - expect) < 0.2, lanes
+    assert res[-1].vehicles == 1 and res[-1].queue == 1         # no zone: the lanes are the approach
+    moving = run([0.1] * 8, MOVING, lanes=LANES, calibration=CAL)
+    assert moving[-1].lanes["L1"]["queued"] + moving[-1].lanes["L2"]["queued"] == 0
 
 
 if __name__ == "__main__":

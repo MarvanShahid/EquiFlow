@@ -15,6 +15,7 @@ from .bus import EventBus
 from .config import AppConfig, IntersectionCfg
 from .controllers import APPROACHES, IntersectionController, create_base
 from .controllers.types import PreemptConfig, Timing
+from .signals import ConflictMonitor, MonitorConfig, SignalOutput, create_driver
 from .vision.sim import SimSource
 from .vision.types import AmbDet, BaseSource, FrameResult
 
@@ -45,9 +46,16 @@ class IntersectionRuntime:
         self.controller = IntersectionController(
             icfg.id, base, timing, PreemptConfig(**cfg.preempt.model_dump()),
             emit=lambda type, **kw: bus.publish(type, intersection_id=icfg.id, **kw), now=time.monotonic())
+        o = cfg.output
+        mon = ConflictMonitor(APPROACHES, MonitorConfig(
+            yellow_s=timing.yellow_s, all_red_s=timing.all_red_s, min_green_s=o.min_green_s,
+            watchdog_s=o.watchdog_s, mismatch_s=o.mismatch_s, tolerance_s=o.tolerance_s))
+        self.output = SignalOutput(icfg.id, APPROACHES, create_driver(o.driver, APPROACHES, **o.driver_params), mon,
+                                   emit=lambda type, **kw: bus.publish(type, intersection_id=icfg.id, **kw))
         self.sources: dict[str, BaseSource] = {}
         self.fps = {a: 0.0 for a in APPROACHES}
         self.queues: dict[str, int | None] = {a: None for a in APPROACHES}
+        self.lanes: dict[str, dict | None] = {a: None for a in APPROACHES}   # calibrated lane-level queues
         self.registry: dict[tuple[str, int], dict] = {}
         self.last_position_ts: dict[tuple[str, int], float] = {}
         self.detections_total = 0
@@ -62,7 +70,9 @@ class IntersectionRuntime:
             v = self.cfg.vision
             if spec != "sim" and self.live_ok:
                 from .vision.live import DirectionTracker, LiveSource
-                self.sources[a] = LiveSource(a, spec, DirectionTracker(v, self.classifier, self.icfg.zones.get(a)),
+                self.sources[a] = LiveSource(a, spec, DirectionTracker(v, self.classifier, self.icfg.zones.get(a),
+                                                                       lanes=self.icfg.lanes.get(a),
+                                                                       calibration=self.icfg.calibration.get(a)),
                                              v, self.on_frame)
             else:
                 self.sources[a] = SimSource(a, self.cfg.sim, self.on_frame, v.stream_width, v.jpeg_quality)
@@ -72,22 +82,31 @@ class IntersectionRuntime:
         for s in self.sources.values():
             s.start()
         threading.Thread(target=self._ticker, daemon=True, name=f"tick-{self.id}").start()
+        self.output.start_watchdog(time.monotonic)
 
     def stop(self) -> None:
         self._running = False
+        self.output.stop_watchdog()
         for s in self.sources.values():
             s.stop()
 
     def _ticker(self) -> None:
         while self._running:
             with self.lock:
-                self.controller.tick(time.monotonic())
+                now = time.monotonic()
+                self.controller.tick(now)
+                lamps = self.controller.lamps()
+            self.output.apply(lamps, now)          # conflict monitor -> signal driver (app/signals/)
             time.sleep(TICK_S)
+
+    def reset_output(self) -> tuple[bool, str]:
+        return self.output.reset(time.monotonic())
 
     # ------------------------------------------------------------- inputs
     def on_frame(self, approach: str, res: FrameResult, fps: float) -> None:
         self.fps[approach] = fps
         self.queues[approach] = res.queue
+        self.lanes[approach] = res.lanes
         self._record(approach, res.ambulances, res.new_confirmed, vehicles=res.vehicles)
 
     def ingest(self, approach: str, present: bool, track_id: int | None, confidence: float,
@@ -173,6 +192,8 @@ class IntersectionRuntime:
             name=self.icfg.name or self.id, lat=self.icfg.lat, lng=self.icfg.lng,
             detections_total=self.detections_total,
             queues=dict(self.queues),
+            lanes=dict(self.lanes),
+            output=self.output.status(),
             sources={a: s.info() for a, s in self.sources.items()})
         return snap
 

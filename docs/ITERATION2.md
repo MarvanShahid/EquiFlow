@@ -55,7 +55,7 @@ Results and their discussion: [RESULTS.md](RESULTS.md). Report chapter: [latex/c
 |---|---|
 | Safety | Tested (randomized: never two non-red lamps; yellow and all-red always honoured) |
 | Performance | `sumo/results/performance.md`: controller tick ~1 µs, MARL decision ~24 µs; 1 h of SUMO in ~3 s. RTX 4050 laptop: vehicle detector 27.7 ms per 1280 px frame, classifier 1.7 ms per crop (batch 16, `cls_v4-2`); full pipeline ~45 ms per frame with 10 vehicles (`runs/eval_test/summary.md`). Measured back to back on battery power, `cls_v5_img128` (128 px) costs 2.3 ms per crop vs 2.0-2.3 ms for `cls_v4-2`: no real difference |
-| Security | Optional API key on every write (`server.api_key` / `EQUIFLOW_API_KEY`, `app/security.py`); MQTT username/password. Off by default for local demos |
+| Security | Operator / viewer keys (environment or SHA-256 hash in config), short-lived signed session tokens, protected reads incl. WebSocket and video, per-IP lockout and write rate limit, security headers + HSTS behind TLS, audit events; `server.public` refuses an unsafe Internet deployment (`app/security.py`, docs/DEPLOYMENT.md). Off by default for local demos |
 | Reproducibility | Pinned versions in `backend/requirements.lock.txt`; seeds, config and versions saved per run |
 | Portability | Tests pass on Linux and Windows |
 
@@ -154,10 +154,24 @@ Tests: 3 new ones for green extension and 2 for re-order recovery (`tests/test_r
 SUMO on this laptop: Windows Smart App Control blocks SUMO's `geos_c.dll`, so SUMO runs in WSL Ubuntu
 (`~/equiflow-venv` with `backend/requirements.lock.txt`).
 
+## Toward deployment: signal output, lane queues, authentication, field testing
+
+Software-side work for the items that were out of reach of a simulation-only prototype. Each needs real
+hardware, a real junction or a real server to finish; what is done and what is left is stated per item.
+
+| Item | Done | Still needs |
+|---|---|---|
+| Real signal control | `backend/app/signals/`: driver interface (`none`, `simulated` field controller with fault injection), an independent conflict monitor (conflicting greens, skipped / short yellow, short all-red, flicker, watchdog in its own thread, commanded vs read-back mismatch) that latches all-red flashing; operator reset only when the hardware reads back all-red; `GET/POST /api/signals/{id}/output[/reset]`. 9 tests, incl. one simulated hour of the real controller with zero monitor trips | A driver for the actual controller (e.g. NTCIP), hardware-in-the-loop on a bench, the traffic authority's approval |
+| Calibrated lane-level queues | `backend/app/vision/lanes.py`: per-lane polygons + stop line, ground homography from 4 measured points, per-lane vehicles / queued / queue length in metres in the live pipeline and the API snapshot; `Projects/calibrate_lanes.py` (click, or command line; `--check` draws a 5 m grid). 6 tests | A calibration and hand-count validation at a real junction |
+| Authentication for Internet deployment | See Non-functional requirements above; dashboard login (`components/LoginGate.tsx`) keeps only a session token. 11 tests + an end-to-end check against a running backend (15 of 15) | A server, a domain and TLS certificates (Caddy / nginx config in docs/DEPLOYMENT.md) |
+| Live traffic testing | Shadow-mode procedure with acceptance criteria ([FIELD_TEST.md](FIELD_TEST.md)); `Projects/field_record.py` records any camera with the live pipeline into the scorer's format (checked on test1.mp4: same 7 confirmations as `track_pipeline.py`, 27 ms per frame) | Permission, a camera at a junction, hours of recording with a manual ambulance log |
+
+Tests: 73 in the backend in total: 69 pass in WSL with SUMO, and the 4 GPU-compatibility tests pass when run on their own on the GPU laptop.
+
 ## Commands for everything else
 
 ```bash
-cd backend && pytest                                  # 45 tests
+cd backend && pytest                                  # 73 tests
 python scripts/scripted_scenario.py                   # exit test (PASS)
 cd ../sumo
 python run_matrix.py && python aggregate.py           # ~45 min on 2 cores

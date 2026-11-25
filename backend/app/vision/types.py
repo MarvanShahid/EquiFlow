@@ -23,6 +23,7 @@ class FrameResult:
     new_confirmed: list[AmbDet]         # tracks that became confirmed on this frame
     annotated: Any = None               # BGR image with boxes drawn (numpy array)
     queue: int | None = None            # vehicles standing still inside the zone (None = no zone configured)
+    lanes: dict | None = None           # lane id -> {vehicles, queued, queue_m} (None = no lanes configured)
 
 
 OnResult = Callable[[str, FrameResult, float], None]  # (approach, result, fps)

@@ -121,9 +121,30 @@ class LogCfg(BaseModel):
     exclude: list[str] = ["ambulance_position"]
 
 
+class OutputCfg(BaseModel):
+    """Signal output (app/signals/): where the controller's lamp states go, behind an independent conflict monitor.
+    driver: "none" (no hardware, default) | "simulated" (a simulated field controller, for testing the chain).
+    Any monitor violation latches all-red flashing until POST /api/signals/{id}/output/reset."""
+    driver: Literal["none", "simulated"] = "none"
+    driver_params: dict = Field(default_factory=dict)      # e.g. {"latency_s": 0.05} for "simulated"
+    min_green_s: float = 1.0          # monitor: shortest green accepted (flicker check)
+    watchdog_s: float = 1.0           # monitor: longest gap between commands
+    mismatch_s: float = 0.5           # monitor: how long commanded and read-back lamps may differ
+    tolerance_s: float = 0.15         # monitor: timing tolerance (controller ticks every 0.1 s)
+
+
 class ServerCfg(BaseModel):
+    """Authentication and hardening, app/security.py. Prefer the environment variables for keys."""
     cors_origins: list[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
-    api_key: str | None = None     # set (or EQUIFLOW_API_KEY) to require X-API-Key on every write (app/security.py)
+    api_key: str | None = None            # operator key (or EQUIFLOW_API_KEY): required for every write
+    api_key_sha256: str | None = None     # ... or only its SHA-256 hex, so the config holds no secret
+    viewer_key: str | None = None         # read-only key (or EQUIFLOW_VIEWER_KEY)
+    viewer_key_sha256: str | None = None
+    protect_reads: bool = False           # reads (GET, WebSockets, video) need a viewer or operator key/token
+    public: bool = False                  # Internet deployment: refuse to start unless safe (forces protect_reads)
+    token_ttl_s: float = 3600             # lifetime of the session tokens from POST /api/auth/login
+    max_failed_auth: int = 10             # failed attempts per minute before a client IP is locked out for 60 s
+    write_rate_per_min: int = 120         # writes per minute per client IP
 
 
 class IntersectionCfg(BaseModel):
@@ -137,6 +158,11 @@ class IntersectionCfg(BaseModel):
     # this signal. Only vehicles whose bottom-centre is inside count, and the ones standing still are the
     # queue. No zone => every tracked vehicle in the frame counts (the old behaviour).
     zones: dict[str, list[list[float]]] = Field(default_factory=dict)
+    # Calibrated lane-level queues (app/vision/lanes.py; make them with Projects/calibrate_lanes.py):
+    # approach -> [{id, polygon: [[x, y], ...], stop_line: [[x, y], [x, y]]}, ...] in 0..1 image coordinates
+    lanes: dict[str, list[dict]] = Field(default_factory=dict)
+    # approach -> {image: 4+ points (0..1), world: the same points on the ground in metres}: ground homography
+    calibration: dict[str, dict] = Field(default_factory=dict)
 
 
 class AppConfig(BaseModel):
@@ -150,6 +176,7 @@ class AppConfig(BaseModel):
     mqtt: MqttCfg = MqttCfg()
     sumo: SumoCfg = SumoCfg()
     server: ServerCfg = ServerCfg()
+    output: OutputCfg = OutputCfg()
     log: LogCfg = LogCfg()
     intersections: list[IntersectionCfg] = [IntersectionCfg(id="J1", name="Intersection 1")]
 

@@ -54,6 +54,37 @@ def _inter(request: Request, iid: str):
         raise HTTPException(404, f"unknown intersection '{iid}'")
 
 
+class LoginIn(BaseModel):
+    key: str = Field(min_length=1, max_length=512)
+
+
+@router.post("/auth/login")
+def login(request: Request, body: LoginIn):
+    """Exchange an operator or viewer key for a short-lived signed token (app/security.py)."""
+    auth = request.app.state.auth
+    headers = {k.lower(): v for k, v in request.headers.items()}
+    ip = headers.get("x-forwarded-for", "").split(",")[0].strip() or (request.client.host if request.client else "?")
+    if auth.locked(ip):
+        raise HTTPException(429, "too many failed attempts; try again in a minute")
+    if not auth.enabled:
+        return {"token": "", "role": "operator", "expires_in": 0, "auth": "disabled"}
+    role = auth.role_for_key(body.key)
+    if role is None:
+        auth.failed(ip)
+        bus = getattr(request.app.state, "bus", None)
+        if bus is not None:
+            bus.publish("auth_failed", client=ip)
+        raise HTTPException(401, "wrong key")
+    return auth.issue(role)
+
+
+@router.get("/auth/whoami")
+def whoami(request: Request):
+    auth = request.app.state.auth
+    return {"auth": "enabled" if auth.enabled else "disabled", "protect_reads": auth.protect_reads,
+            "public": auth.public}
+
+
 @router.get("/health")
 def health(request: Request):
     rt = _rt(request)
@@ -93,6 +124,22 @@ def preempt(request: Request, iid: str, body: PreemptRequest):
 def cancel_preempt(request: Request, iid: str, approach: Approach):
     _inter(request, iid).cancel_preempt(approach)
     return {"ok": True}
+
+
+@router.get("/signals/{iid}/output")
+def signal_output(request: Request, iid: str):
+    """Signal output status: driver, fail-safe flash, latched fault (app/signals/)."""
+    return _inter(request, iid).output.status()
+
+
+@router.post("/signals/{iid}/output/reset")
+def signal_output_reset(request: Request, iid: str):
+    """Operator reset after a signal fault. Refused while the cause is still present."""
+    ok, msg = _inter(request, iid).reset_output()
+    request.app.state.bus.publish("signal_reset_requested", intersection_id=iid, ok=ok, message=msg)
+    if not ok:
+        raise HTTPException(409, msg)
+    return {"ok": True, "message": msg}
 
 
 @router.get("/ambulances")

@@ -14,7 +14,7 @@ from .comms.mqtt_bridge import MqttBridge
 from .config import load_config
 from .eventlog import EventLogger
 from .runtime import Runtime
-from .security import ApiKeyMiddleware, resolve_key
+from .security import Auth, AuthMiddleware
 from .sumo_api import router as sumo_router
 from .sumo_api import ws_router as sumo_ws_router
 from .sumo_live import SumoLive
@@ -64,9 +64,12 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="EquiFlow", version="0.1.0", lifespan=lifespan)
-# CORS origins come from config; read once at import so the middleware can be installed
+# Auth and CORS come from config; read once at import so the middleware can be installed
 _server_cfg = load_config().server
-app.add_middleware(ApiKeyMiddleware, key=resolve_key(_server_cfg.api_key))
+auth = Auth(_server_cfg)
+auth.validate(_server_cfg.cors_origins)     # server.public: refuse to start an unsafe Internet deployment
+app.state.auth = auth
+app.add_middleware(AuthMiddleware, auth=auth)
 app.add_middleware(CORSMiddleware, allow_origins=_server_cfg.cors_origins,   # added last = outermost, so a
                    allow_methods=["*"], allow_headers=["*"])                  # 401 still carries CORS headers
 app.include_router(router, prefix="/api")

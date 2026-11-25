@@ -21,6 +21,7 @@ import cv2
 import numpy as np
 
 from ..config import VisionCfg
+from .lanes import LaneModel
 from .types import AmbDet, BaseSource, FrameResult, OnResult
 
 PRUNE_AFTER_FRAMES = 300
@@ -46,7 +47,8 @@ class SharedClassifier:
 class DirectionTracker:
     """Detect -> track -> classify -> vote, for one approach."""
 
-    def __init__(self, cfg: VisionCfg, classifier: SharedClassifier, zone: list[list[float]] | None = None):
+    def __init__(self, cfg: VisionCfg, classifier: SharedClassifier, zone: list[list[float]] | None = None,
+                 lanes: list[dict] | None = None, calibration: dict | None = None):
         from . import gpu_compat
         gpu_compat.apply()
         from ultralytics import YOLO  # lazy
@@ -54,6 +56,7 @@ class DirectionTracker:
         self.cls = classifier
         self.det = YOLO(cfg.det_weights)
         self.zone = np.array(zone, dtype=np.float32) if zone and len(zone) >= 3 else None
+        self.lanes = LaneModel(lanes, calibration) if lanes else None    # calibrated lane-level queues
         self._reset_state()
 
     def in_zone(self, x: float, y: float, W: int, H: int) -> bool:
@@ -114,9 +117,14 @@ class DirectionTracker:
         seen: dict[int, tuple] = {}
         new_confirmed: list[AmbDet] = []
         in_zone = queued = 0
+        lane_pts: list[tuple[float, float, bool]] = []
         if self.zone is not None:
             poly = (self.zone * np.array([W, H], dtype=np.float32)).astype(np.int32).reshape(-1, 1, 2)
             cv2.polylines(frame, [poly], True, (255, 160, 0), thick)
+        if self.lanes is not None:
+            for ln in self.lanes.lanes:
+                poly = (ln.polygon * np.array([W, H], dtype=np.float32)).astype(np.int32).reshape(-1, 1, 2)
+                cv2.polylines(frame, [poly], True, (255, 220, 120), max(1, thick - 1))
 
         for (tid, x1, y1, x2, y2), p in zip(keep, ps):
             self.last_frame[tid] = self.frame_no
@@ -126,13 +134,15 @@ class DirectionTracker:
             n_votes = sum(self.votes[tid])
             (xa, ya), (xb, yb) = self.centers[tid][0], self.centers[tid][-1]
             moved = math.hypot(xb - xa, yb - ya)
+            recent = list(self.centers[tid])[-c.queue_frames:]
+            stationary = len(recent) >= 2 and (math.hypot(recent[-1][0] - recent[0][0], recent[-1][1] - recent[0][1])
+                                               / (len(recent) - 1)) <= c.queue_max_move * W
+            if self.lanes is not None:                        # bottom-centre = where it touches the road
+                lane_pts.append((((x1 + x2) / 2) / W, y2 / H, stationary))
             if self.in_zone((x1 + x2) / 2, y2, W, H):          # bottom-centre = where it is on the road
                 in_zone += 1
-                recent = list(self.centers[tid])[-c.queue_frames:]
-                if len(recent) >= 2:
-                    step = math.hypot(recent[-1][0] - recent[0][0], recent[-1][1] - recent[0][1]) / (len(recent) - 1)
-                    if step <= c.queue_max_move * W:
-                        queued += 1
+                if stationary:
+                    queued += 1
 
             if (tid not in self.active and n_votes >= c.k
                     and float(np.mean(self.probs[tid])) >= c.mean_min and moved >= c.min_move * W):
@@ -157,11 +167,22 @@ class DirectionTracker:
         ambulances = [self._det(t, *seen[t], W, H) for t in self.active if t in seen]
         if self.frame_no % 100 == 0:
             self._prune()
+        lanes = self.lanes.measure(lane_pts) if self.lanes is not None else None
+        if lanes is not None:
+            for ln in self.lanes.lanes:                       # lane queue label at its stop line
+                r, at = lanes[ln.id], (ln.stop_line[0] if ln.stop_line is not None else ln.polygon[0])
+                txt = f"{ln.id}: {r['queued']}q" + (f" {r['queue_m']:.0f} m" if r["queue_m"] is not None else "")
+                cv2.putText(frame, txt, (int(at[0] * W), int(at[1] * H) - 6), cv2.FONT_HERSHEY_SIMPLEX,
+                            fscale * 0.8, (255, 220, 120), max(1, thick - 1))
+        if self.zone is None and lanes is not None:           # lanes but no zone: the lanes are the approach
+            return FrameResult(vehicles=sum(r["vehicles"] for r in lanes.values()), ambulances=ambulances,
+                               new_confirmed=new_confirmed, annotated=frame,
+                               queue=sum(r["queued"] for r in lanes.values()), lanes=lanes)
         if self.zone is None:
             return FrameResult(vehicles=len(keep), ambulances=ambulances, new_confirmed=new_confirmed,
                                annotated=frame)
         return FrameResult(vehicles=in_zone, ambulances=ambulances, new_confirmed=new_confirmed, annotated=frame,
-                           queue=queued)
+                           queue=queued, lanes=lanes)
 
     @staticmethod
     def _det(tid, p, x1, y1, x2, y2, W, H) -> AmbDet:

@@ -266,7 +266,9 @@ chosen without it is looser and fires 8 times on test5). test5 was checked: it h
 ## 8. Limitations (state these in the report)
 
 - **Simulation only.** No real signal is controlled; SUMO's driver model, the hand-built networks and the
-  generated demand decide the absolute numbers.
+  generated demand decide the absolute numbers. The signal-output layer and its conflict monitor are tested
+  against a simulated field controller only; there is no driver for real hardware yet, and live traffic has not
+  been tested (the shadow-mode procedure is in docs/FIELD_TEST.md).
 - **The SUMO cameras are virtual**: ambulances are known exactly and their classifier scores are simulated
   (with the error sweep in Section 5). The real camera pipeline and the SUMO evaluation are joined through
   the same controller and the same voting rule, not through real video of the simulated junctions.
@@ -275,9 +277,10 @@ chosen without it is looser and fires 8 times on test5). test5 was checked: it h
 - **Tracking** was scored on 12 short clips with 7 ambulance passes: far too few for a reliable recall figure.
   The live vote (3 of 8) was tuned on the same clips; leave-one-video-out gives 11 false events instead of 6.
 - The fair-recovery stress scenario is one synthetic demand pattern (40 ambulances per hour), not observed data.
-- The camera junction's queue is a vehicle count inside a hand-drawn zone (`zones:` in the config), not a
-  calibrated lane-level queue length.
-- No authentication by default (`server.api_key` turns it on); fine for a local demo only.
+- Calibrated lane-level queues (per-lane counts and queue length in metres from a ground homography) are
+  implemented and unit-tested, but not yet validated against hand counts at a real junction.
+- Authentication is off by default for local demos; `server.public: true` enforces keys, protected reads and a
+  safe configuration for an Internet deployment (docs/DEPLOYMENT.md).
 
 ## 9. Performance
 
