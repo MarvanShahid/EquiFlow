@@ -117,9 +117,16 @@ chosen on the other 11 videos, scored on the held-out one) gives 7 of 7 passes a
 held out, the setting chosen without it is looser and fires 8 times on test5. Remaining false events: test5
 (3, confirmed clip with no ambulance), test12 (2, at 76.6 s, 1.4 s before the labelled pass) and test4 (1).
 
-Environment note (this laptop): Windows Smart App Control blocks torchvision's CUDA extension and `lap`'s
-`_lapjv.pyd`. Runs used torch 2.14.1+cu126 with torchvision 0.29.1+cpu, Ultralytics' own `TorchNMS.nms` as the
-CUDA NMS kernel, and ByteTrack's SciPy assignment (`use_lap=False`) instead of lap.
+Environment note (this laptop): Windows Smart App Control blocks torchvision's CUDA extension, so torch is
+2.14.1+cu126 and torchvision 0.29.1+cpu. `backend/app/vision/gpu_compat.py` (also imported by the GPU scripts in
+`Projects/` through `Projects/gpu_compat.py`) then registers Ultralytics' own `TorchNMS.nms` as the CUDA NMS kernel,
+and falls back to ByteTrack's SciPy assignment if `lap` is blocked too; on a normal installation it changes
+nothing. Smart App Control blocked `lap` during the first runs and allowed it later: the tracking scores are
+identical with either (7 of 7 passes, 6 false events on all 12 videos).
+
+**GPU live demo (backend, `config.live.yaml`, `device: 0`):** works on this laptop. One feed runs the full
+pipeline (YOLO26s + ByteTrack + `cls_v5_img128` + 3-of-8 vote) at a median 26 ms per frame (~38 fps, test1.mp4,
+the same confirmations as `track_pipeline.py`); the backend starts in live mode with all four video feeds.
 
 Ground truth: `test5` checked, it has no ambulance, so its confirmations are real false events. `test7` has no
 source video and was removed from `ground_truth.csv`.
@@ -142,7 +149,7 @@ controller, plus 180 stress-test runs). Full numbers: [RESULTS.md](RESULTS.md) S
 Final EquiFlow against actuated (paired, held-out): car wait −2.00 ± 0.61 s, worst approach −2.32 s; 95th
 percentile, longest wait and Jain index statistically level; ambulance travel −10.1 s.
 
-Tests: 3 new ones for green extension and 2 for re-order recovery (`tests/test_requirements.py`), 45 in total.
+Tests: 3 new ones for green extension and 2 for re-order recovery (`tests/test_requirements.py`), 4 for the GPU compatibility module (`tests/test_gpu_compat.py`; they need ultralytics and run on their own, since `test_live_pipeline.py` swaps in a stand-in ultralytics), 49 in total.
 
 SUMO on this laptop: Windows Smart App Control blocks SUMO's `geos_c.dll`, so SUMO runs in WSL Ubuntu
 (`~/equiflow-venv` with `backend/requirements.lock.txt`).

@@ -28,6 +28,10 @@ uvicorn app.main:app --port 8000
 ```
 It starts in **simulation** by default (no GPU, weights or videos needed), so you can see the whole flow immediately.
 
+On Windows machines where Smart App Control blocks torchvision's CUDA extension or the `lap` package, the live
+pipeline still runs on the GPU: `backend/app/vision/gpu_compat.py` switches to Ultralytics' own NMS and ByteTrack's
+SciPy matching only where needed (`python Projects/gpu_compat.py` shows what it applied).
+
 (or `python -m uvicorn app.main:app --host 127.0.0.1 --port 8000`)
 
 **Dashboard** (Node 18.18+)

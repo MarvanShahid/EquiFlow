@@ -28,6 +28,8 @@ PRUNE_AFTER_FRAMES = 300
 
 class SharedClassifier:
     def __init__(self, cfg: VisionCfg):
+        from . import gpu_compat
+        gpu_compat.apply()             # blocked torchvision CUDA ops / lap DLL: see vision/gpu_compat.py
         from ultralytics import YOLO  # lazy
         self.cfg = cfg
         self.model = YOLO(cfg.cls_weights)
@@ -45,6 +47,8 @@ class DirectionTracker:
     """Detect -> track -> classify -> vote, for one approach."""
 
     def __init__(self, cfg: VisionCfg, classifier: SharedClassifier, zone: list[list[float]] | None = None):
+        from . import gpu_compat
+        gpu_compat.apply()
         from ultralytics import YOLO  # lazy
         self.cfg = cfg
         self.cls = classifier

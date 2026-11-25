@@ -18,6 +18,7 @@ import csv
 import itertools
 import math
 import statistics
+import gpu_compat  # noqa: F401  (see gpu_compat.py)
 from collections import defaultdict, deque
 from pathlib import Path
 

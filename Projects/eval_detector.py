@@ -30,6 +30,7 @@ import time
 from datetime import datetime
 from pathlib import Path
 
+import gpu_compat  # noqa: F401,E402  (see gpu_compat.py)
 import numpy as np
 
 HERE = Path(__file__).resolve().parent  # the Projects folder

@@ -292,3 +292,5 @@ Source: `sumo/results/performance.md`.
   about **45 ms per frame (22 fps) with 10 vehicles** in view. Measured back to back on battery power, the 128 px
   classifier costs 2.3 ms per crop against 2.0–2.3 ms for the 96 px one. In a CPU-only smoke test the detector
   took 470 ms per frame, so the live pipeline needs a GPU for real time.
+- **Live backend on the GPU** (`config.live.yaml`, one feed, test1.mp4, mains power): the whole pipeline
+  (detector + ByteTrack + classifier + vote) takes a median 26 ms per frame, p95 33 ms (~38 fps per feed).

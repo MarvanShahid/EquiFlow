@@ -22,6 +22,7 @@ import argparse
 import json
 import shutil
 import sys
+import gpu_compat  # noqa: F401  (see gpu_compat.py)
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent

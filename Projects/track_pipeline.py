@@ -3,6 +3,7 @@ import csv, math, sys
 from collections import defaultdict, deque
 from pathlib import Path
 import cv2, numpy as np
+import gpu_compat  # noqa: F401  (blocked torchvision CUDA ops / lap: see gpu_compat.py)
 from ultralytics import YOLO
 
 HERE = Path(__file__).resolve().parent  # the Projects folder
