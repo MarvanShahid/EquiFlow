@@ -34,6 +34,10 @@ SciPy matching only where needed (`python Projects/gpu_compat.py` shows what it 
 
 (or `python -m uvicorn app.main:app --host 127.0.0.1 --port 8000`)
 
+Where Windows blocks SUMO (Smart App Control), run the backend in WSL instead, so the Live network page works:
+`wsl -d Ubuntu -- bash /mnt/c/<path to EquiFlow>/backend/run_wsl.sh` (needs `~/equiflow-venv` with
+`requirements.lock.txt` installed; the dashboard still reaches it at http://localhost:8000).
+
 **Dashboard** (Node 18.18+)
 ```bash
 cd dashboard

@@ -36,6 +36,26 @@ export interface Signal {
     latency_max_s: number | null;
   };
   sources: Record<Approach, SourceInfo>;
+  queues?: Record<Approach, number | null>;
+  lanes?: Record<Approach, Record<string, LaneQueue> | null>;
+  output?: SignalOutput;
+}
+
+/** Calibrated lane-level queue (backend/app/vision/lanes.py). queue_m is null without a ground calibration. */
+export interface LaneQueue {
+  vehicles: number;
+  queued: number;
+  queue_m: number | null;
+}
+
+/** Signal output behind the conflict monitor (backend/app/signals/). */
+export interface SignalOutput {
+  driver: { driver: string; [k: string]: unknown };
+  flashing: boolean;
+  fault: { kind: string; detail: string } | null;
+  faults_total: number;
+  commands: number;
+  resets: number;
 }
 
 export interface Metrics {

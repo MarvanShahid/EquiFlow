@@ -1,0 +1,2 @@
+# shell scripts run in WSL / Linux: always LF, or bash fails on the carriage returns
+*.sh text eol=lf

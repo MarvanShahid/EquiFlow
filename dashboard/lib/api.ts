@@ -7,14 +7,28 @@ export const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:800
 // NEXT_PUBLIC_API_KEY still works for a local demo, but it is built into the page: never use it on the Internet.
 const BUILD_KEY = process.env.NEXT_PUBLIC_API_KEY ?? "";
 const TOKEN_KEY = "equiflow_token";
+const ROLE_KEY = "equiflow_role";
 
 export function getToken(): string {
   if (typeof window === "undefined") return "";
   return window.sessionStorage.getItem(TOKEN_KEY) ?? "";
 }
 
+/** "operator" | "viewer" while signed in, "" otherwise. */
+export function getRole(): string {
+  if (typeof window === "undefined") return "";
+  return getToken() ? window.sessionStorage.getItem(ROLE_KEY) ?? "" : "";
+}
+
 export function clearToken() {
-  if (typeof window !== "undefined") window.sessionStorage.removeItem(TOKEN_KEY);
+  if (typeof window === "undefined") return;
+  window.sessionStorage.removeItem(TOKEN_KEY);
+  window.sessionStorage.removeItem(ROLE_KEY);
+}
+
+export function signOut() {
+  clearToken();
+  window.location.reload();
 }
 
 export async function login(key: string): Promise<{ role: string }> {
@@ -26,7 +40,10 @@ export async function login(key: string): Promise<{ role: string }> {
   if (res.status === 429) throw new Error("Too many attempts. Wait a minute and try again.");
   if (!res.ok) throw new Error("Wrong key.");
   const data = await res.json();
-  if (data.token) window.sessionStorage.setItem(TOKEN_KEY, data.token);
+  if (data.token) {
+    window.sessionStorage.setItem(TOKEN_KEY, data.token);
+    window.sessionStorage.setItem(ROLE_KEY, data.role ?? "");
+  }
   return data;
 }
 

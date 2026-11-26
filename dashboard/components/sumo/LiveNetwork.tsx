@@ -1,5 +1,7 @@
 "use client";
 
+import { API_URL } from "@/lib/api";
+
 import { useEffect, useMemo, useState } from "react";
 import {
   VCOLOR,
@@ -19,7 +21,7 @@ import JunctionPanel from "./JunctionPanel";
 import NetworkCanvas from "./NetworkCanvas";
 
 const CONTROLLERS: { id: string; controller: Controller; base?: Base; label: string; hint: string }[] = [
-  { id: "equiflow", controller: "equiflow", base: "adaptive", label: "EquiFlow", hint: "Our controller: adaptive greens, ambulance priority, green corridor, fair recovery" },
+  { id: "equiflow", controller: "equiflow", base: "adaptive", label: "EquiFlow", hint: "Our controller: adaptive greens with gap-out and green extension, and safe ambulance priority" },
   { id: "marl", controller: "equiflow", base: "marl", label: "EquiFlow MARL", hint: "Same priority and safety layer, with the trained multi-agent RL controller choosing the greens" },
   { id: "fixed", controller: "fixed", label: "Fixed-time", hint: "Baseline: SUMO's static signal plan" },
   { id: "actuated", controller: "actuated", label: "Actuated", hint: "Baseline: SUMO's detector-actuated plan" },
@@ -47,7 +49,11 @@ function describe(e: SumoEvent): { text: string; tone: string } | null {
     case "preempt_ended":
       return { text: `${e.tls}: priority ended after ${e.duration_s} s`, tone: "amb" };
     case "recovery_planned":
-      return { text: `${e.tls}: fair recovery for ${(e.plan as string[]).join(", ")} (+${e.extra_green_s} s)`, tone: "warn" };
+      return { text: `${e.tls}: fair recovery, ${(e.plan as string[]).join(", ")} served first`, tone: "warn" };
+    case "green_extended":
+      return { text: `${at}: green extended, still the busiest (${e.vehicles} vehicles)`, tone: "dim" };
+    case "green_ended_early":
+      return { text: `${at}: green ended early after ${e.after_s} s, nobody left`, tone: "dim" };
     case "preempt_timeout":
       return { text: `${at}: priority timed out (fail-safe)`, tone: "warn" };
     case "manual_preempt":
@@ -203,7 +209,7 @@ export default function LiveNetwork() {
       {!geometry ? (
         <p className="waiting">
           {link === "offline"
-            ? "Can't reach the backend. Start it with “uvicorn app.main:app --port 8000” in the backend folder."
+            ? "Can't reach the backend at " + API_URL + ". Start it in the backend folder (uvicorn app.main:app --port 8000, or backend/run_wsl.sh in WSL); this page reconnects by itself."
             : status?.available === false
               ? "Install SUMO to use the live view."
               : "Pick a network and press Start simulation."}

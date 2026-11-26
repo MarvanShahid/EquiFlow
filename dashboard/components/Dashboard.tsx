@@ -1,5 +1,7 @@
 "use client";
 
+import { API_URL } from "@/lib/api";
+
 import { useState } from "react";
 import { useEquiflow, useTicker } from "@/lib/useEquiflow";
 import Board from "./Board";
@@ -53,7 +55,7 @@ export default function Dashboard() {
       {!signal ? (
         <p className="waiting">
           {link === "offline"
-            ? "Can't reach the backend. Start it with “uvicorn app.main:app --port 8000” in the backend folder."
+            ? "Can't reach the backend at " + API_URL + ". Start it in the backend folder (uvicorn app.main:app --port 8000, or backend/run_wsl.sh in WSL); this page reconnects by itself."
             : "Connecting to the backend…"}
         </p>
       ) : (

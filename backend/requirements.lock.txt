@@ -3,6 +3,7 @@
 # requirements.txt keeps the looser minimum versions. Also passed on Windows / Python 3.14.3 (DELL machine).
 fastapi==0.163.0
 uvicorn==0.54.0
+websockets==17.2   # WebSocket support for /ws and /ws/sumo (requirements.txt gets it via uvicorn[standard])
 pydantic==2.13.5
 PyYAML==6.0.3
 opencv-python-headless==5.0.0.93

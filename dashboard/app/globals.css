@@ -298,3 +298,40 @@ main .panel + .panel { margin-top: 12px; }
 .rtable.robust td { text-align: left; font-size: 12.5px; }
 .rtable.robust td b { font-size: 15px; }
 .rtable .is-bad { color: var(--red); }
+
+/* ------------------------------------------------ safety monitor, session, lanes (Iteration 2b) */
+.status.mode-fault { border-color: var(--red); box-shadow: inset 4px 0 0 var(--red); }
+.status.mode-fault .status-title { color: var(--red); }
+.tone-bad { color: var(--red); font-weight: 700; }
+
+.output-state {
+  display: flex; align-items: center; gap: 10px; padding: 8px 10px; margin-bottom: 12px;
+  border: 1px solid var(--line); border-radius: 8px; background: #1e252c;
+}
+.output-state > div { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1; }
+.output-state strong { font-size: 13.5px; }
+.output-state .hint { font-size: 12px; }
+.output-state .chip-dot { width: 10px; height: 10px; border-radius: 50%; flex: none; background: var(--green); }
+.output-state.is-fault { border-color: var(--red); background: color-mix(in srgb, var(--red) 12%, var(--panel)); }
+.output-state.is-fault .chip-dot { background: var(--red); animation: siren 0.8s steps(2, end) infinite; }
+.output-state.is-fault strong { color: var(--red); }
+.output-state .btn-primary { padding: 5px 12px; }
+
+.plan .lamp.on.lamp-red.flash { animation: siren 0.8s steps(2, end) infinite; }
+
+.session { margin-left: auto; display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.role { border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; color: var(--paint-dim); font-weight: 700; }
+.role-operator { color: var(--yellow); border-color: color-mix(in srgb, var(--yellow) 50%, var(--line)); }
+.session .btn-quiet { padding: 4px 10px; font-size: 13px; }
+
+.lanes { margin-top: 12px; }
+.qbar-cell { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+.qbar { display: inline-block; height: 8px; border-radius: 4px; background: var(--amber); min-width: 2px; max-width: 160px; }
+
+.seg-small button { padding: 4px 10px; font-size: 13px; }
+.variants-toggle { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--paint-dim); margin-left: auto; }
+.legend .is-main { color: var(--paint); }
+
+@media (prefers-reduced-motion: reduce) {
+  .output-state.is-fault .chip-dot, .plan .lamp.on.lamp-red.flash { animation: none; }
+}

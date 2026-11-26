@@ -25,10 +25,11 @@ const ARM: Record<Approach, { x: number; y: number; w: number; h: number }> = {
 
 function Head({ s, a, remaining }: { s: Signal; a: Approach; remaining: number | null }) {
   const { x, y, tx, anchor } = LAYOUT[a];
-  const lamp = s.lamps[a];
+  const flashing = !!s.output?.flashing;            // fail-safe: the real heads flash red, whatever the plan says
+  const lamp = flashing ? "red" : s.lamps[a];
   const amb = s.ambulance[a];
   const lit = { amb, red: lamp === "red", yellow: lamp === "yellow", green: lamp === "green" };
-  const isCurrent = s.current === a && s.stage !== "ALL_RED";
+  const isCurrent = !flashing && s.current === a && s.stage !== "ALL_RED";
   const labelClass = amb ? "plan-name is-amb" : "plan-name";
 
   return (
@@ -40,7 +41,7 @@ function Head({ s, a, remaining }: { s: Signal; a: Approach; remaining: number |
           cx={x + HEAD_W / 2}
           cy={y + 14 + i * 22}
           r={8}
-          className={`lamp lamp-${k}${lit[k] ? " on" : ""}`}
+          className={`lamp lamp-${k}${lit[k] ? " on" : ""}${flashing && k === "red" ? " flash" : ""}`}
         />
       ))}
       <text x={tx} y={y + 16} textAnchor={anchor} className={labelClass}>
@@ -50,11 +51,13 @@ function Head({ s, a, remaining }: { s: Signal; a: Approach; remaining: number |
         {s.vehicles[a]} {s.vehicles[a] === 1 ? "vehicle" : "vehicles"}
       </text>
       <text x={tx} y={y + 50} textAnchor={anchor} className="plan-sub">
-        {isCurrent && remaining !== null
-          ? `${lamp} · ${Math.ceil(remaining)} s left`
-          : isCurrent
-            ? `${lamp} · held`
-            : `waiting ${Math.round(s.waiting_s[a])} s`}
+        {flashing
+          ? "flashing red"
+          : isCurrent && remaining !== null
+            ? `${lamp} · ${Math.ceil(remaining)} s left`
+            : isCurrent
+              ? `${lamp} · held`
+              : `waiting ${Math.round(s.waiting_s[a])} s`}
       </text>
       {amb && (
         <text x={tx} y={y + 68} textAnchor={anchor} className="plan-amb">
@@ -66,8 +69,9 @@ function Head({ s, a, remaining }: { s: Signal; a: Approach; remaining: number |
 }
 
 export default function Plan({ signal, remaining }: { signal: Signal; remaining: number | null }) {
-  const centre =
-    signal.mode === "PREEMPT"
+  const centre = signal.output?.flashing
+    ? ["Fail-safe", "flashing red"]
+    : signal.mode === "PREEMPT"
       ? ["Ambulance", signal.active_preempt ?? ""]
       : signal.mode === "RECOVERY"
         ? ["Recovering", ""]

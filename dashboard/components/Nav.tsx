@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { getRole, signOut } from "@/lib/api";
 
 const LINKS = [
   { href: "/", label: "Live network" },
@@ -12,6 +14,8 @@ const LINKS = [
 
 export default function Nav() {
   const path = usePathname();
+  const [role, setRole] = useState("");
+  useEffect(() => setRole(getRole()), []); // sessionStorage exists only in the browser
   return (
     <nav className="nav" aria-label="Main">
       <Link href="/" className="brand">
@@ -36,6 +40,14 @@ export default function Nav() {
           );
         })}
       </ul>
+      {role && (
+        <div className="session">
+          <span className={`role role-${role}`}>{role === "operator" ? "Operator" : "Viewer"}</span>
+          <button type="button" className="btn-quiet" onClick={signOut}>
+            Sign out
+          </button>
+        </div>
+      )}
     </nav>
   );
 }
