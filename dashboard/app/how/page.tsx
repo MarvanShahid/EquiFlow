@@ -1,3 +1,5 @@
+import { Card, PageHeader } from "@/components/ui";
+
 export const metadata = { title: "How it works · EquiFlow" };
 
 const STEPS = [
@@ -40,15 +42,9 @@ const STEPS = [
 
 export default function Page() {
   return (
-    <main className="shell how">
-      <header className="pagehead">
-        <div>
-          <h1>How EquiFlow works</h1>
-          <p className="lede">
-            From a camera frame to a green light for the ambulance, without starving the other roads.
-          </p>
-        </div>
-      </header>
+    <div className="page">
+      <PageHeader title="How EquiFlow works" description="From a camera frame to a green light for the ambulance, without starving the other roads." />
+      <Card title="Pipeline">
 
       <svg viewBox="0 0 1000 150" className="flow" role="img" aria-label="Pipeline: cameras, vehicle detection and tracking, ambulance classifier and voting, signal controller, signals and dashboard">
         {[
@@ -66,33 +62,35 @@ export default function Page() {
           </g>
         ))}
       </svg>
+      </Card>
 
       <ol className="steps">
         {STEPS.map((s) => (
           <li key={s.n}>
             <span className="stepn">{s.n}</span>
             <div>
-              <h2>{s.title}</h2>
+              <h3>{s.title}</h3>
               <p>{s.body}</p>
             </div>
           </li>
         ))}
       </ol>
 
-      <section className="panel how-test">
-        <h2>Where it is tested</h2>
+      <Card title="Where it is tested">
+        <div className="prose">
         <p>
           The SUMO model has nine Islamabad junction types: a 4-arm crossing, T- and Y-junctions, 5- and 6-arm chowks, a
           roundabout, a sector grid and a Zero Point style diamond interchange. All drive on the left. The traffic is 62%
           cars, 25% motorcycles, 6% buses and 7% trucks, plus 6 to 14 ambulances an hour. The same controller code that runs
-          the camera junction runs every SUMO signal, so the <a href="/">Live network</a> page shows exactly what would happen
-          on the street. The <a href="/results">Results</a> page compares it with SUMO&apos;s fixed-time and actuated plans.
+          the camera junction runs every SUMO signal, so the <a href="/simulation">Simulation</a> page shows exactly what would happen
+          on the street. The <a href="/reports">Analytics &amp; Reports</a> page compares it with SUMO&apos;s fixed-time and actuated plans.
         </p>
         <p>
           The MARL controller only chooses the next green. Ambulance priority, the green corridor, safety timing and fair
           recovery stay on top of it unchanged, so learning can never make a junction unsafe.
         </p>
-      </section>
-    </main>
+        </div>
+      </Card>
+    </div>
   );
 }

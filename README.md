@@ -15,7 +15,7 @@ cameras / videos ──► vision worker ──► signal controller ──► e
 | `backend/app/api.py` | REST, WebSocket, MJPEG video |
 | `backend/app/comms/mqtt_bridge.py` | Optional MQTT topics from the roadmap |
 | `backend/app/sumo_live.py`, `sumo_api.py` | Live SUMO view: runs a `sumo/` network through TraCI with every signal driven by the same controller, and streams it to the dashboard |
-| `dashboard/` | Next.js (App Router, TypeScript): Live network, Camera feeds, Results, How it works |
+| `dashboard/` | Next.js (App Router, TypeScript): operations dashboard (overview, live traffic, signals and safety, lanes, emergency, MARL, SUMO, cameras, reports, logs, settings) |
 | `sumo/` | Islamabad junction networks, baseline runs (`run_sim.py`) and the EquiFlow evaluation (`run_equiflow.py`) |
 
 ## Run it
@@ -34,7 +34,7 @@ SciPy matching only where needed (`python Projects/gpu_compat.py` shows what it 
 
 (or `python -m uvicorn app.main:app --host 127.0.0.1 --port 8000`)
 
-Where Windows blocks SUMO (Smart App Control), run the backend in WSL instead, so the Live network page works:
+Where Windows blocks SUMO (Smart App Control), run the backend in WSL instead, so the Simulation page works:
 `wsl -d Ubuntu -- bash /mnt/c/<path to EquiFlow>/backend/run_wsl.sh` (needs `~/equiflow-venv` with
 `requirements.lock.txt` installed; the dashboard still reaches it at http://localhost:8000).
 
@@ -48,12 +48,26 @@ npm.cmd run dev                           # http://localhost:3000
 
 ## The website
 
+A sidebar groups the pages; the top bar shows backend health, both live streams, alerts and the theme toggle.
+Every value comes from the backend: missing data is shown as "not configured" / "not running", never estimated.
+A latched signal fail-safe shows a red banner on every page. With authentication on, viewers see the controls
+locked and operators confirm every critical action; the backend still checks each request.
+
 | Page | What the traffic authority sees |
 |---|---|
-| **Live network** (`/`) | A live top-down view of a SUMO network (pick any of the 9 Islamabad junction types, the traffic level, and the controller: EquiFlow, fixed-time or actuated). Click a junction for its signals, queue and waiting time per approach, the phase it is serving, *why* it chose that green, and a virtual camera per approach showing the detector output (green box = vehicle, yellow = some ambulance votes, red = confirmed ambulance). Buttons send an ambulance from any approach or test priority without one. |
-| **Camera feeds** (`/cameras`) | The four-camera pilot junction: annotated video from your two models (or simulated feeds), the signal heads and the event log |
-| **Results** (`/results`) | Waiting time / time loss / trip time per vehicle class: fixed-time vs actuated vs EquiFlow, from `sumo/results/summary_by_class.csv` |
-| **How it works** (`/how`) | The pipeline in six steps, for visitors |
+| **Overview** (`/`) | KPIs (vehicles, intersections, simulated wait and throughput, queues, emergency detections, signal controllers, system health), the camera junction plan and heads, the SUMO network, and a merged activity feed |
+| **Live Traffic** (`/traffic`) | Camera junction (plan, annotated feeds, per-approach counts, queues, FPS, emergency tracks) or the simulation network, clearly labelled as such |
+| **Intersections** (`/intersections`) | Every camera-monitored and simulated junction with mode, current green, vehicles, cameras and output status |
+| **Traffic Signals** (`/signals`) | Phase and countdown, R/Y/G heads, the safety chain (output driver, conflict monitor, watchdog, fail-safe latch), operator priority test and reset, with confirmations |
+| **Lane Analytics** (`/lanes`) | Per-approach and per-lane counts and queues; metres only for ground-calibrated lanes; trends since the page opened |
+| **Emergency Vehicles** (`/emergency`) | Active and cleared tracks, detection-to-green latency, controller response, and an emergency timeline (manual tests and simulation events labelled) |
+| **MARL Controller** (`/marl`) | Agents, live decisions with their inputs and who decided (agent or safety layer), policy description, training curves |
+| **Simulation (SUMO)** (`/simulation`) | Start / restart / pause / speed / stop, ambulance dispatch, network map, junction panel with *why this green*, virtual cameras |
+| **Camera Monitoring** (`/cameras`) | Source health, processing rate and the annotated feeds |
+| **Analytics & Reports** (`/reports`) | Fixed-time vs actuated vs EquiFlow vs MARL from `sumo/results`, robustness grid, MARL training (old `/results` redirects here) |
+| **System Logs** (`/logs`) | The event and audit log with severity / category / source filters and CSV export |
+| **Settings** (`/settings`) | Theme, session (role, expiry), connection and read-only backend configuration |
+| **How It Works** (`/how`) | The pipeline in seven steps, for visitors |
 
 The live view needs SUMO: either `SUMO_HOME` pointing at your SUMO install, or `pip install eclipse-sumo`. It starts by itself (`sumo.autostart` in `config.yaml`); without SUMO the rest of the backend still runs and the page says what is missing.
 
@@ -66,7 +80,7 @@ In the SUMO view each approach has a *virtual camera* (last 120 m before the sto
    - PowerShell: `$env:EQUIFLOW_CONFIG="config.live.yaml"; uvicorn app.main:app --port 8000`
    - cmd: `set EQUIFLOW_CONFIG=config.live.yaml` then `uvicorn app.main:app --port 8000`
 
-`mode: auto` falls back to simulation if the weights or `ultralytics` are missing. The reason is shown in the dashboard (hover the "Simulated cameras" pill) and in `GET /api/health`.
+`mode: auto` falls back to simulation if the weights or `ultralytics` are missing. The reason is shown in the dashboard (the "Simulated vision" badge in the top bar, and a banner on Live Traffic) and in `GET /api/health`.
 Any approach set to `sim` in the config stays simulated, so you can run one real camera and three simulated ones.
 
 If four feeds are too slow: lower `imgsz` (960 or 640), set `process_every: 2`, or run the video at lower resolution.

@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { API_URL, apiHeaders, withToken } from "./api";
+import { request } from "./api";
+import { setSumoStatus, useLive } from "./live";
 import type { LampColor, Mode } from "./types";
 
-export const SUMO_WS_URL = API_URL.replace(/^http/, "ws") + "/ws/sumo";
 export const VTYPES = ["car", "motorcycle", "bus", "truck", "ambulance"] as const;
 export type VType = (typeof VTYPES)[number];
 /** Colours match the SUMO GUI colours set in sumo/build_islamabad.py. */
@@ -149,90 +148,15 @@ export interface Frame {
   events: SumoEvent[];
 }
 
-export type Link = "connecting" | "live" | "offline";
+export type { Link } from "./live";
 
-/** Live SUMO state: one WebSocket (geometry once per run, frames at about 6 Hz), reconnecting on its own. */
+/** Live SUMO state from the shared connection in lib/live.ts (geometry once per run, frames at about 6 Hz). */
 export function useSumo() {
-  const [geometry, setGeometry] = useState<Geometry | null>(null);
-  const [frame, setFrame] = useState<Frame | null>(null);
-  const [status, setStatus] = useState<SumoStatus | null>(null);
-  const [link, setLink] = useState<Link>("connecting");
-  const runRef = useRef(-1);
-
-  useEffect(() => {
-    let ws: WebSocket | null = null;
-    let timer: ReturnType<typeof setTimeout> | undefined;
-    let closed = false;
-    let attempt = 0;
-    const connect = () => {
-      setLink("connecting");
-      ws = new WebSocket(withToken(SUMO_WS_URL));
-      ws.onopen = () => {
-        attempt = 0;
-        setLink("live");
-      };
-      ws.onmessage = (m) => {
-        const msg = JSON.parse(m.data);
-        if (msg.type === "geometry") {
-          runRef.current = msg.data.run_id;
-          setGeometry(msg.data as Geometry);
-          setFrame(null);
-        } else if (msg.type === "frame") {
-          if (msg.data.run_id === runRef.current) setFrame(msg.data as Frame);
-        } else if (msg.type === "status") {
-          setStatus(msg.data as SumoStatus);
-        }
-      };
-      ws.onclose = () => {
-        if (closed) return;
-        setLink("offline");
-        timer = setTimeout(connect, Math.min(8000, 1000 * 2 ** attempt++));
-      };
-      ws.onerror = () => ws?.close();
-    };
-    connect();
-    return () => {
-      closed = true;
-      clearTimeout(timer);
-      ws?.close();
-    };
-  }, []);
-
-  // keep the status fresh (state changes such as "finished" or a new speed)
-  useEffect(() => {
-    let alive = true;
-    const poll = () =>
-      fetch(`${API_URL}/api/sumo/status`, { headers: apiHeaders(false) })
-        .then((r) => (r.ok ? r.json() : null))
-        .then((s) => alive && s && setStatus(s))
-        .catch(() => {});
-    poll();
-    const id = setInterval(poll, 3000);
-    return () => {
-      alive = false;
-      clearInterval(id);
-    };
-  }, []);
-
-  return { geometry, frame, status, setStatus, link };
+  const sumo = useLive((s) => s.sumo);
+  return { geometry: sumo.geometry, frame: sumo.frame, status: sumo.status, setStatus: setSumoStatus, link: sumo.link, events: sumo.events };
 }
 
-async function call(method: "GET" | "POST", path: string, body?: unknown) {
-  const res = await fetch(`${API_URL}/api/sumo${path}`, {
-    method,
-    headers: apiHeaders(!!body),
-    body: body ? JSON.stringify(body) : undefined,
-  });
-  const text = await res.text();
-  if (!res.ok) {
-    let detail = text;
-    try {
-      detail = JSON.parse(text).detail ?? text;
-    } catch {}
-    throw new Error(String(detail));
-  }
-  return text ? JSON.parse(text) : null;
-}
+const call = (method: "GET" | "POST", path: string, body?: unknown) => request(method, `/api/sumo${path}`, body);
 
 export const sumoApi = {
   networks: () => call("GET", "/networks") as Promise<{ networks: NetworkInfo[]; status: SumoStatus }>,
@@ -268,6 +192,9 @@ export interface TrainRow {
   epsilon: number;
   mean_wait_s: number | null;
   ambulance_wait_s: number | null;
+  trips?: number | null;
+  updates?: number | null;
+  loss?: number | null;
 }
 
 export interface ResultRow {

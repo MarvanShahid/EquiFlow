@@ -1,5 +1,5 @@
-import LiveNetwork from "@/components/sumo/LiveNetwork";
+import Overview from "@/components/pages/Overview";
 
 export default function Page() {
-  return <LiveNetwork />;
+  return <Overview />;
 }

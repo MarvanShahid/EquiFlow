@@ -2,6 +2,8 @@
 
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { VTYPES, sumoApi, type ResultRow, type RobustRow, type TrainRow, type VType } from "@/lib/sumo";
+import { BarChart3, FlaskConical, Loader2, Route, ShieldQuestion, Table2, TrendingDown } from "lucide-react";
+import { Card, Empty, Kpi } from "./ui";
 
 const METRICS = {
   mean_waiting_s: "Average waiting time",
@@ -24,8 +26,8 @@ const CTRL_LABEL: Record<string, string> = {
 const CTRL_COLOR: Record<string, string> = {
   fixed: "#7d8790",
   actuated: "#f6a623",
-  equiflow: "#2fcf8f",
-  "equiflow-marl": "#4aa3ff",
+  equiflow: "#14b8a6",
+  "equiflow-marl": "#4f8ff7",
   "equiflow-nocorridor": "#8e7dff",
   "equiflow-norecovery": "#b8b2a6",
   "equiflow-nogapout": "#9fa7ae",
@@ -91,9 +93,28 @@ export default function Results() {
     return { ctrls, common, value, seeds };
   }, [rows, net, scen]);
 
-  if (error) return <p className="error">Could not load results: {error}</p>;
-  if (!rows || !view) return <p className="waiting">Loading results…</p>;
-  if (rows.length === 0) return <p className="waiting">No results yet. Run sumo/run_sim.py and sumo/run_equiflow.py.</p>;
+  if (error)
+    return (
+      <Card>
+        <Empty icon={ShieldQuestion} title="Could not load results">
+          {error}
+        </Empty>
+      </Card>
+    );
+  if (!rows || !view)
+    return (
+      <Card>
+        <Empty icon={Loader2} title="Loading results…" />
+      </Card>
+    );
+  if (rows.length === 0)
+    return (
+      <Card>
+        <Empty icon={BarChart3} title="No results yet">
+          Run <code>python sumo/run_matrix.py</code> then <code>python sumo/aggregate.py</code> to produce them.
+        </Empty>
+      </Card>
+    );
 
   const { ctrls, common, value, seeds } = view;
   const max = Math.max(1, ...ctrls.flatMap((c) => VTYPES.map((vt) => value(c, vt, metric) ?? 0)));
@@ -141,36 +162,46 @@ export default function Results() {
 
   return (
     <>
-      <section className="kpis big" aria-label="Headline results">
-        <div className="kpi-amb">
-          <span>Ambulance waiting at signals</span>
-          <strong>{f1(w("ambulance", "equiflow"))} s</strong>
-          <em>
-            EquiFlow, vs {f1(w("ambulance", "fixed"))} s fixed-time ({pct(w("ambulance", "fixed"), w("ambulance", "equiflow"))}% less) and{" "}
-            {f1(w("ambulance", "actuated"))} s actuated. MARL: {f1(w("ambulance", "equiflow-marl"))} s
-          </em>
-        </div>
-        <div>
-          <span>Car waiting at signals</span>
-          <strong>{f1(w("car", "equiflow"))} s</strong>
-          <em>
-            EquiFlow, vs {f1(w("car", "fixed"))} s fixed-time ({pct(w("car", "fixed"), w("car", "equiflow"))}% less) and {f1(w("car", "actuated"))} s
-            actuated. MARL: {f1(w("car", "equiflow-marl"))} s
-          </em>
-        </div>
-        <div>
-          <span>Compared runs</span>
-          <strong>{common.size}</strong>
-          <em>
-            network, traffic and seed combinations run with all four controllers ({seeds.size} {seeds.size === 1 ? "seed" : "seeds"})
-          </em>
-        </div>
+      <section className="grid g-kpi" aria-label="Headline results" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))" }}>
+        <Kpi
+          label="Ambulance waiting at signals (EquiFlow)"
+          icon={Route}
+          tone="emg"
+          value={f1(w("ambulance", "equiflow"))}
+          unit="s"
+          meta={
+            <>
+              vs {f1(w("ambulance", "fixed"))} s fixed-time ({pct(w("ambulance", "fixed"), w("ambulance", "equiflow")) ?? "–"}% less) and {f1(w("ambulance", "actuated"))} s actuated. MARL:{" "}
+              {f1(w("ambulance", "equiflow-marl"))} s
+            </>
+          }
+        />
+        <Kpi
+          label="Car waiting at signals (EquiFlow)"
+          icon={TrendingDown}
+          tone="info"
+          value={f1(w("car", "equiflow"))}
+          unit="s"
+          meta={
+            <>
+              vs {f1(w("car", "fixed"))} s fixed-time ({pct(w("car", "fixed"), w("car", "equiflow")) ?? "–"}% less) and {f1(w("car", "actuated"))} s actuated. MARL:{" "}
+              {f1(w("car", "equiflow-marl"))} s
+            </>
+          }
+        />
+        <Kpi
+          label="Matched comparison runs"
+          icon={FlaskConical}
+          value={common.size}
+          meta={`network × traffic × seed combinations run with all four controllers (${seeds.size} ${seeds.size === 1 ? "seed" : "seeds"})`}
+        />
       </section>
 
-      <section className="controls panel" aria-label="Filters">
-        <label>
+      <Card>
+      <div className="toolbar" aria-label="Filters" role="group">
+        <label className="field">
           <span>Network</span>
-          <select value={net} onChange={(e) => setNet(e.target.value)}>
+          <select className="select" value={net} onChange={(e) => setNet(e.target.value)}>
             <option value="all">All signalised networks</option>
             {SIGNALISED.map((n) => (
               <option key={n} value={n}>
@@ -179,9 +210,9 @@ export default function Results() {
             ))}
           </select>
         </label>
-        <label>
+        <label className="field">
           <span>Traffic</span>
-          <select value={scen} onChange={(e) => setScen(e.target.value)}>
+          <select className="select" value={scen} onChange={(e) => setScen(e.target.value)}>
             <option value="all">All levels</option>
             {SCEN.map((s) => (
               <option key={s} value={s}>
@@ -192,16 +223,18 @@ export default function Results() {
         </label>
         <fieldset className="seg">
           <legend>Measure</legend>
-          {(Object.keys(METRICS) as Metric[]).map((m) => (
-            <button key={m} type="button" aria-pressed={metric === m} onClick={() => setMetric(m)}>
-              {METRICS[m].replace("Average ", "")}
-            </button>
-          ))}
+          <div className="seg-btns">
+            {(Object.keys(METRICS) as Metric[]).map((m) => (
+              <button key={m} type="button" aria-pressed={metric === m} onClick={() => setMetric(m)}>
+                {METRICS[m].replace("Average ", "")}
+              </button>
+            ))}
+          </div>
         </fieldset>
-      </section>
+      </div>
+      </Card>
 
-      <section className="panel">
-        <h2>{METRICS[metric]} by vehicle type, seconds (lower is better)</h2>
+      <Card title={`${METRICS[metric]} by vehicle type`} icon={BarChart3} sub="Seconds, lower is better">
         <ul className="legend">
           {ctrls.map((c) => (
             <li key={c}>
@@ -239,10 +272,10 @@ export default function Results() {
           controller; shown when <code>sumo/results/heldout/</code> exists, otherwise the older{" "}
           <code>run_equiflow.py</code> results).
         </p>
-      </section>
+      </Card>
 
-      <section className="panel">
-        <h2>Per network, heavy traffic: average wait (s), averaged over seeds</h2>
+      <Card title="Per network, heavy traffic" icon={Table2} sub="Average wait in seconds, averaged over seeds" flush>
+        <div className="table-wrap">
         <table className="rtable">
           <thead>
             <tr>
@@ -278,12 +311,12 @@ export default function Results() {
             ))}
           </tbody>
         </table>
-      </section>
+        </div>
+      </Card>
 
       {hasCorr && (
-        <section className="panel">
-          <h2>Green corridor (sector grid and diamond interchange, medium and heavy traffic)</h2>
-          <dl className="metrics">
+        <Card title="Green corridor" icon={Route} sub="Sector grid and diamond interchange, medium and heavy traffic">
+          <dl className="kv">
             <div>
               <dt>Ambulance time lost, with corridor</dt>
               <dd>{f1(corr("equiflow", "ambulance", "mean_time_loss_s"))} s</dd>
@@ -303,16 +336,15 @@ export default function Results() {
             Once a camera confirms an ambulance, the next signals on its route start clearing when it is within 25 s of them,
             before their own cameras can see it.
           </p>
-        </section>
+        </Card>
       )}
 
       {robust.length > 0 && (
-        <section className="panel">
-          <h2>Robustness to camera errors</h2>
-          <div className="controls inline">
-            <label>
+        <Card title="Robustness to camera errors" icon={ShieldQuestion} sub="Heavy traffic, one hour per cell">
+          <div className="toolbar" style={{ marginBottom: 12 }}>
+            <label className="field">
               <span>Network</span>
-              <select value={robNet} onChange={(e) => setRobNet(e.target.value)}>
+              <select className="select" value={robNet} onChange={(e) => setRobNet(e.target.value)}>
                 {robNets.map((n) => (
                   <option key={n} value={n}>
                     {NET_LABEL[n] ?? n}
@@ -321,6 +353,7 @@ export default function Results() {
               </select>
             </label>
           </div>
+          <div className="table-wrap">
           <table className="rtable robust">
             <thead>
               <tr>
@@ -353,18 +386,18 @@ export default function Results() {
               ))}
             </tbody>
           </table>
+          </div>
           <p className="hint wide">
             Per-frame chance that the detector loses a vehicle (rows) or that a non-ambulance is scored like an ambulance
             (columns), heavy traffic, one hour. &ldquo;False&rdquo; counts non-ambulances confirmed as ambulances. The 5-of-8 vote
             absorbs missed frames and occasional false scores; only very noisy classifiers (20% or more of frames) cause false
             priority. Refresh with <code>python sumo/run_robustness.py</code>.
           </p>
-        </section>
+        </Card>
       )}
 
       {train.length > 0 && (
-        <section className="panel">
-          <h2>MARL training: average wait per episode (s)</h2>
+        <Card title="MARL training: average wait per episode" icon={TrendingDown} sub="Seconds per episode, by training network">
           <ul className="legend">
             {[...series.keys()].map((k, i) => (
               <li key={k}>
@@ -374,8 +407,8 @@ export default function Results() {
             ))}
           </ul>
           <svg viewBox="0 0 760 240" className="bars" role="img" aria-label="Average wait per training episode for each training network">
-            <line x1={40} y1={210} x2={750} y2={210} stroke="#3e4953" />
-            <line x1={40} y1={10} x2={40} y2={210} stroke="#3e4953" />
+            <line x1={40} y1={210} x2={750} y2={210} className="axis" />
+            <line x1={40} y1={10} x2={40} y2={210} className="axis" />
             <text x={34} y={16} textAnchor="end" className="bar-val">{tMaxW.toFixed(0)}</text>
             <text x={34} y={212} textAnchor="end" className="bar-val">0</text>
             <text x={750} y={232} textAnchor="end" className="bar-val">episode {tMaxEp}</text>
@@ -396,7 +429,7 @@ export default function Results() {
             One agent per junction, all sharing one network. Each episode is half an hour of SUMO traffic; exploration falls
             from 30% to 3%. Train more with <code>python marl/train_marl.py --episodes 40</code>.
           </p>
-        </section>
+        </Card>
       )}
     </>
   );

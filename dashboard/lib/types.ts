@@ -50,7 +50,8 @@ export interface LaneQueue {
 
 /** Signal output behind the conflict monitor (backend/app/signals/). */
 export interface SignalOutput {
-  driver: { driver: string; [k: string]: unknown };
+  /** driver name plus driver-specific fields; the simulated controller adds latency_s, writes, stuck, link_down */
+  driver: { driver: string; latency_s?: number; flashing?: boolean; writes?: number; stuck?: Record<string, string>; link_down?: boolean; [k: string]: unknown };
   flashing: boolean;
   fault: { kind: string; detail: string } | null;
   faults_total: number;
@@ -63,6 +64,7 @@ export interface Metrics {
   mode: "live" | "sim";
   mode_reason: string;
   controller: string;
+  intersections?: number;
   ambulance_detections: number;
   preemptions: number;
   active_preemptions: number;

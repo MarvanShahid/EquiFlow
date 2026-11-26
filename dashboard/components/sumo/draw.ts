@@ -5,7 +5,7 @@ export const LAMP_COLOR: Record<string, string> = {
   yellow: "#f6a623",
   green: "#2fcf8f",
 };
-export const AMB_BLUE = "#4aa3ff";
+export const AMB_BLUE = "#c084fc"; // emergency colour, the same as --emergency in globals.css
 
 /** Draw one vehicle with its front at (0,0) pointing along +x after the caller's transform. */
 export function drawVehicle(

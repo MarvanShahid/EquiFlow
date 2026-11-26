@@ -1,7 +1,7 @@
-import Dashboard from "@/components/Dashboard";
+import Cameras from "@/components/pages/Cameras";
 
-export const metadata = { title: "Camera feeds · EquiFlow" };
+export const metadata = { title: "Camera Monitoring · EquiFlow" };
 
 export default function Page() {
-  return <Dashboard />;
+  return <Cameras />;
 }

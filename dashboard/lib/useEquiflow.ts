@@ -1,63 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { API_URL, apiHeaders, wsUrl } from "./api";
-import type { EquiEvent, Snapshot } from "./types";
+import { useEffect, useState } from "react";
+import { useLive } from "./live";
 
-export type Link = "connecting" | "live" | "offline";
-const MAX_EVENTS = 80;
+export type { Link } from "./live";
 
-/** Live state from the backend: one WebSocket (snapshots + events) with automatic reconnect. */
+/** Live state of the camera-junction runtime (/ws), from the shared connection in lib/live.ts. */
 export function useEquiflow() {
-  const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
-  const [events, setEvents] = useState<EquiEvent[]>([]);
-  const [link, setLink] = useState<Link>("connecting");
-  const receivedAt = useRef(0);
-
-  useEffect(() => {
-    let ws: WebSocket | null = null;
-    let timer: ReturnType<typeof setTimeout> | undefined;
-    let closed = false;
-    let attempt = 0;
-
-    fetch(`${API_URL}/api/events?limit=60`, { headers: apiHeaders(false) })
-      .then((r) => (r.ok ? r.json() : []))
-      .then((list: EquiEvent[]) => !closed && setEvents(list))
-      .catch(() => {});
-
-    const connect = () => {
-      setLink("connecting");
-      ws = new WebSocket(wsUrl());
-      ws.onopen = () => {
-        attempt = 0;
-        setLink("live");
-      };
-      ws.onmessage = (m) => {
-        const msg = JSON.parse(m.data);
-        if (msg.type === "snapshot") {
-          receivedAt.current = performance.now();
-          setSnapshot(msg.data as Snapshot);
-        } else if (msg.type === "event" && msg.data.type !== "ambulance_position") {
-          setEvents((prev) => [msg.data as EquiEvent, ...prev].slice(0, MAX_EVENTS));
-        }
-      };
-      ws.onclose = () => {
-        if (closed) return;
-        setLink("offline");
-        timer = setTimeout(connect, Math.min(8000, 1000 * 2 ** attempt++));
-      };
-      ws.onerror = () => ws?.close();
-    };
-    connect();
-
-    return () => {
-      closed = true;
-      clearTimeout(timer);
-      ws?.close();
-    };
-  }, []);
-
-  return { snapshot, events, link, receivedAt };
+  const eq = useLive((s) => s.eq);
+  return { snapshot: eq.snapshot, events: eq.events, link: eq.link, receivedAt: eq.receivedAt, eventsLoaded: eq.eventsLoaded };
 }
 
 /** Re-renders every `ms` so countdowns move smoothly between 2 Hz snapshots. */
@@ -67,4 +18,11 @@ export function useTicker(ms = 200) {
     const id = setInterval(() => setN((n) => n + 1), ms);
     return () => clearInterval(id);
   }, [ms]);
+}
+
+/** Seconds left in the current stage, extrapolated from the last snapshot. */
+export function smoothRemaining(remaining: number | null | undefined, receivedAt: number): number | null {
+  if (remaining === null || remaining === undefined) return null;
+  const age = (performance.now() - receivedAt) / 1000;
+  return Math.max(0, remaining - age);
 }
